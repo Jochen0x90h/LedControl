@@ -1,0 +1,297 @@
+{
+    "PEC12R-4217F-S0024": {
+        "description": "PEC12R - 12 mm Incremental Encoder (https://www.bourns.com/docs/product-datasheets/pec12r.pdf)",
+        "body": [12.4, 13.4, 5.1],
+        "pads": [
+            {
+                "position": [0, 7.5],
+                "pitch": 2.5,
+                "size": 1.6,
+                "drillSize": 1,
+                "count": 3,
+                "names": ["A", "C", "B"]
+            },
+            {
+                "position": [0, -7.0],
+                "pitch": 5,
+                "size": 1.6,
+                "drillSize": 1,
+                "count": 2,
+                "names": ["S1", "S2"]
+            },
+            {
+                "position": [0, 0],
+                "pitch": 11.2,
+                "size": [2.2, 3.6],
+                "drillSize": [1.6, 3.0],
+                "count": 2
+            }
+        ]
+    },
+    "Connector-Flat-24_P0.5mm": {
+        "description": "Flat display connector 0.5mm pitch 24 pin",
+        "body": [18.4, 6, 1.2],
+        "offset": [0, 1.8, 0],
+        "pads": [
+            {
+                "position": [0, -1.5],
+                "pitch": 0.5,
+                "size": [0.3, 1.2],
+                "count": 24
+            },
+            {
+                "pitch": 16,
+                "size": [2, 3.6],
+                "count": 2,
+                "number": 25
+            }
+        ]
+    },
+    "WAGO2061-602": {
+        "description": "SMD terminal block 2 positions, 0.25 - 1.5mm² / 20 - 16 AWG (https://www.wago.com/de/leiterplattenanschluss/smd-leiterplattenklemme-mit-betaetigungsdrueckern-im-gurt/p/2061-602_998-404)",
+        "body": [11.70, 15.2, 5.6],
+        "margin": [0.05, 0],
+        "pads": [
+            {
+                "position": [0, 4.75],
+                "size": [2.1, 6.5],
+                "pitch": 6,
+                "count": 2
+            },
+            {
+                "position": [0, -6.35],
+                "size": [2.4, 4.5],
+                "pitch": 6,
+                "count": 2
+            }
+        ]
+    },
+    "Harting14110413002000": {
+        "description": "har-flexicon 2,54 MSH-4 T32 (https://b2b.harting.com/ebusiness/de/har-flexicon-254-MSH-4-T32-BK-600pcs/14110413002000?newPDP=true#)",
+        "body": [15.8, 6.1, 5],
+        "offset": [0, -0.5, 0],
+        "margin": -0.075,
+        "pads": [
+            {
+                "size": [1.1, 6],
+                "pitch": 2.54,
+                "count": 6,
+                "names": ["MP1", "1", "2", "3", "4", "MP2"]
+            },
+            {
+                "drillSize": 0.9,
+                "count": 1,
+                "position": [-5.08, -0.25]
+            },
+            {
+                "drillSize": 0.9,
+                "count": 1,
+                "position": [5.08, 0.25]
+            }
+        ]
+    },
+    "FTSH-107-01-L-DV-K": {
+        "description": "Pin header 1.27mm 2x7 (https://suddendocs.samtec.com/catalog_english/ftsh_smt.pdf)",
+        "body": [8.89, 5, 6.12],
+        "pads": [
+            {
+                "type": "dual",
+                "distance": 6,
+                "size": [0.8, 2.4],
+                "offset": [0, -1.2],
+                "pitch": 1.27,
+                "count": 14,
+                "numbering": "columns"
+            }
+        ]
+    },
+    "ProgPads": {
+        "description": "Programming pads 1.6mm 1x5",
+        "pads": [
+            {
+                "size": 1.2,
+                "drillSize": 0.7,
+                "pitch": 1.6,
+                "count": 5
+            }
+        ]
+    },
+    "Termination": {
+        "description": "Pads for serial or parallel termination",
+        "pads": [
+            {
+                "type": "dual",
+                "size": [1.6, 1.7],
+                "pitch": 2,
+                "distance": 1.9,
+                "count": 4,
+                "numbering": "rows",
+                "names": ["a1", "a2", "b1", "b2"]
+            }
+        ]
+    },
+    "Jumper": {
+        "description": "Solder jumper",
+        "pads": [
+            {
+                "pitch": 0.65,
+                "size": [0.5, 1],
+                "count": 2
+            }
+        ]
+    },
+    "PhotoDiode": {
+        "description": "Pads for photo diode",
+        "body": [4, 4, 10],
+        "pads": [
+            {
+                "pitch": 2.54,
+                "size": 1.5,
+                "drillSize": 0.9,
+                "count": 2
+            }
+        ]
+    },
+    "USB4510-03-1-A": {
+        "description": "USB-C Recepatce for USB 2.0 (https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/5564/USB4510.pdf)",
+        "body": [8.94, 6.5, 3.16],
+        "position": [0, -1.6],
+        "offset": [0, -1.25, -1.6],
+        "silkscreen": false,
+        "pads": [
+            {
+                // inner small pads
+                "position": [0, -5.3],
+                "size": [0.3, 1.0],
+                "pitch": 0.5,
+                "count": 8,
+                "names": ["B8", "A5", "B7", "A6", "A7", "B6", "A8", "B5"]
+            },
+            {
+                // left large pads (GND, VBUS)
+                "position": [-2.8, -5.3],
+                "size": [0.6, 1.0],
+                "pitch": 0.8,
+                "count": 2,
+                "names": ["A1", "A4"]
+            },
+            {
+                // right large pads (VBUS, GND)
+                "position": [2.8, -5.3],
+                "size": [0.6, 1.0],
+                "pitch": 0.8,
+                "count": 2,
+                "names": ["A4", "A1"]
+            },
+            {
+                // shield
+                "position": [0, -4],
+                "size": [1, 1.8],
+                "drillSize": [0.6, 1.4],
+                "pitch": 11.24,
+                "count": 2,
+                "names": ["S1", "S1"]
+            },
+            {
+                // shield
+                "size": [1, 2.2],
+                "drillSize": [0.6, 1.8],
+                "pitch": 11.24,
+                "count": 2,
+                "names": ["S1", "S1"]
+            },
+            {
+                // corner holes
+                "position": [0, -4.2],
+                "drillSize": 1,
+                "pitch": 8.45,
+                "count": 2
+            }
+        ],
+        "lines": [
+            {
+                "layer": "Dwgs.User",
+                "width": 0.1,
+                "points": [-6, 1.6, -4.62, 1.6, -4.62, -4.60, 4.62, -4.60, 4.62, 1.6, 6, 1.6]
+            }
+        ]
+    },
+    "PMEG6010ELR": {
+        "description": "Schottky Diode, 60V, 1A",
+        "body": [2.8, 1.9, 1.1],
+        "pads": [
+            {
+                "size": [1.2, 1.2],
+                "pitch": 2.8,
+                "count": 2
+            }
+        ]
+    },
+    "SP3485": {
+        "description": "RS-485 Transceiver 3.3V",
+        "body": [4.90, 3.90, 1.75],
+        "margin": 0.1,
+        "pads": [
+            {
+                "type": "dual",
+                "distance": 6.20,
+                "size": [0.6, 1.2],
+                "offset": [0, -0.6],
+                "pitch": 1.27,
+                "count": 8
+            }
+        ]
+    },
+    "TPS82130": {
+        "description": "Texas Instruments buck converter (http://www.ti.com/lit/ds/symlink/tps82130.pdf#page=19)",
+        "body": [3.00, 2.80, 1.53],
+        "margin": 0.1,
+        "pads": [
+            {
+                "type": "dual",
+                "distance": 2.1,
+                "size": [0.4, 0.5],
+                "pitch": 0.65,
+                "count": 8
+            },
+            {
+                "size": [1.9, 1.1],
+                "number": 9
+            }
+        ]
+    },
+    "BME680": {
+        "description": "Bosch air sensor (https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme680-ds001.pdf)",
+        "body": [3.00, 3.00, 0.93],
+        "margin": 0.1,
+        "pads": [
+            {
+                "type": "dual",
+                "distance": 2.4,
+                "size": [0.5, 0.5],
+                "pitch": 0.8,
+                "count": 8,
+                "mirror": true
+            }
+        ]
+    },
+    "STM32G431CBU": {
+        "description": "STM32G431CBU UFQFPN48",
+        "body": [7, 7, 0.6],
+        "pads": [
+            {
+                "type": "quad",
+                "distance": 7.4,
+                "size": [0.3, 0.60],
+                "offset": [0, -0.30],
+                "pitch": 0.5,
+                "count": 48
+            },
+            {
+                "size": [5.6, 5.6],
+                "shape": 0.01,
+                "number": 49
+            }
+        ]
+    }
+}
