@@ -7,6 +7,11 @@ using namespace coco;
 
 extern const int e12Table[12];
 
+/// @brief Convert a value to the 12 series, e.g. 10 -> 0, 100 -> 12, 1000 -> 24
+/// @param value value to convert
+/// @return value in E12 series
+int toE12(int value);
+
 
 template <typename T, int P>
 struct E12 {
@@ -21,14 +26,6 @@ struct E12 {
 		return e;
 	}
 };
-
-/**
- * Convert a value to the 12 series, e.g. 10 -> 0, 100 -> 12, 1000 -> 24
- * @param value
- * @return value in E12 series
- */
-int toE12(int value);
-
 
 // logarithmic duration: 10ms, 12ms, 15ms ...
 using MillisecondsE12 = E12<uint8_t, -3>;

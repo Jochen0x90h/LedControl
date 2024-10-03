@@ -35,19 +35,27 @@ AwaitableCoroutine EffectManager::load() {
 
 	// gload global parameters
 	co_await storage.read(GLOBAL_ID, &this->global, sizeof(Global), result);
-	this->global.brightness = std::clamp(int(this->global.brightness), 0, 24);
-	this->global.presetIndex = std::clamp(int(this->global.presetIndex), 0, this->presetCount - 1);
+	if (result == 3) {
+		this->global.presetIndex = std::clamp(int(this->global.presetIndex), 0, this->presetCount - 1);
+		this->global.brightness = std::clamp(int(this->global.brightness), 0, 24);
+		this->global.duration = std::clamp(int(this->global.duration), 12, 72);
+	} else {
+		// first-time initialization
+		this->global.presetIndex = 0;
+		this->global.brightness = 24; // 100%
+		this->global.duration = 24; // 1s
+	}
 }
 
 AwaitableCoroutine EffectManager::save() {
 	int result;
 
-	// save all presets
+	// save all dirty presets
 	for (int presetIndex = 0; presetIndex < this->presetCount; ++presetIndex) {
 		auto &preset = this->presetList[presetIndex];
 		if (preset.dirty) {
 			// determine size of preset
-			int size = offsetof(Preset, data) + preset.nameLength + this->effectInfos[preset.effectIndex].parameterInfos.size() - 1;
+			int size = offsetof(Preset, data) + preset.nameLength + this->effectInfos[preset.effectIndex].parameterInfos.size();
 
 			// save preset
 			co_await storage.write(this->directory[presetIndex], &preset, size, result);
@@ -170,84 +178,134 @@ void EffectManager::initParameters(int presetIndex) {
 
 	// convert to preset parameters
 	auto &parameterInfos = effectInfo.parameterInfos;
-	int parametersOffset = preset.nameLength - 1;
-	for (int parameterIndex = 1; parameterIndex < parameterInfos.size(); ++parameterIndex) {
+	int parametersOffset = preset.nameLength;// - 1;
+	for (int parameterIndex = 0; parameterIndex < parameterInfos.size(); ++parameterIndex) {
 		auto &parameterInfo = parameterInfos[parameterIndex];
 		uint8_t &parameter = preset.data[parametersOffset + parameterIndex];
-		void *effectParameter = this->effectParameters + parameterInfo.offset;
+		float effectParameter = this->effectParameters[parameterIndex];//parameterInfo.offset;
 
 		switch (parameterInfo.type) {
-		case ParameterInfo::Type::COUNT_20:
-			parameter = *reinterpret_cast<int *>(effectParameter);
+		case ParameterInfo::Type::COUNT:
+			parameter = int(effectParameter);// *reinterpret_cast<int *>(effectParameter);
 			break;
-		case ParameterInfo::Type::SHORT_DURATION_E12:
-		case ParameterInfo::Type::LONG_DURATION_E12:
-			parameter = toE12(reinterpret_cast<Milliseconds<> *>(effectParameter)->value);
+		case ParameterInfo::Type::DURATION_E12:
+			parameter = toE12(int(effectParameter * 1000.0f));// toE12(reinterpret_cast<Milliseconds<> *>(effectParameter)->value);
+			break;
+		case ParameterInfo::Type::PERCENTAGE:
+			parameter = int(effectParameter * 100.0f);// *reinterpret_cast<int *>(effectParameter) * 100 / 4095;
 			break;
 		case ParameterInfo::Type::PERCENTAGE_E12:
-			parameter = toE12(*reinterpret_cast<int *>(effectParameter) * 1000 / 4095);
-			break;
-		case ParameterInfo::Type::PERCENTAGE_2:
-		case ParameterInfo::Type::PERCENTAGE_5:
-			parameter = *reinterpret_cast<int *>(effectParameter) * 100 / 4095;
+			parameter = toE12(int(effectParameter * 1000.0f));  //   *reinterpret_cast<int *>(effectParameter) * 1000 / 4095);
 			break;
 		case ParameterInfo::Type::HUE:
-			parameter = *reinterpret_cast<int *>(effectParameter) >> 6;
+			parameter = int(effectParameter * 24.0f);//  *reinterpret_cast<int *>(effectParameter) >> 6;
 			break;
 		}
 	}
 }
+/*
+void EffectManager::updateGlobalParameter(int parameterIndex, int delta) {
+	if (delta != 0) {
+		// start save timer
+		this->timeout = this->loop.now() + SAVE_TIMEOUT;
+		this->timerBarrier.doAll();
+	}
+
+	if (parameterIndex == 0) {
+		// percentage E12 (0-24 -> 1.0%-100.0%)
+		uint8_t b = this->global.brightness = std::clamp(this->global.brightness + delta, 0, 24);
+		this->brightness = PercentageE12{b}.get() * 0.001f;
+		//return {ParameterInfo::Type::PERCENTAGE_E12, int(b)};
+	} else {
+		// duration E12 (12-60 -> 100ms - 1000s)
+		uint8_t d = this->global.duration = std::clamp(this->global.duration + delta, 12, 60);
+		this->duration = MillisecondsE12{d}.get() * 1ms;
+		//return {ParameterInfo::Type::DURATION_E12, int(d)};
+	}
+}*/
+
+const ParameterInfo globalParameterInfos[] = {
+    {"Brightness", ParameterInfo::Type::PERCENTAGE_E12, 0, 24, 1},
+    {"Duration", ParameterInfo::Type::DURATION_E12, 12, 72, 1},
+};
+
+String EffectManager::getParameterName(int presetIndex, int parameterIndex) {
+    if (parameterIndex < 2)
+		return globalParameterInfos[parameterIndex].name;
+	return this->effectInfos[this->presetList[presetIndex].effectIndex].parameterInfos[parameterIndex - 2].name;
+}
 
 EffectManager::ParameterValue EffectManager::updateParameter(int presetIndex, int parameterIndex, int delta) {
+	if (parameterIndex < 2) {
+		if (delta != 0) {
+			// start save timer
+			this->timeout = this->loop.now() + SAVE_TIMEOUT;
+			this->timerBarrier.doAll();
+		}
+
+		uint8_t parameter;
+		if (parameterIndex == 0) {
+			// brightness percentage E12 (0-24 -> 1.0%-100.0%)
+			parameter = this->global.brightness = std::clamp(this->global.brightness + delta, 0, 24);
+			this->brightness = PercentageE12{parameter}.get() * 0.001f;
+			//return {ParameterInfo::Type::PERCENTAGE_E12, int(b)};
+		} else {
+			// duration E12 (12-72 -> 100ms - 10000s)
+			parameter = this->global.duration = std::clamp(this->global.duration + delta, 12, 60);
+			this->duration = MillisecondsE12{parameter}.get() * 1ms;
+			//return {ParameterInfo::Type::DURATION_E12, int(d)};
+		}
+
+		return {globalParameterInfos[parameterIndex], int(parameter)};
+	}
+
+	parameterIndex -= 2;
+
 	auto &preset = this->presetList[presetIndex];
 	auto &parameterInfo = this->effectInfos[preset.effectIndex].parameterInfos[parameterIndex];
 
 	if (delta != 0) {
-		if (parameterIndex == 0) {
+		/*if (parameterIndex == 0) {
 			// start save timer
 			this->timeout = this->loop.now() + SAVE_TIMEOUT;
 			this->timerBarrier.doAll();
-		} else {
+		} else {*/
 			// mark preset as "dirty", to be saved on next save operation
 			preset.dirty = true;
-		}
+		//}
 	}
-	int parametersOffset = preset.nameLength - 1;
-	uint8_t &parameter = parameterIndex == 0 ? this->global.brightness : preset.data[parametersOffset + parameterIndex];
-	void *effectParameter = this->effectParameters + parameterInfo.offset;
+	int parametersOffset = preset.nameLength;// - 1;
+	uint8_t &parameter = /*parameterIndex == 0 ? this->global.brightness :*/ preset.data[parametersOffset + parameterIndex];
+	float &effectParameter = this->effectParameters[parameterIndex];//parameterInfo.offset;
 
-	// update parameter and convert/assign to effect parameter
+	// update parameter
+	if (!parameterInfo.wrap) {
+		parameter = std::clamp(parameter + delta * parameterInfo.step, int(parameterInfo.min), int(parameterInfo.max));
+	} else {
+		int m = parameterInfo.min;
+		int range = parameterInfo.max + 1 - m;
+		parameter = (parameter + delta * parameterInfo.step + (range << 16) - m) % range + m;
+	}
+
+	// convert to effect parameter
 	switch (parameterInfo.type) {
-	case ParameterInfo::Type::COUNT_20:
-		parameter = std::clamp(parameter + delta, 1, 20);
-		*reinterpret_cast<int *>(effectParameter) = parameter;
+	case ParameterInfo::Type::COUNT:
+		effectParameter = parameter;
 		break;
-	case ParameterInfo::Type::SHORT_DURATION_E12:
-		parameter = std::clamp(parameter + delta, 0, 36);
-		*reinterpret_cast<Milliseconds<> *>(effectParameter) = MillisecondsE12{parameter}.get() * 1ms;
+	case ParameterInfo::Type::DURATION_E12:
+		effectParameter = MillisecondsE12{parameter}.get() * 0.001f;
 		break;
-	case ParameterInfo::Type::LONG_DURATION_E12:
-		parameter = std::clamp(parameter + delta, 12, 60);
-		*reinterpret_cast<Milliseconds<> *>(effectParameter) = MillisecondsE12{parameter}.get() * 1ms;
+	case ParameterInfo::Type::PERCENTAGE:
+		effectParameter = parameter * 0.01f;
 		break;
 	case ParameterInfo::Type::PERCENTAGE_E12:
-		parameter = std::clamp(parameter + delta, 0, 24);
-		*reinterpret_cast<int *>(effectParameter) = PercentageE12{parameter}.get() * 4095 / 1000;
-		break;
-	case ParameterInfo::Type::PERCENTAGE_2:
-		parameter = std::clamp(parameter + delta * 2, 0, 100);
-		*reinterpret_cast<int *>(effectParameter) = parameter * 4095 / 100;
-		break;
-	case ParameterInfo::Type::PERCENTAGE_5:
-		parameter = std::clamp(parameter + delta * 5, 0, 100);
-		*reinterpret_cast<int *>(effectParameter) = parameter * 4095 / 100;
+		effectParameter = PercentageE12{parameter}.get() * 0.001f;
 		break;
 	case ParameterInfo::Type::HUE:
-		parameter = (parameter + delta + 240) % 24;
-		*reinterpret_cast<int *>(effectParameter) = parameter << 6;
+		effectParameter = parameter / 24.0f;
 		break;
 	}
-	return {parameterInfo.type, int(parameter)};
+	return {parameterInfo, int(parameter)};
 }
 
 AwaitableCoroutine EffectManager::run(int presetIndex) {
@@ -255,25 +313,49 @@ AwaitableCoroutine EffectManager::run(int presetIndex) {
 	this->effect.destroy();
 
 	// wait until strip is ready
-	co_await strip.wait();
-
+	co_await this->strip.untilReady();
 
 	auto &effectInfo = this->effectInfos[this->presetList[presetIndex].effectIndex];
 
 	// transfer effect parameters from preset
-	for (int parameterIndex = 0; parameterIndex < effectInfo.parameterInfos.size(); ++parameterIndex)
+	for (int parameterIndex = 0; parameterIndex < effectInfo.parameterInfos.size() + 2; ++parameterIndex)
 		updateParameter(presetIndex, parameterIndex, 0);
 
 	// start new effect
-	this->effect = effectInfo.run(loop, strip, this->effectParameters);
+	this->effect = run(effectInfo.end, effectInfo.run);
 }
+
+Coroutine EffectManager::run(EndFunction end, RunFunction run) {
+    auto start = this->loop.now();
+    while (true) {
+        auto now = this->loop.now();
+        float time = float(now - start) / float(this->duration);
+
+		if (end(time, this->effectParameters)) {
+			start = now;
+			time = 0;
+		}
+
+		/*auto t = now - start;
+        if (t > this->duration) {
+            start = now;
+            t = 0s;
+        }
+        float time = float(t) / float(this->duration);*/
+
+		run(this->strip, this->brightness, time, this->effectParameters);
+
+		co_await strip.show();
+	}
+}
+
 
 AwaitableCoroutine EffectManager::stop() {
 	// stop current effect
 	this->effect.destroy();
 
 	// wait until strip is ready
-	co_await strip.wait();
+	co_await strip.untilReady();
 
 	// turn off all LEDs
 	strip.clear();

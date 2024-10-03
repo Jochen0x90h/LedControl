@@ -184,18 +184,19 @@
                 "names": ["A4", "A1"]
             },
             {
-                // shield
-                "position": [0, -4],
-                "size": [1, 1.8],
-                "drillSize": [0.6, 1.4],
+                // shield long holes
+                "position": [0, -4.25],
+                "size": [1, 1.4],
+                "drillSize": [0.5, 0.9],
                 "pitch": 11.24,
                 "count": 2,
                 "names": ["S1", "S1"]
             },
             {
-                // shield
-                "size": [1, 2.2],
-                "drillSize": [0.6, 1.8],
+                // shield long holes
+                "position": [0, -0.3],
+                "size": [1, 1.7],
+                "drillSize": [0.5, 1.2],
                 "pitch": 11.24,
                 "count": 2,
                 "names": ["S1", "S1"]
@@ -212,7 +213,7 @@
             {
                 "layer": "Dwgs.User",
                 "width": 0.1,
-                "points": [-6, 1.6, -4.62, 1.6, -4.62, -4.60, 4.62, -4.60, 4.62, 1.6, 6, 1.6]
+                "points": [-4.62, 1.0, -4.62, -4.60, 4.62, -4.60, 4.62, 1.0]
             }
         ]
     },

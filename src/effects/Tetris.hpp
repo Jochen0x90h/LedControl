@@ -5,88 +5,107 @@
  */
 
 #include "../EffectInfo.hpp"
-#include "../math.hpp"
 
 
 namespace Tetris {
 
-struct Parameters {
-    // brightness (0 - 4095)
-    int brightness;
+const uint8_t tetrisRandom[32] = {0, 3, 1, 4, 2, 4, 0, 2, 1, 3, 1, 0, 2, 1, 3, 4, 2, 4, 1, 3, 4, 0, 1, 0, 3, 4, 1, 4, 3, 1, 4, 0};
 
-    // duration for movement over whole strip
-    Milliseconds<> duration;
+float lookupTetrisRandom(float index) {
+    return tetrisRandom[int(index) & 31];
+}
+
+struct Parameters {
+    // number of blocks (may not be accurate due to random size of blocks)
+    float count;
 };
+const ParameterInfo parameterInfos[] = {
+    {"Count", ParameterInfo::Type::COUNT, 1, 50, 1},
+};
+
 
 // initialize parameters with default values
 void init(void *parameters) {
     auto &p = *reinterpret_cast<Parameters *>(parameters);
 
-    p.brightness = 4095; // 100%
-    p.duration = 5s;
+    p.count = 10.0f;
 }
 
-float3 block(float time, float endTime, float size, float position, float hue) {
-    float e = min(time, endTime);
-    float s = e - size;
-    if (position < s || position > e + 1.0f) {
-        return {0, 0, 0};
-    } else {
-        float value;
-        if (position < s + 1) {
-            // ramp up
-            value = position - s;
-        } else if (position < e) {
-            value = 1.0f;
-        } else {
-            // ramp down
-            value = 1.0f - (position - e);
-        }
-        return hsv2rgb({hue, 1.0f, value});
-    }
-}
-
-Coroutine run(Loop &loop, Strip &strip, const void *parameters) {
+bool end(float time, const void *parameters) {
     auto &p = *reinterpret_cast<const Parameters *>(parameters);
 
+    float count = 1.0f;
+
+    float t = (time - 1.0f) * count;
+
+    float endTime = count;
+    float randomIndex = 0;
+    while (endTime > 0) {
+        // random value 0 - 4
+        float randomValue = lookupTetrisRandom(randomIndex);
+
+        // size and hue of block
+        float size = (1.0f + randomValue) * count / (p.count * 3.0f);
+
+        t -= endTime;
+        endTime -= size;
+        randomIndex += 1.3f;
+    }
+
+    return t >= 1.0f;
+}
+
+void run(Strip &strip, float brightness, float time, const void *parameters) {
     int count = strip.size();
-    auto start = loop.now();
-    while (true) {
-        auto now = loop.now();
-        auto t = now - start;
-        if (t > p.duration * 8) {
-            start = now;
-            t = 0s;
-        }
-        float time = float(t) / float(p.duration);
+    auto &p = *reinterpret_cast<const Parameters *>(parameters);
 
-        float brightness = p.brightness / 4096.0f;
+    for (int ledIndex = 0; ledIndex < count; ++ledIndex) {
+        float position = float(ledIndex);
+        float3 color = {0, 0, 0};
 
-        for (int ledIndex = 0; ledIndex < count; ++ledIndex) {
-            float position = float(ledIndex);
-            //float coordinate = position / float(count - 1);
-            float3 color = {0, 0, 0};
+        // position and end position of block
+        float blockPosition = (time - 1.0f) * count;
+        float endPosition = count;
 
-            float t = (time - 1.0f) * count;
-            float size = count / 10.0f;
+        float randomIndex = 0;
+        while (endPosition > 0) {
+            // random value 0 - 4
+            float randomValue = lookupTetrisRandom(randomIndex);
 
-            for (int i = 0; i < 10; ++i) {
-                float endTime = (10 - i) * 0.1f * count;
-                color += block(t, endTime, size, position, noise(i * 0.2f));
+            // size and hue of block
+            float size = (1.0f + randomValue) * count / (p.count * 3.0f);
+            float hue = randomValue * 0.2f;
 
-                t -= endTime;
+            // block
+            float e = min(blockPosition, endPosition);
+            float s = e - size;
+            if (position >= s && position <= e + 1.0f) {
+                float value;
+                if (position < s + 1) {
+                    // ramp up
+                    value = position - s;
+                } else if (position < e) {
+                    value = 1.0f;
+                } else {
+                    // ramp down
+                    value = 1.0f - (position - e);
+                }
+                color += hsv2rgb({hue, 1.0f, value});
             }
 
-            strip.set(ledIndex, color);
+            // update position and end position for next block
+            blockPosition -= endPosition;
+            endPosition -= size;
+
+            randomIndex += 1.0f;
         }
-        co_await strip.show();
+
+        color *= brightness;
+
+        strip.set(ledIndex, color);
     }
 }
 
-const ParameterInfo parameterInfos[] = {
-    {"Brightness", ParameterInfo::Type::PERCENTAGE_E12, offsetof(Parameters, brightness)},
-    {"Duration", ParameterInfo::Type::LONG_DURATION_E12, offsetof(Parameters, duration)},
-};
-constexpr EffectInfo info{"Tetris", parameterInfos, sizeof(Parameters), &init, &run};
+constexpr EffectInfo info{"Tetris", parameterInfos, &init, &end, &run};
 
 } // namespace Tetris

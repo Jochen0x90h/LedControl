@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cmath>
 #include <numbers>
+#include <random>
 
 
 namespace fs = std::filesystem;
@@ -321,11 +322,26 @@ void generatePalette(const fs::path &path, const fs::path &outputPath, const std
 	f.close();
 }
 
+// generate random sequence for tetris to std::cout only as template for hand tuned sequence
+void generateRandom(const fs::path &outputPath) {
+	//std::ofstream f(outputPath);
+	//f << "#pragma once" << std::endl;
+	//f << std::endl;
+
+	auto &f = std::cout;
+
+	f << "const uint8_t tetrisRandom[32] = {";
+	std::random_device random;
+	for (int j = 0; j < 32; ++j) {
+		f << random() % 5 << ", ";
+	}
+	f << "};" << std::endl;
+}
 
 /**
  * Unsigned cosine with 8 bit output and 10 bit input, shifted to positive values
  */
-void generateCosTable(const fs::path &outputPath) {
+/*void generateCosTable(const fs::path &outputPath) {
 	std::ofstream f(outputPath);
 	f << "#pragma once" << std::endl;
 	f << std::endl;
@@ -343,7 +359,7 @@ void generateCosTable(const fs::path &outputPath) {
 	}
 	f << "};" << std::endl;
 	//f << "inline uint8_t cos8u10(uint16_t x) {return cos8Table[x];}" << std::endl;
-}
+}*/
 
 int main(int argc, const char **argv) {
 
@@ -361,7 +377,10 @@ int main(int argc, const char **argv) {
 		}
 	}
 
-	generateCosTable(effectsDir / "cos8u10.hpp");
+	// tetris random
+	generateRandom(effectsDir / "tetrisRandom.hpp");
+
+	//generateCosTable(effectsDir / "cos8u10.hpp");
 
 	return 0;
 }

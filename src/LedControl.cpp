@@ -1,4 +1,5 @@
 #include <LedControl.hpp> // drivers
+#include "E12.hpp"
 #include "EffectManager.hpp"
 #include "effects/StaticColor.hpp"
 #include "effects/ColorCycle3.hpp"
@@ -121,20 +122,18 @@ AwaitableCoroutine parametersMenu(Loop &loop, SSD130x &display, InputDevice &but
 			int edit = menu.edit(1);
 			int delta = edit > 0 ? menu.delta() : 0;
 			auto p = effectManager.updateParameter(presetIndex, parameterIndex, delta);
-			switch (p.type) {
-			case ParameterInfo::Type::COUNT_20:
+			switch (p.info.type) {
+			case ParameterInfo::Type::COUNT:
 				stream << underline(dec(p.value), edit > 0);
 				break;
-			case ParameterInfo::Type::SHORT_DURATION_E12:
-			case ParameterInfo::Type::LONG_DURATION_E12:
+			case ParameterInfo::Type::DURATION_E12:
 				stream << underline(MillisecondsE12(p.value), edit > 0) << 's';
+				break;
+			case ParameterInfo::Type::PERCENTAGE:
+				stream << underline(dec(p.value), edit > 0) << '%';
 				break;
 			case ParameterInfo::Type::PERCENTAGE_E12:
 				stream << underline(PercentageE12(p.value), edit > 0) << '%';
-				break;
-			case ParameterInfo::Type::PERCENTAGE_2:
-			case ParameterInfo::Type::PERCENTAGE_5:
-				stream << underline(dec(p.value), edit > 0) << '%';
 				break;
 			case ParameterInfo::Type::HUE:
 				stream << underline(hueNames[p.value], edit > 0);
@@ -379,38 +378,48 @@ Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, EffectManag
 
 				value << effectManager.getPresetName(presetIndex);
 			} else {
+				// get parameter info and value
+				auto p = effectManager.updateParameter(presetIndex, parameterIndex, 0);
+
 				// show parameter name
-				String name = effectManager.getParameterName(presetIndex, parameterIndex);
+				String name = p.info.name;//effectManager.getParameterName(presetIndex, parameterIndex);
 				int w = coco::tahoma8pt1bpp.calcWidth(name);
 				bitmap.drawText((128 - w) >> 1, 10, coco::tahoma8pt1bpp, name);
 
-				// value
-				auto p = effectManager.updateParameter(presetIndex, parameterIndex, delta);
-				switch (p.type) {
-				case ParameterInfo::Type::COUNT_20:
-					barW = p.value * 124 / 20;
+				// calc x-coordinate and widht of display bar
+				{
+					int value = p.value - p.info.min;
+					int range = p.info.max + p.info.min;
+					if (!p.info.wrap) {
+						barW = value * 124 / range;
+					} else {
+						barW = 124 / range + 1; // width of bar is at least 1 pixel
+						barX = value * (124 - barW) / range;
+					}
+				}
+
+				// create display value
+				switch (p.info.type) {
+				case ParameterInfo::Type::COUNT:
+					//barW = p.value * 124 / 20;
 					value << dec(p.value);
 					break;
-				case ParameterInfo::Type::SHORT_DURATION_E12:
-					barW = p.value * 124 / 36;
+				case ParameterInfo::Type::DURATION_E12:
+					//barW = p.value * 124 / 36;
+					//barW = (p.value - 12) * 124 / 48;
 					value << MillisecondsE12(p.value) << "s";
 					break;
-				case ParameterInfo::Type::LONG_DURATION_E12:
-					barW = (p.value - 12) * 124 / 48;
-					value << MillisecondsE12(p.value) << "s";
-					break;
-				case ParameterInfo::Type::PERCENTAGE_E12:
-					barW = p.value * 124 / 24;
-					value << PercentageE12(p.value) << "%";
-					break;
-				case ParameterInfo::Type::PERCENTAGE_2:
-				case ParameterInfo::Type::PERCENTAGE_5:
-					barW = p.value * 124 / 100;
+				case ParameterInfo::Type::PERCENTAGE:
+					//barW = p.value * 124 / 100;
 					value << dec(p.value) << "%";
 					break;
+				case ParameterInfo::Type::PERCENTAGE_E12:
+					//barW = p.value * 124 / 24;
+					value << PercentageE12(p.value) << "%";
+					break;
 				case ParameterInfo::Type::HUE:
-					barW = 124 / 24;
-					barX = p.value * (124 - barW) / 23;
+					//barW = 124 / 24;
+					//barX = p.value * (124 - barW) / 23;
 					value << hueNames[p.value];
 					break;
 				}

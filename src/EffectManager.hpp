@@ -12,183 +12,161 @@ using namespace coco;
 
 // preset (effect and parameters), gets stored in flash
 struct Preset {
-	uint8_t effectIndex;
+    uint8_t effectIndex;
 
-	// length of name
-	uint8_t nameLength;
+    // length of name
+    uint8_t nameLength;
 
-	// name and parameters
-	uint8_t data[30];
+    // name and parameters
+    uint8_t data[30];
 
-	bool dirty;
+    bool dirty;
 };
 
 class EffectManager {
 public:
-	static constexpr int GLOBAL_ID = 0;
-	static constexpr int DIRECTORY_ID = 100;
-	static constexpr int FIRST_PRESET_ID = 101;
-	static constexpr int LAST_PRESET_ID = FIRST_PRESET_ID + 98;
-	static constexpr int MAX_PRESET_COUNT = 32;
-	static constexpr Milliseconds<> SAVE_TIMEOUT = 2s;
+    static constexpr int GLOBAL_ID = 0;
+    static constexpr int DIRECTORY_ID = 100;
+    static constexpr int FIRST_PRESET_ID = 101;
+    static constexpr int LAST_PRESET_ID = FIRST_PRESET_ID + 98;
+    static constexpr int MAX_PRESET_COUNT = 32;
+    static constexpr Milliseconds<> SAVE_TIMEOUT = 2s;
 
 
-	EffectManager(Loop &loop, const BufferStorage::Info &storageInfo, Buffer &flashBuffer, Strip &strip,
-		Array<const EffectInfo> effectInfos)
-		: loop(loop)
-		, storage(storageInfo, flashBuffer)
-		, strip(strip)
-		, effectInfos(effectInfos)
-		, timerCoroutine(saveTimer())
-	{}
+    EffectManager(Loop &loop, const BufferStorage::Info &storageInfo, Buffer &flashBuffer, Strip &strip,
+        Array<const EffectInfo> effectInfos)
+        : loop(loop)
+        , storage(storageInfo, flashBuffer)
+        , strip(strip)
+        , effectInfos(effectInfos)
+        , timerCoroutine(saveTimer())
+    {}
 
-	~EffectManager() {
-		this->timerCoroutine.destroy();
-	}
+    ~EffectManager() {
+        this->timerCoroutine.destroy();
+    }
 
-	/**
-	 * Load all presets from flash
-	 */
-	[[nodiscard]] AwaitableCoroutine load();
+    /// @brief Load all presets from flash
+    ///
+    [[nodiscard]] AwaitableCoroutine load();
 
-	/**
-	 * Save all presets with dirty flag to flash
-	 */
-	[[nodiscard]] AwaitableCoroutine save();
+    /// @brief Save all presets with dirty flag to flash
+    ///
+    [[nodiscard]] AwaitableCoroutine save();
 
-	/**
-	 * Add a new preset at the end of the list. Make sure getPresetCount() is < MAX_PRESET_COUNT
-	 * @return index of new preset
-	 */
-	int addPreset();
+    /// @brief Add a new preset at the end of the list. Make sure getPresetCount() is < MAX_PRESET_COUNT
+    /// @return index of new preset
+    int addPreset();
 
-	/**
-	 * Delete a preset
-	 */
-	void deletePreset(int presetIndex);
+    /// @brief Delete a preset
+    ///
+    void deletePreset(int presetIndex);
 
+    /// @brief Add a delta to an effect index of a preset
+    ///
+    void updateEffect(int presetIndex, int delta);
 
-	//[[nodiscard]] AwaitableCoroutine loadPreset(int presetInex);
+    /// @brief Set default values for the parameters
+    ///
+    void initParameters(int presetIndex);
 
-	/**
-	 * Save a preset, also makes newPreset() permanent
-	 */
-	//[[nodiscard]] AwaitableCoroutine savePreset(int presetIndex);
-
-	/**
-	 * Delete a preset
-	 */
-	//[[nodiscard]] AwaitableCoroutine deletePreset(int presetIndex);
-
-	/**
-	 * Add a delta to an effect index of a preset
-	 */
-	void updateEffect(int presetIndex, int delta);
-
-	/**
-	 * Set default values for the parameters
-	 */
-	void initParameters(int presetIndex);
-
-	struct ParameterValue {
-		ParameterInfo::Type type;
-		int value;
-	};
-
-	/**
-	 * Add a delta to a parameter of a preset, clamp to valid range and return its current value
-	 */
-	ParameterValue updateParameter(int presetIndex, int parameterIndex, int delta);
-
-	/**
-	 * Run the given preset
-	 */
-	[[nodiscard]] AwaitableCoroutine run(int presetIndex);
-
-	/**
-	 * Stop the current preset
-	 */
-	[[nodiscard]] AwaitableCoroutine stop();
+    struct ParameterValue {
+        const ParameterInfo &info;
+        int value;
+    };
 
 
 
-	/**
-	 * Size of presets list
-	 */
-	int getPresetCount() {return this->presetCount;}
+    /**
+     * Size of presets list
+     */
+    int getPresetCount() {return this->presetCount;}
 
-	/**
-	 * Get the name of the given preset. The effect name is the default name
-	 */
-	String getPresetName(int presetIndex) {
-		// use effect name for now
-		return this->effectInfos[this->presetList[presetIndex].effectIndex].name;
-	}
+    /**
+     * Get the name of the given preset. The effect name is the default name
+     */
+    String getPresetName(int presetIndex) {
+        // use effect name for now
+        return this->effectInfos[this->presetList[presetIndex].effectIndex].name;
+    }
 
-	/**
-	 * Number of effect parameters in the given preset
-	 */
-	int getParameterCount(int presetIndex) {
-		return this->effectInfos[this->presetList[presetIndex].effectIndex].parameterInfos.size();
-	}
+    int getPresetIndex() {return this->global.presetIndex;}
+    void setPresetIndex(int index);
 
-	/**
-	 * Get the name of the given parameter of the given preset
-	 */
-	String getParameterName(int presetIndex, int parameterIndex) {
-		return this->effectInfos[this->presetList[presetIndex].effectIndex].parameterInfos[parameterIndex].name;
-	}
+    /// @brief Number of effect parameters in the given preset
+    ///
+    int getParameterCount(int presetIndex) {
+        return 2 + this->effectInfos[this->presetList[presetIndex].effectIndex].parameterInfos.size();
+    }
+
+    /// @brief Get the name of the given parameter of the given preset
+    ///
+    String getParameterName(int presetIndex, int parameterIndex);
+
+    /// @brief Add a delta to a parameter of a preset, clamp to valid range and return its current value
+    ///
+    ParameterValue updateParameter(int presetIndex, int parameterIndex, int delta);
 
 
-	int getPresetIndex() {return this->global.presetIndex;}
-	void setPresetIndex(int index);
+    /// @brief Run the given preset
+    ///
+    [[nodiscard]] AwaitableCoroutine run(int presetIndex);
+
+    /// @brief Stop the current preset
+    ///
+    [[nodiscard]] AwaitableCoroutine stop();
+
 protected:
+    Coroutine run(EndFunction end, RunFunction function);
 
-	int findFreeId();
+    int findFreeId();
 
-	/**
-	 * Timer that saves parameter changes to flash after some time
-	 */
-	Coroutine saveTimer();
+    /**
+     * Timer that saves parameter changes to flash after some time
+     */
+    Coroutine saveTimer();
 
 
-	Loop &loop;
-	BufferStorage storage;
- 	Strip &strip;
+    Loop &loop;
+    BufferStorage storage;
+     Strip &strip;
 
-	// list of all effects
-	Array<const EffectInfo> effectInfos;
+    // list of all effects
+    Array<const EffectInfo> effectInfos;
 
-	// preset directory in flash
-	uint8_t directory[MAX_PRESET_COUNT];
-	bool directoryDirty = false;
+    // preset directory in flash
+    uint8_t directory[MAX_PRESET_COUNT];
+    bool directoryDirty = false;
 
-	// list of all presets
-	int presetCount = 0;
-	Preset presetList[MAX_PRESET_COUNT];
+    // list of all presets
+    int presetCount = 0;
+    Preset presetList[MAX_PRESET_COUNT];
 
-	// current preset
-	//int presetIndex = -1;
+    // current preset
+    //int presetIndex = -1;
 
-	//uint8_t globalBrightness = 24;
+    //uint8_t globalBrightness = 24;
 
-	struct Global {
-		uint8_t presetIndex;
-		uint8_t brightness;
-	};
-	Global global;
+    struct Global {
+        uint8_t presetIndex;
+        uint8_t brightness;
+        uint8_t duration;
+    };
+    Global global;
 
-	// effect parameters (get converted from current preset)
-	alignas(4) uint8_t effectParameters[128];
+    // effect parameters (get converted from global and current preset)
+    float brightness;
+    Milliseconds<> duration;
+    float effectParameters[32];
 
-	Coroutine effect;
+    Coroutine effect;
 
-	// save timeout
-	Loop::Time timeout;
+    // save timeout
+    Loop::Time timeout;
 
-	// timer waits on barrier until it gets started
-	Barrier<> timerBarrier;
+    // timer waits on barrier until it gets started
+    Barrier<> timerBarrier;
 
-	// must be last
-	Coroutine timerCoroutine;
+    // must be last
+    Coroutine timerCoroutine;
 };

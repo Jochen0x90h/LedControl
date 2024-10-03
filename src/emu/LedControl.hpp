@@ -20,9 +20,9 @@ constexpr SSD130x::Flags DISPLAY_FLAGS = SSD130x::Flags::SSD1306;
 constexpr int PAGE_SIZE = 2048;
 constexpr int BLOCK_SIZE = 8;
 constexpr BufferStorage::Info storageInfo {
-	PAGE_SIZE,
-	BLOCK_SIZE,
 	0, // address
+	BLOCK_SIZE,
+	PAGE_SIZE,
 	8192, // sector size
 	2, // sector count
 	BufferStorage::Type::MEM_4N

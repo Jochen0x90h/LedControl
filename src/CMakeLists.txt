@@ -14,7 +14,6 @@ function(firmware FW BOARD_LIB)
 			EffectManager.hpp
 			math.hpp
 			Strip.hpp
-			Timer.hpp
 			effects/ColorCycle3.hpp
 			effects/ColorFade.hpp
 			effects/ColorFade3.hpp
@@ -35,7 +34,7 @@ function(firmware FW BOARD_LIB)
 		)
 		target_link_libraries(${NAME}
 			${BOARD_LIB}
-			#coco::coco
+			coco::coco
 			coco-loop::coco-loop
 			coco-device::coco-device
 			coco-led-strip::coco-led-strip

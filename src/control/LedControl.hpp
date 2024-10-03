@@ -29,9 +29,9 @@ constexpr int SECTOR_COUNT = 4;
 constexpr int SECTOR_PAGE_COUNT = FLASH_SIZE / (2 * PAGE_SIZE * SECTOR_COUNT); // use half of available flash which is 64K, also configure in link.ld
 constexpr int SECTOR_SIZE = SECTOR_PAGE_COUNT * PAGE_SIZE;
 constexpr BufferStorage::Info storageInfo {
-	PAGE_SIZE,
-	BLOCK_SIZE,
 	FLASH_ADDRESS + FLASH_SIZE - SECTOR_COUNT * SECTOR_SIZE, // address
+	BLOCK_SIZE,
+	PAGE_SIZE,
 	SECTOR_SIZE,
 	SECTOR_COUNT,
 	BufferStorage::Type::MEM_4N

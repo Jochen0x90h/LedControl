@@ -8,9 +8,8 @@
 using namespace coco;
 
 
-/**
- * LED strip with double buffering
- */
+/// @brief LED strip with double buffering
+///
 class Strip {
 public:
     Strip(Buffer &buffer1, Buffer &buffer2) : buffers{&buffer1, &buffer2} {
@@ -20,16 +19,15 @@ public:
 
     int size() {return this->count;}
 
-    /**
-     * Clear the buffer
-     */
+	/// @brief Clear the buffer
+    ///
 	void clear() {
         this->buffer->array<uint8_t>().fill(0);
     }
 
-    /**
-     * Set float color (0.0f - 1.0f)
-     */
+    /// @brief Set float color (0.0f - 1.0f)
+    /// @param index index of LED
+    /// @param color color of LED
     void set(int index, float3 color) {
         uint8_t *b = this->buffer->data() + index * 3;
         b[0] = clamp(int(color.x * 255.0f + 0.5f), 0, 255);
@@ -37,9 +35,8 @@ public:
         b[2] = clamp(int(color.z * 255.0f + 0.5f), 0, 255);
     }
 
-    /**
-     * Show contents of strip on LEDs
-     */
+    /// @brief Show contents of strip on LEDs
+    /// @return use co_await to wait until show() is done
     [[nodiscard]] Awaitable<Buffer::Events> show() {
         // WS2812: swap first and second byte of RGB colors
 #ifdef SWAP_R_G
@@ -59,10 +56,9 @@ public:
         return this->buffer->untilReadyOrDisabled();
     }
 
-    /**
-     * Use co_await to wait until the strip is ready again
-     */
-    [[nodiscard]] Awaitable<Buffer::Events> wait() {
+    /// @brief Wait until strip is ready
+    /// @return Use co_await to wait until the strip is ready again
+    [[nodiscard]] Awaitable<Buffer::Events> untilReady() {
         return this->buffer->untilReadyOrDisabled();
     }
 

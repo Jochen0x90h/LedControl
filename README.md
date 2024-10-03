@@ -1,14 +1,10 @@
-# CoCo LED Strip
+# LED Control
 
-LED strip support for CoCo
-
-## Import
-Add coco-ledstrip/\<version> to your conanfile where version corresponds to the git tags
+Control unit for LED strips
 
 ## Features
-* Emulator showing graphs for red, green and blue values and color strip
+* 128x64 OLED Display
+* Support for presets, i.e. the same effect can be configured with different parameters in the preset list
 
-## Suppoted LEDs
-
-## Supported Platforms
+## Compile
 See README.md of coco base library
