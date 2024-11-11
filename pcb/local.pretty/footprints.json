@@ -140,70 +140,57 @@
             }
         ]
     },
-    "PhotoDiode": {
-        "description": "Pads for photo diode",
-        "body": [4, 4, 10],
-        "pads": [
-            {
-                "pitch": 2.54,
-                "size": 1.5,
-                "drillSize": 0.9,
-                "count": 2
-            }
-        ]
-    },
     "USB4510-03-1-A": {
-        "description": "USB-C Recepatce for USB 2.0 (https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/5564/USB4510.pdf)",
+        "description": "USB-C Recepatce for USB 2.0 (https://gct.co/connector/usb4510)",
         "body": [8.94, 6.5, 3.16],
-        "position": [0, -1.6],
-        "offset": [0, -1.25, -1.6],
+        "offset": [0, -2.75, -1.6],
         "silkscreen": false,
         "pads": [
             {
                 // inner small pads
-                "position": [0, -5.3],
-                "size": [0.3, 1.0],
+                "position": [0, -6.75],
+                "size": [0.3, 1.1],
                 "pitch": 0.5,
                 "count": 8,
                 "names": ["B8", "A5", "B7", "A6", "A7", "B6", "A8", "B5"]
             },
             {
                 // left large pads (GND, VBUS)
-                "position": [-2.8, -5.3],
-                "size": [0.6, 1.0],
+                "position": [-2.8, -6.75],
+                "size": [0.6, 1.1],
                 "pitch": 0.8,
                 "count": 2,
                 "names": ["A1", "A4"]
             },
             {
                 // right large pads (VBUS, GND)
-                "position": [2.8, -5.3],
-                "size": [0.6, 1.0],
+                "position": [2.8, -6.75],
+                "size": [0.6, 1.1],
                 "pitch": 0.8,
                 "count": 2,
                 "names": ["A4", "A1"]
             },
             {
-                // shield long holes
-                "position": [0, -4.25],
-                "size": [1, 1.4],
+                // upper shield long holes
+                "position": [0, -5.6],
+                "size": [1.0, 1.4],
                 "drillSize": [0.5, 0.9],
                 "pitch": 11.24,
                 "count": 2,
                 "names": ["S1", "S1"]
             },
             {
-                // shield long holes
-                "position": [0, -0.3],
-                "size": [1, 1.7],
-                "drillSize": [0.5, 1.2],
+                // lower shield long holes
+                "position": [0, -1.6],
+                "size": [1.0, 1.8],
+                "drillSize": [0.5, 1.3],
                 "pitch": 11.24,
                 "count": 2,
                 "names": ["S1", "S1"]
             },
             {
                 // corner holes
-                "position": [0, -4.2],
+                "position": [0, -5.8],
                 "drillSize": 1,
                 "pitch": 8.45,
                 "count": 2
@@ -213,7 +200,64 @@
             {
                 "layer": "Dwgs.User",
                 "width": 0.1,
-                "points": [-4.62, 1.0, -4.62, -4.60, 4.62, -4.60, 4.62, 1.0]
+                "points": [-6, 0, -4.62, 0, -4.62, -6.20, 4.62, -6.20, 4.62, 0, 6, 0]
+            }
+        ]
+    },
+    "USB4105-GF-A-120": {
+        "description": "USB-C Recepatce for USB 2.0 (https://gct.co/connector/usb4105)",
+        "body": [8.94, 7.35, 3.31],
+        "offset": [0, -3.675, 0],
+        "silkscreen": false,
+        "pads": [
+            {
+                // inner small pads
+                "position": [0, -7.355],
+                "size": [0.3, 1.15],
+                "pitch": 0.5,
+                "count": 8,
+                "names": ["B8", "A5", "B7", "A6", "A7", "B6", "A8", "B5"]
+            },
+            {
+                // left large pads (GND, VBUS)
+                "position": [-2.8, -7.355],
+                "size": [0.6, 1.15],
+                "pitch": 0.8,
+                "count": 2,
+                "names": ["A1", "A4"]
+            },
+            {
+                // right large pads (VBUS, GND)
+                "position": [2.8, -7.355],
+                "size": [0.6, 1.15],
+                "pitch": 0.8,
+                "count": 2,
+                "names": ["A4", "A1"]
+            },
+            {
+                // lower shield long holes
+                "position": [0, -2.6],
+                "size": [1.0, 1.5],
+                "drillSize": [0.5, 1.0],
+                "pitch": 8.64,
+                "count": 2,
+                "names": ["S1", "S1"]
+            },
+            {
+                // upper shield long holes
+                "position": [0, -6.78],
+                "size": [1.0, 1.8],
+                "drillSize": [0.5, 1.3],
+                "pitch": 8.64,
+                "count": 2,
+                "names": ["S1", "S1"]
+            },
+            {
+                // holes
+                "position": [0, -6.28],
+                "drillSize": 0.6,
+                "pitch": 5.78,
+                "count": 2
             }
         ]
     },
@@ -292,6 +336,64 @@
                 "size": [5.6, 5.6],
                 "shape": 0.01,
                 "number": 49
+            }
+        ]
+    },
+    "SOT23-SC70": {
+        "description": "Compromise footprint for SOT23 and SC70",
+        "body": [2.8, 1.5, 1.0],
+        "pads": [
+            {
+                "type": "dual",
+                "distance": 2.5,
+                "size": [0.6, 1.2],
+                "pitch": 0.8,
+                "count": 6,
+                "names": ["1", "2", "3", "4", "", "5"]
+            }
+        ]
+    },
+    "PhotoDiode": {
+        "description": "Pads for photo diode",
+        "body": [4.4, 2, 10],
+        "pads": [
+            {
+                "position": [0, -2],
+                "type": "dual",
+                "distance": 4,
+                "pitch": 2.54,
+                "size": 1.5,
+                "drillSize": 0.9,
+                "count": 4,
+                "names": ["1", "2", "2", ""]
+            }
+        ],
+        "circles": [
+            {
+                "layer": "Dwgs.User",
+                "width": 0.1,
+                "center": [0, 0],
+                "diameter": 5
+            }
+        ]
+    },
+    "TSOP31238": {
+        "description": "TSOP 31238 IR receiver module",
+        "body": [10, 2, 12.5],
+        "pads": [
+            {
+                "size": 1.4,
+                "drillSize": 0.9,
+                "pitch": 2.54,
+                "count": 4,
+                "names": ["1", "2", "", "3"]
+            }
+        ],
+        "lines": [
+            {
+                "layer": "Dwgs.User",
+                "width": 0.1,
+                "points": [-5, -1, 5, -1, 5, -13.5, -5, -13.5, -5, -1]
             }
         ]
     }

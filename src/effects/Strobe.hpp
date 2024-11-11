@@ -46,7 +46,7 @@ void run(Strip &strip, float brightness, float time, const void *parameters) {
     auto &p = *reinterpret_cast<const Parameters *>(parameters);
 
     for (int ledIndex = 0; ledIndex < count; ++ledIndex) {
-        float position = float(ledIndex);
+        //float position = float(ledIndex);
         float3 color = {0, 0, 0};
 
         if (time < p.strobePercentage) {

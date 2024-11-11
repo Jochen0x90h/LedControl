@@ -17,8 +17,8 @@ boxY1 = -boxHeight/2;
 boxY2 = boxHeight/2;
 
 // pcb
-pcbX1 = -30;
-pcbX2 = 30;
+pcbX1 = -31;
+pcbX2 = 31;
 pcbY1 = -38;
 pcbY2 = 3;
 pcbX = (pcbX1 + pcbX2)/2;
@@ -111,11 +111,13 @@ echo(100-panelY2);
 
 // usb-c connector
 usbX = 0;
-usbWidth = 8.5;
-usbThickness = 2.5;
 usbZ = pcbZ2;
-usbPlugWidth = 12;
-usbPlugThickness = 8; // thickness of plug of usb cable
+usbWidth = 9.0; // receptacle
+usbHeight = 3.4;
+usbConnectorWidth = 8.4; // connector
+usbConnectorHeight = 2.5;
+usbPlugWidth = 12; // plastic casing of connector
+usbPlugHeight = 8;
 
 
 // box with center/size in x/y plane and z ranging from z1 to z2
@@ -168,20 +170,23 @@ module frustum(x, y, w1, h1, w2, h2, z1, z2) {
 
 module usb() {
 	color([0.5, 0.5, 0.5]) {
-        translate([usbX, boxY1+2.1, usbZ]) {
+        translate([usbX, boxY1+2.1, usbZ+usbHeight/2]) {
             rotate([90, 0, 0]) {
+                // recepacle
                 hull() {
-                    translate([-usbWidth/2, 0, 0])
-                        cylinder(d=usbThickness, h=10);
-                    translate([usbWidth/2, 0, 0])
-                        cylinder(d=usbThickness, h=10);
+                    translate([-(usbWidth)/2, 0, 0])
+                        cylinder(d=usbHeight, h=1);
+                    translate([(usbWidth)/2, 0, 0])
+                        cylinder(d=usbHeight, h=1);
                 }
+
+                // connector
                 hull() {
-                    translate([-(usbWidth+0.5)/2, 0, 0])
-                        cylinder(d=usbThickness+0.5, h=1);
-                    translate([(usbWidth+0.5)/2, 0, 0])
-                        cylinder(d=usbThickness+0.5, h=1);
-                }
+                    translate([-usbConnectorWidth/2, 0, 0])
+                        cylinder(d=usbConnectorHeight, h=10);
+                    translate([usbConnectorWidth/2, 0, 0])
+                        cylinder(d=usbConnectorHeight, h=10);
+                }              
             }
         }
     }
@@ -476,12 +481,12 @@ module coverForProduction() {
 	
 // casing parts that need to be printed
 base();
-//cover();
+cover();
 //wheel();
 //coverForProduction();
 
 // reference parts
-//pcb();
+pcb();
 //poti();
 usb();
 //usbPlug();

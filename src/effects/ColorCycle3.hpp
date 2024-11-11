@@ -46,7 +46,7 @@ void run(Strip &strip, float brightness, float time, const void *parameters) {
     auto &p = *reinterpret_cast<const Parameters *>(parameters);
 
     for (int ledIndex = 0; ledIndex < count; ++ledIndex) {
-        float position = float(ledIndex);
+        //float position = float(ledIndex);
         float3 color = {0, 0, 0};
 
         float t = fract(time);
@@ -65,7 +65,7 @@ void run(Strip &strip, float brightness, float time, const void *parameters) {
             h2 = p.hue3;
             s1 = p.saturation2;
             s2 = p.saturation3;
-        } else if (iteration == 2.0f) {
+        } else {
             h1 = p.hue3;
             h2 = p.hue1;
             s1 = p.saturation3;

@@ -87,12 +87,12 @@ void __attribute__((weak)) SystemInit() {
     RCC->APB2ENR = RCC->APB2ENR | RCC_APB2ENR_SYSCFGEN;
 
     // enable clock of CORDIC
-    RCC->AHB1ENR = RCC->AHB1ENR | RCC_AHB1ENR_CORDICEN;
+    //RCC->AHB1ENR = RCC->AHB1ENR | RCC_AHB1ENR_CORDICEN;
 
 	// disable dead battery pull-ups (when not using UCPD, otherwise do this after initializing UCPD)
 	PWR->CR3 = PWR->CR3 | PWR_CR3_UCPD_DBDIS;
 
-	// enable reference voltage if necessary, this devboard has an external voltage reference
+	// enable reference voltage
 	//vref::enable(vref::Config::INTERNAL_2V9);
 
 /*

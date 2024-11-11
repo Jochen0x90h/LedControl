@@ -40,9 +40,9 @@ public:
     [[nodiscard]] Awaitable<Buffer::Events> show() {
         // WS2812: swap first and second byte of RGB colors
 #ifdef SWAP_R_G
-        auto a = array();
-        for (Color<uint8_t> &c : a) {
-            std::swap(c.r, c.g);
+        auto a = this->buffer->array<Vector3<uint8_t>>();
+        for (Vector3<uint8_t> &c : a) {
+            std::swap(c.x, c.y);
         }
 #endif
 

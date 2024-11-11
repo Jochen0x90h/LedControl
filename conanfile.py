@@ -24,18 +24,18 @@ class Project(ConanFile):
         return False
 
     def requirements(self):
-        self.requires("coco-led-strip/main", options={"platform": self.options.platform})
-        self.requires("coco-spi/pow10", options={"platform": self.options.platform})
-        self.requires("coco-mono-display/pow10", options={"platform": self.options.platform})
-        self.requires("coco-flash/pow10", options={"platform": self.options.platform})
-        self.requires("coco-storage/pow10", options={"platform": self.options.platform})
-        self.requires("coco-math/main", options={"platform": self.options.platform})
+        self.requires("coco-led-strip/0.1.0", options={"platform": self.options.platform})
+        self.requires("coco-spi/0.6.0", options={"platform": self.options.platform})
+        self.requires("coco-mono-display/0.3.0", options={"platform": self.options.platform})
+        self.requires("coco-flash/0.5.0", options={"platform": self.options.platform})
+        self.requires("coco-storage/0.5.0", options={"platform": self.options.platform})
+        self.requires("coco-math/0.1.0", options={"platform": self.options.platform})
 
     def build_requirements(self):
-        self.tool_requires("coco-toolchain/pow10", options={"platform": self.options.platform})
-        self.test_requires("coco-devboards/pow10", options={"platform": self.options.platform})
+        self.tool_requires("coco-toolchain/0.3.0", options={"platform": self.options.platform})
+        self.test_requires("coco-devboards/0.6.0", options={"platform": self.options.platform})
         if not self.cross():
-            self.test_requires("gtest/1.14.0")
+            self.test_requires("gtest/1.15.0")
 
     keep_imports = True
     def imports(self):

@@ -18,7 +18,7 @@
 #include <coco/PseudoRandom.hpp>
 #include <coco/StreamOperators.hpp>
 #include <coco/StringBuffer.hpp>
-#include <coco/noise.hpp>
+#include <coco/math.hpp>
 #include <coco/debug.hpp>
 
 
@@ -530,6 +530,7 @@ Coroutine draw(Loop &loop, Buffer &buffer) {
 
 
 int main() {
+	math::init();
 	//draw(drivers.loop, drivers.displayBuffer);
 
 
