@@ -2,7 +2,7 @@
 
 #include "EffectInfo.hpp"
 #include "Strip.hpp"
-#include <coco/BufferStorage.hpp>
+#include <coco/Storage.hpp>
 #include <coco/Buffer.hpp>
 #include <coco/Loop.hpp>
 #include <coco/Coroutine.hpp>
@@ -26,17 +26,18 @@ struct Preset {
 class EffectManager {
 public:
     static constexpr int GLOBAL_ID = 0;
-    static constexpr int DIRECTORY_ID = 100;
-    static constexpr int FIRST_PRESET_ID = 101;
-    static constexpr int LAST_PRESET_ID = FIRST_PRESET_ID + 98;
+    static constexpr int DIRECTORY_ID = 1;
+    static constexpr int FIRST_PRESET_ID = 2;
+    static constexpr int LAST_PRESET_ID = 99;
     static constexpr int MAX_PRESET_COUNT = 32;
+
     static constexpr Milliseconds<> SAVE_TIMEOUT = 2s;
 
 
-    EffectManager(Loop &loop, const BufferStorage::Info &storageInfo, Buffer &flashBuffer, Strip &strip,
+    EffectManager(Loop &loop, Storage &storage, Strip &strip,
         Array<const EffectInfo> effectInfos)
         : loop(loop)
-        , storage(storageInfo, flashBuffer)
+        , storage(storage)
         , strip(strip)
         , effectInfos(effectInfos)
         , timerCoroutine(saveTimer())
@@ -77,14 +78,12 @@ public:
 
 
 
-    /**
-     * Size of presets list
-     */
+    /// @brief Get number of presets in the presets list
+    ///
     int getPresetCount() {return this->presetCount;}
 
-    /**
-     * Get the name of the given preset. The effect name is the default name
-     */
+    /// @brief Get the name of the given preset. The effect name is the default name
+    ///
     String getPresetName(int presetIndex) {
         // use effect name for now
         return this->effectInfos[this->presetList[presetIndex].effectIndex].name;
@@ -128,8 +127,8 @@ protected:
 
 
     Loop &loop;
-    BufferStorage storage;
-     Strip &strip;
+    Storage &storage;
+    Strip &strip;
 
     // list of all effects
     Array<const EffectInfo> effectInfos;
@@ -142,11 +141,7 @@ protected:
     int presetCount = 0;
     Preset presetList[MAX_PRESET_COUNT];
 
-    // current preset
-    //int presetIndex = -1;
-
-    //uint8_t globalBrightness = 24;
-
+    // global parameters which get stored in flash automatically
     struct Global {
         uint8_t presetIndex;
         uint8_t brightness;

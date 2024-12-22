@@ -12,6 +12,8 @@ function(firmware FW BOARD_LIB)
 			EffectInfo.hpp
 			EffectManager.cpp
 			EffectManager.hpp
+			RemoteControl.cpp
+			RemoteControl.hpp
 			math.hpp
 			Strip.hpp
 			effects/ColorCycle3.hpp
@@ -40,6 +42,7 @@ function(firmware FW BOARD_LIB)
 			coco-led-strip::coco-led-strip
 			coco-spi::coco-spi
 			coco-mono-display::coco-mono-display
+			coco-ir::coco-ir
 			coco-flash::coco-flash
 			coco-storage::coco-storage
 			coco-math::coco-math

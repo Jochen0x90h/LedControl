@@ -17,10 +17,10 @@ boxY1 = -boxHeight/2;
 boxY2 = boxHeight/2;
 
 // pcb
-pcbX1 = -31;
-pcbX2 = 31;
+pcbX1 = -32;
+pcbX2 = 32;
 pcbY1 = -38;
-pcbY2 = 3;
+pcbY2 = 1.5;
 pcbX = (pcbX1 + pcbX2)/2;
 pcbY = (pcbY1 + pcbY2)/2;
 pcbWidth = pcbX2 - pcbX1;
@@ -29,7 +29,7 @@ pcbZ1 = 3;
 pcbZ2 = pcbZ1+1.6; // mounting surface
 
 // pcb screw
-pcbScrewX = -28;
+pcbScrewX = -30;
 pcbScrewY = -22;
 
 // poti (Bourns PEC12R-4215F-S0024)
@@ -52,7 +52,7 @@ baseZ2 = pcbZ1;
 
 // cover
 coverZ1 = pcbZ2;
-coverZ2 = potiZ4 + 1; // use height of poti mounted on pcb plus cap
+coverZ2 = potiZ4 + 1; // use height of poti mounted on pcb plus wheel
 coverFit = 0.4;
 coverOverlap = 2.5;
 
@@ -65,11 +65,24 @@ wheelZ2 = coverZ2 - 3; // thickness of wheel
 wheelZ3 = coverZ2;
 
 // photo diode
+// https://cdn-reichelt.de/documents/datenblatt/A500/BPV_10NF_DS.pdf
 photoX = -potiX;
-photoY = potiY;
+//photoY = potiY; // only photo diode, no IR receiver
+photoY = potiY - 7; // photo diode and IR receiver
 photoD = 5.1 + 0.1; // diameter + tolerance
-photoZ2 = coverZ2;
-photoZ1 = photoZ2 - 3.85;
+photoR = photoD * 0.5; // radius
+photoZ3 = coverZ2 - 1;
+photoZ2 = photoZ3 - 7.6;//3.85;
+photoZ1 = photoZ3 - 8.6;
+
+// IR receiver
+// https://cdn-reichelt.de/documents/datenblatt/A500/TSOP312SERIES_DATASHEET.pdf
+irX = -potiX;
+irY = potiY - 2.2;
+irCenterY = irY + 9.2; // center of sensitive area
+irZ3 = coverZ2 - 1;
+irZ1 = irZ3 - 5.8;
+irZ2 = irZ1 + 4;
 
 // display (2.42 inch)
 displayTolerance = 0.4;
@@ -219,6 +232,45 @@ module poti() {
 			box(x, y+potiD2/2, 10, 3, potiZ3, potiZ4+0.5);
 		}
 	}
+}
+
+module photoDiode() {
+    translate([photoX, photoY, photoZ3-photoR]) {
+        sphere(photoR);
+    }
+    translate([photoX, photoY, photoZ1]) {
+        cylinder(h=photoZ3-photoZ1-photoR, r=photoR, center=false);
+    }
+}
+
+module photoCutout() {
+    z = photoZ3-photoD*0.5;
+    translate([photoX, photoY, z]) {
+        cylinder(h=coverZ2-z+0.1, r1=photoR, r2=5, center=false);
+    }
+    translate([photoX, photoY, photoZ1]) {
+        cylinder(h=10, r=photoR, center=false);
+    }
+}
+
+module irReceiver() {
+    w = 10+0.3;
+    h = 12.5+0.4;
+    R = 2.75;
+    box(irX, irY + h/2, w, h, irZ1, irZ2);
+    box(irX, irY - 0.7, w, 1.4, irZ1, irZ1+2);
+    translate([irX, irCenterY, irZ3 - R]) {
+        sphere(R);
+        rotate([90, 0, 0])
+            cylinder(h=9.2, r=R, center=false);
+    }
+}
+
+module irCutout() {
+    translate([irX, irCenterY, irZ2]) {
+        cylinder(h=coverZ2-irZ2+0.1, r1=2.6, r2=5, center=false);
+    }
+    irReceiver();
 }
 
 // 
@@ -389,24 +441,7 @@ color([1, 0, 0]) {
                 // subtract inner volume, leave 2mm wall
                 box(x=0, y=0, w=76, h=76, z1=coverZ1-1, z2=coverZ2-2);
             }
-			
-            // poti base
-			intersection() {
-				wheelBase(x=potiX, y=potiY);
-			
-				// cut away poti base outside of cover and at display
-				cuboid(x1=-40, y1=-40, x2=40, y2=panelY1, z1=pcbZ2, z2=coverZ2-2);
-			}
 
-			// photo diode border
-			barrel(photoX, photoY,
-				photoD+2,
-				photoZ1, photoZ2);
-
-            // pcb screw
-            //barrel(pcbScrewX, pcbScrewY, M2Diameter+2*M2Wall, pcbZ2+1, pcbZ2+M2Depth+1);
-            barrel(pcbScrewX, pcbScrewY, 4.9, pcbZ2, coverZ2);
-			
 			// lower display holder
 			box(panelX, panelY1-0.25,
                 panelWidth-4, 2,
@@ -421,20 +456,30 @@ color([1, 0, 0]) {
 			// display cable support
 			box(0, -12, displayCableWidth1, 2,
 				wheelZ2-3, coverZ2);
+			
+            // poti base
+			intersection() {
+				wheelBase(x=potiX, y=potiY);
+			
+				// cut away poti base outside of cover and at display
+				cuboid(x1=-40, y1=-40, x2=40, y2=panelY1, z1=pcbZ2, z2=coverZ2-2);
+			}
+
+			// photo diode border
+			barrel(photoX, photoY,
+				8,
+				photoZ3-photoR-1, photoZ3);
+
+            // IR receiver border
+			barrel(irX, irCenterY,
+				8,
+				irZ2, coverZ2);
+            
+            // pcb screw
+            //barrel(pcbScrewX, pcbScrewY, M2Diameter+2*M2Wall, pcbZ2+1, pcbZ2+M2Depth+1);
+            barrel(pcbScrewX, pcbScrewY, 4.9, pcbZ2, coverZ2);			
 		}
-		
-		// subtract poti cutout for wheel and axis
-		potiCutout(x=potiX, y=potiY);		
-
-		// subtract photo diode cutout
-		barrel(photoX, photoY,
-			photoD,
-			photoZ1-1, photoZ2+1);
-
-		// subtract pcb screw hole
-        //barrel(pcbScrewX, pcbScrewY, M2Diameter, pcbZ1, pcbZ2 + M2Depth);
-        barrel(pcbScrewX, pcbScrewY, 2, pcbZ1, pcbZ1 + 12);
-        
+		       
         // subtract display screen window
 		frustum(x=screenX, y=screenY,
 			w1=screenWidth-4, h1=screenHeight-4,
@@ -453,18 +498,58 @@ color([1, 0, 0]) {
 		frustum(x=screenX, y=panelY1, 
 			w1=displayCableWidth1, h1=45,
 			w2=displayCableWidth1, h2=6,
-			z1=panelZ3-10, z2=panelZ3-0.5);
-	
-		// subtract components on pcb
+			z1=panelZ3-10, z2=panelZ3-0.5);	
+       
+		// subtract poti cutout for wheel and axis
+		potiCutout(x=potiX, y=potiY);		
+
+        // subtract photo diode cutout
+        photoCutout();
+        
+        // subtract IR receiver and cutout
+        irCutout();
+
+		// subtract usb cutout
 		//usbPlug();
 		usb();
+
+		// subtract pcb screw hole
+        //barrel(pcbScrewX, pcbScrewY, M2Diameter, pcbZ1, pcbZ2 + M2Depth);
+        barrel(pcbScrewX, pcbScrewY, 2, pcbZ1, pcbZ1 + 12);
 	}		
 
-	// snap lock between cover and base
+	// add snap lock between cover and base
 	snap(-(76)/2, 40);
 	snap((76)/2, 40);
 } // color
 }
+
+// support for photo diode and IR receiver
+module support() {
+    difference() {
+        union() {
+            // add support for IR receiver
+            barrel(irX, irCenterY, 5, pcbZ2, irZ1);
+            box(irX, (irCenterY + irY) * 0.5,
+                5, irCenterY - irY,
+                pcbZ2, irZ1);
+
+            // add support for photo diode
+            barrel(photoX, photoY, 5, pcbZ2, photoZ1);
+            
+            // add connection
+            box(irX, (irCenterY + photoY) * 0.5,
+                5, irCenterY - photoY,
+                pcbZ2, pcbZ2 + 3);
+        }
+    
+        // subtract holes
+        barrel(photoX - 1.25, photoY, 1.1, pcbZ2-1, coverZ2);      
+        barrel(photoX + 1.25, photoY, 1.1, pcbZ2-1, coverZ2);      
+        barrel(irX - 1.25, irY - 1, 1.1, pcbZ2-1, coverZ2);      
+    }
+}
+    
 
 // cover for production including wheel and programmer
 module coverForProduction() {
@@ -480,13 +565,16 @@ module coverForProduction() {
 
 	
 // casing parts that need to be printed
-base();
+//base();
 cover();
 //wheel();
 //coverForProduction();
 
 // reference parts
-pcb();
+//pcb();
 //poti();
-usb();
+//photoDiode();
+//irReceiver();
+//usb();
 //usbPlug();
+//support();
