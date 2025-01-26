@@ -1,14 +1,11 @@
 #pragma once
 
-/*
- * Cylon bounce effect
- * https://www.tweaking4all.com/hardware/arduino/adruino-led-strip-effects/#LEDStripEffectCylon
- */
-
 #include "../EffectInfo.hpp"
 #include "../math.hpp"
 
 
+/// @brief Cylon bounce effect
+/// https://www.tweaking4all.com/hardware/arduino/adruino-led-strip-effects/#LEDStripEffectCylon
 namespace CylonBounce {
 
 struct Parameters {

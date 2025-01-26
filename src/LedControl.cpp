@@ -9,6 +9,7 @@
 #include "effects/Strobe.hpp"
 #include "effects/CylonBounce.hpp"
 #include "effects/MeteorRain.hpp"
+#include "effects/SnowSparkle.hpp"
 #include "effects/Spring.hpp"
 #include "effects/Summer.hpp"
 #include "effects/Autumn.hpp"
@@ -54,6 +55,7 @@ const EffectInfo effectInfos[] = {
     Strobe::info,
     CylonBounce::info,
     MeteorRain::info,
+    SnowSparkle::info,
     Spring::info,
     Summer::info,
     Autumn::info,
@@ -248,6 +250,11 @@ AwaitableCoroutine remoteMenu(Loop &loop, SSD130x &display, InputDevice &buttons
         }
         if (menu.entry("Duration Down")) {
             remoteControl.setLearn(3);
+            co_await remoteCommandMenu(loop, display, buttons, remoteControl);
+            remoteControl.setNormal();
+        }
+        if (menu.entry("Next Preset")) {
+            remoteControl.setLearn(4);
             co_await remoteCommandMenu(loop, display, buttons, remoteControl);
             remoteControl.setNormal();
         }
@@ -448,9 +455,17 @@ Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &st
             showParameter = true;
             parameterTimeout = loop.now() + 5s;
 
-            // select brightness
-            parameterIndex = command >> 1;
-            effectManager.updateParameter(presetIndex, parameterIndex, (command & 1) == 0 ? 1 : -1);
+            if (command < 4) {
+                // update brightness or duration
+                parameterIndex = command >> 1;
+                effectManager.updateParameter(presetIndex, parameterIndex, (command & 1) == 0 ? 1 : -1);
+            } else {
+                // next preset
+                parameterIndex = -1;
+                presetIndex = (presetIndex + 1 + effectManager.getPresetCount()) % effectManager.getPresetCount();
+                effectManager.setPresetIndex(presetIndex);
+                co_await effectManager.run(presetIndex);
+            }
             idle = false;
         }
 
@@ -482,7 +497,7 @@ Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &st
                 bitmap.drawText((128 - w) >> 1, 10, coco::tahoma8pt1bpp, name);
 
                 barW = 124 / effectManager.getPresetCount();
-                barX = presetIndex * (124 - barW) / (effectManager.getPresetCount() - 1);
+                barX = presetIndex * (124 - barW) / std::max(effectManager.getPresetCount() - 1, 1);
 
                 value << effectManager.getPresetName(presetIndex);
             } else {

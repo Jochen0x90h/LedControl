@@ -1,4 +1,51 @@
 {
+    "0603": {
+        "description": "Generic 0603 resistor/capacitor footprint (pad with = (body width) / 4 + 0.3, pitch = (body width) - (pad width) + 0.6)",
+        "body": [1.6, 0.8, 0.8],
+        "courtyardAdd": 0.2,
+        "pads": [
+            {
+                "pitch": 1.5,
+                "size": [0.7, 0.9],
+                "count": 2
+            }
+        ]
+    },
+    "0805": {
+        "description": "Generic 0805 resistor/capacitor footprint",
+        "body": [2, 1.25, 1.0],
+        "courtyardAdd": 0.3,
+        "pads": [
+            {
+                "pitch": 1.8,
+                "size": [0.8, 1.4],
+                "count": 2
+            }
+        ]
+    },
+    "1206": {
+        "description": "Generic 1206 resistor/capacitor footprint",
+        "body": [3.2, 1.5, 1.2],
+        "courtyardAdd": 0.4,
+        "pads": [
+            {
+                "pitch": 2.7,
+                "size": [1.1, 1.7],
+                "count": 2
+            }
+        ]
+    },
+    "1206-term": {
+        "description": "1206 termination resistor footprint",
+        "body": [3.2, 1.5, 1.2],
+        "pads": [
+            {
+                "pitch": 2.2,
+                "size": [1.6, 1.7],
+                "count": 2
+            }
+        ]
+    },
     "PEC12R-4217F-S0024": {
         "description": "PEC12R - 12 mm Incremental Encoder (https://www.bourns.com/docs/product-datasheets/pec12r.pdf)",
         "body": [12.4, 13.4, 5.1],
@@ -28,20 +75,22 @@
             }
         ]
     },
-    "Connector-Flat-24_P0.5mm": {
-        "description": "Flat display connector 0.5mm pitch 24 pin",
-        "body": [18.4, 6, 1.2],
-        "offset": [0, 1.8, 0],
+    "Connector-Flat-24-0.5mm": {
+        "description": "Flat display connector 0.5mm pitch 24 pin (https://www.lcsc.com/product-detail/FFC-FPC-Flat-Flexible-Connector-Assemblies_JUSHUO-AFC07-S24FCC-00_C11057.html?s_z=n_C11057)",
+        "body": [17.6, 6.0, 2.0],
+        "offset": [0, 2.75, 0],
         "pads": [
             {
-                "position": [0, -1.5],
+                "position": [0, -1.1],
                 "pitch": 0.5,
-                "size": [0.3, 1.2],
+                "size": [0.3, 1.3],
                 "count": 24
             },
             {
-                "pitch": 16,
-                "size": [2, 3.6],
+                "position": [0, 1.25],
+                "pitch": 15.3,
+                "size": [2.0, 3.0],
+                "shape": 0.05,
                 "count": 2,
                 "number": 25
             }
@@ -50,7 +99,8 @@
     "WAGO2061-602": {
         "description": "SMD terminal block 2 positions, 0.25 - 1.5mm² / 20 - 16 AWG (https://www.wago.com/de/leiterplattenanschluss/smd-leiterplattenklemme-mit-betaetigungsdrueckern-im-gurt/p/2061-602_998-404)",
         "body": [11.70, 15.2, 5.6],
-        "margin": [0.05, 0],
+        "courtyardAdd": [0.3, 0],
+        "silkscreenAdd": -0.2,
         "pads": [
             {
                 "position": [0, 4.75],
@@ -70,7 +120,7 @@
         "description": "har-flexicon 2,54 MSH-4 T32 (https://b2b.harting.com/ebusiness/de/har-flexicon-254-MSH-4-T32-BK-600pcs/14110413002000?newPDP=true#)",
         "body": [15.8, 6.1, 5],
         "offset": [0, -0.5, 0],
-        "margin": -0.075,
+        "silkscreenAdd": -0.2,
         "pads": [
             {
                 "size": [1.1, 6],
@@ -90,8 +140,8 @@
             }
         ]
     },
-    "FTSH-107-01-L-DV-K": {
-        "description": "Pin header 1.27mm 2x7 (https://suddendocs.samtec.com/catalog_english/ftsh_smt.pdf)",
+    "PinHeader-2x7-1.27mm-smd": {
+        "description": "Pin header, 2x7 pins, 1.27mm raster (FTSH-107-01-L-DV-K https://suddendocs.samtec.com/catalog_english/ftsh_smt.pdf or BD125-16-A-0305-0580-L-B https://gct.co/connector/bd125)",
         "body": [8.89, 5, 6.12],
         "pads": [
             {
@@ -276,7 +326,8 @@
     "SO-8": {
         "description": "Generic SO-8 footprint (https://en.wikipedia.org/wiki/Small_outline_integrated_circuit)",
         "body": [4.90, 3.90, 1.75],
-        "margin": 0.1,
+        "silkscreenAdd": 0.1,
+        "courtyardAdd": 0.5,
         "pads": [
             {
                 "type": "dual",
@@ -289,19 +340,21 @@
         ]
     },
     "TPS82130": {
-        "description": "Texas Instruments buck converter (http://www.ti.com/lit/ds/symlink/tps82130.pdf#page=19)",
-        "body": [3.00, 2.80, 1.53],
-        "margin": 0.1,
+        "description": "Texas Instruments buck converter (https://www.ti.com/product/de-de/TPS82130)",
+        "body": [2.80, 3.00, 1.53],
+        "silkscreenAdd": 0.2,
+        "courtyardAdd": 0.5,
+        "orientation": "top-left",
         "pads": [
             {
                 "type": "dual",
                 "distance": 2.1,
-                "size": [0.4, 0.5],
+                "size": [0.5, 0.4],
                 "pitch": 0.65,
                 "count": 8
             },
             {
-                "size": [1.9, 1.1],
+                "size": [1.1, 1.9],
                 "number": 9
             }
         ]
@@ -309,7 +362,8 @@
     "BME680": {
         "description": "Bosch air sensor (https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme680-ds001.pdf)",
         "body": [3.00, 3.00, 0.93],
-        "margin": 0.1,
+        "silkscreenAdd": 0.2,
+        "courtyardAdd": 0.5,
         "pads": [
             {
                 "type": "dual",
@@ -324,6 +378,8 @@
     "STM32G431CBU": {
         "description": "STM32G431CBU UFQFPN48",
         "body": [7, 7, 0.6],
+        "silkscreenAdd": 0.2,
+        "courtyardAdd": 0.5,
         "pads": [
             {
                 "type": "quad",

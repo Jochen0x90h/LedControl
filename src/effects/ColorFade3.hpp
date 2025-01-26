@@ -1,14 +1,11 @@
 #pragma once
 
-/*
- * Color fade effect with 3 colors
- * https://www.tweaking4all.com/hardware/arduino/adruino-led-strip-effects/#LEDStripEffectFadeInandFadeOutRedGreenandBlue
- */
-
 #include "../EffectInfo.hpp"
 #include "../math.hpp"
 
 
+/// @brief Color fade effect with 3 colors
+/// https://www.tweaking4all.com/hardware/arduino/adruino-led-strip-effects/#LEDStripEffectFadeInandFadeOutRedGreenandBlue
 namespace ColorFade3 {
 
 struct Parameters {

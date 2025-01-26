@@ -1,14 +1,12 @@
 #pragma once
 
-/*
- * Spring effect
- */
-
 #include "../EffectInfo.hpp"
 #include "lookupSpringPalette.hpp"
 #include "../math.hpp"
 
 
+/// @brief Spring effect
+///
 namespace Spring {
 
 struct Parameters {

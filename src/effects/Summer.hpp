@@ -1,14 +1,12 @@
 #pragma once
 
-/*
- * Summer effect
- */
-
 #include "../EffectInfo.hpp"
 #include "lookupSummerPalette.hpp"
 #include "../math.hpp"
 
 
+/// @brief Summer effect
+///
 namespace Summer {
 
 struct Parameters {

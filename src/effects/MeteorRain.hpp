@@ -1,17 +1,15 @@
 #pragma once
 
-/*
- * Meteor rain effect
- * https://www.tweaking4all.com/hardware/arduino/adruino-led-strip-effects/#LEDStripEffectMeteorRain
- */
-
 #include "../EffectInfo.hpp"
 #include "../math.hpp"
 
 
+/// @brief Meteor rain effect
+/// https://www.tweaking4all.com/hardware/arduino/adruino-led-strip-effects/#LEDStripEffectMeteorRain
 namespace MeteorRain {
 
 struct Parameters {
+    // color
     float hue;
     float saturation;
 
@@ -38,6 +36,7 @@ void init(void *parameters) {
 }
 
 bool end(float time, const void *parameters) {
+    // 256 iterations so that meteor looks different in every iteration
     return time >= 256.0f;
 }
 

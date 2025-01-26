@@ -1,14 +1,12 @@
 #pragma once
 
-/*
- * Autumn effect
- */
-
 #include "../EffectInfo.hpp"
 #include "lookupAutumnPalette.hpp"
 #include "../math.hpp"
 
 
+/// @brief Autumn effect
+///
 namespace Autumn {
 
 struct Parameters {

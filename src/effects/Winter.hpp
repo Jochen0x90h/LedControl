@@ -1,14 +1,12 @@
 #pragma once
 
-/*
- * Winter effect
- */
-
 #include "../EffectInfo.hpp"
 #include "lookupWinterPalette.hpp"
 #include "../math.hpp"
 
 
+/// @brief Winter effect
+///
 namespace Winter {
 
 struct Parameters {

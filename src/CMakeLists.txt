@@ -21,6 +21,7 @@ function(firmware FW BOARD_LIB)
 			effects/ColorFade3.hpp
 			effects/CylonBounce.hpp
 			effects/MeteorRain.hpp
+			effects/SnowSparkle.hpp
 			effects/StaticColor.hpp
 			effects/Strobe.hpp
 			effects/Spring.hpp

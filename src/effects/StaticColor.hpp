@@ -4,10 +4,8 @@
 #include "../math.hpp"
 
 
-/*
- * Static color
- */
-
+/// @brief Static color effect
+/// Displays an uniform color without animation
 namespace StaticColor {
 
 struct Parameters {

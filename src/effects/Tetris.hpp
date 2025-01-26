@@ -1,12 +1,10 @@
 #pragma once
 
-/*
- * Tetris effect
- */
-
 #include "../EffectInfo.hpp"
 
 
+/// @brief Tetris effect
+///
 namespace Tetris {
 
 const uint8_t tetrisRandom[32] = {0, 3, 1, 4, 2, 4, 0, 2, 1, 3, 1, 0, 2, 1, 3, 4, 2, 4, 1, 3, 4, 0, 1, 0, 3, 4, 1, 4, 3, 1, 4, 0};

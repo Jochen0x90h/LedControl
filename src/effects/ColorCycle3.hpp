@@ -1,13 +1,11 @@
 #pragma once
 
-/*
- * Color cycle effect with 3 colors, interpolates between three colors
- */
-
 #include "../EffectInfo.hpp"
 #include "../math.hpp"
 
 
+/// @brief Color cycle effect with 3 colors, interpolates between three colors
+///
 namespace ColorCycle3 {
 
 struct Parameters {

@@ -1,14 +1,11 @@
 #pragma once
 
-/*
- * Strobe effect
- * https://www.tweaking4all.com/hardware/arduino/adruino-led-strip-effects/#LEDStripEffectStrobe
- */
-
 #include "../EffectInfo.hpp"
 #include "../math.hpp"
 
 
+/// @param Strobe effect
+/// https://www.tweaking4all.com/hardware/arduino/adruino-led-strip-effects/#LEDStripEffectStrobe
 namespace Strobe {
 
 struct Parameters {
