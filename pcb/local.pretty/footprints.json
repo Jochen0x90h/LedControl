@@ -36,7 +36,7 @@
         ]
     },
     "1206-term": {
-        "description": "1206 termination resistor footprint",
+        "description": "1206 resistor footprint for serial or parallel termination",
         "body": [3.2, 1.5, 1.2],
         "pads": [
             {
@@ -46,9 +46,24 @@
             }
         ]
     },
+    /*"Termination": {
+        "description": "Pads for serial or parallel termination",
+        "pads": [
+            {
+                "type": "dual",
+                "size": [1.6, 1.7],
+                "pitch": 2,
+                "distance": 1.9,
+                "count": 4,
+                "numbering": "rows",
+                "names": ["a1", "a2", "b1", "b2"]
+            }
+        ]
+    },*/
     "PEC12R-4217F-S0024": {
         "description": "PEC12R - 12 mm Incremental Encoder (https://www.bourns.com/docs/product-datasheets/pec12r.pdf)",
         "body": [12.4, 13.4, 5.1],
+        "silkscreenAdd": -0.3,
         "pads": [
             {
                 "position": [0, 7.5],
@@ -100,7 +115,7 @@
         "description": "SMD terminal block 2 positions, 0.25 - 1.5mm² / 20 - 16 AWG (https://www.wago.com/de/leiterplattenanschluss/smd-leiterplattenklemme-mit-betaetigungsdrueckern-im-gurt/p/2061-602_998-404)",
         "body": [11.70, 15.2, 5.6],
         "courtyardAdd": [0.3, 0],
-        "silkscreenAdd": -0.2,
+        "silkscreenAdd": [0, -0.3],
         "pads": [
             {
                 "position": [0, 4.75],
@@ -120,7 +135,7 @@
         "description": "har-flexicon 2,54 MSH-4 T32 (https://b2b.harting.com/ebusiness/de/har-flexicon-254-MSH-4-T32-BK-600pcs/14110413002000?newPDP=true#)",
         "body": [15.8, 6.1, 5],
         "offset": [0, -0.5, 0],
-        "silkscreenAdd": -0.2,
+        "silkscreenAdd": -0.3,
         "pads": [
             {
                 "size": [1.1, 6],
@@ -166,32 +181,85 @@
             }
         ]
     },
-    "Termination": {
-        "description": "Pads for serial or parallel termination",
+    "Jumper": {
+        "description": "Jumper with 2 pads and 0.15mm gap",
         "pads": [
             {
-                "type": "dual",
-                "size": [1.6, 1.7],
-                "pitch": 2,
-                "distance": 1.9,
-                "count": 4,
-                "numbering": "rows",
-                "names": ["a1", "a2", "b1", "b2"]
+                "pitch": 0.65,
+                "size": [0.5, 1.0],
+                "shape": 0,
+                "count": 2,
+                "jumper": true
+            }
+        ],
+        "circles": [
+            {
+                "layer": "F.Mask",
+                "fill": true,
+                "radius": 0.51,
+                "center": [0, 0]
             }
         ]
     },
-    "Jumper": {
-        "description": "Solder jumper",
+    "TYPE-C-16PIN-2MD-073": {
+        "description": "USB-C Recepatce for USB 2.0 and JLCPCB (https://www.lcsc.com/datasheet/lcsc_datasheet_2501101719_SHOU-HAN-TYPE-C-16PIN-2MD-073_C2765186.pdf)",
+        "body": [8.94, 7.35, 3.31],
+        "offset": [0, -3.675, 0],
+        "position": [0, 5.0],
+        "silkscreen": false,
         "pads": [
             {
-                "pitch": 0.63,
-                "size": [0.5, 1.0],
-                "shape": 0,
+                // inner small pads
+                "position": [0, -7.355],
+                "size": [0.3, 1.15],
+                "pitch": 0.5,
+                "count": 8,
+                "names": ["B8", "A5", "B7", "A6", "A7", "B6", "A8", "B5"]
+            },
+            {
+                // left large pads (GND, VBUS)
+                "position": [-2.8, -7.355],
+                "size": [0.6, 1.15],
+                "pitch": 0.8,
+                "count": 2,
+                "names": ["A1", "A4"]
+            },
+            {
+                // right large pads (VBUS, GND)
+                "position": [2.8, -7.355],
+                "size": [0.6, 1.15],
+                "pitch": 0.8,
+                "count": 2,
+                "names": ["A4", "A1"]
+            },
+            {
+                // lower shield long holes
+                "position": [0, -2.6],
+                "size": [1.0, 1.80],
+                "drillSize": [0.60, 1.40],
+                "pitch": 8.64,
+                "count": 2,
+                "names": ["S1", "S1"]
+            },
+            {
+                // upper shield long holes
+                "position": [0, -6.78],
+                "size": [1.0, 2.10],
+                "drillSize": [0.60, 1.70],
+                "pitch": 8.64,
+                "count": 2,
+                "names": ["S1", "S1"]
+            },
+            {
+                // holes
+                "position": [0, -6.28],
+                "drillSize": 0.65,
+                "pitch": 5.78,
                 "count": 2
             }
         ]
     },
-    "USB4510-03-1-A": {
+    /*"USB4510-03-1-A": {
         "description": "USB-C Recepatce for USB 2.0 (https://gct.co/connector/usb4510)",
         "body": [8.94, 6.5, 3.16],
         "offset": [0, -2.75, -1.6],
@@ -311,7 +379,7 @@
                 "count": 2
             }
         ]
-    },
+    },*/
     "PMEG6010ELR": {
         "description": "Schottky Diode, 60V, 1A",
         "body": [2.8, 1.9, 1.1],
@@ -326,7 +394,7 @@
     "SO-8": {
         "description": "Generic SO-8 footprint (https://en.wikipedia.org/wiki/Small_outline_integrated_circuit)",
         "body": [4.90, 3.90, 1.75],
-        "silkscreenAdd": 0.1,
+        "silkscreenAdd": 0.2,
         "courtyardAdd": 0.5,
         "pads": [
             {
@@ -375,8 +443,8 @@
             }
         ]
     },
-    "STM32G431CBU": {
-        "description": "STM32G431CBU UFQFPN48",
+    "STM32-UFQFPN48": {
+        "description": "STM32 UFQFPN48 package",
         "body": [7, 7, 0.6],
         "silkscreenAdd": 0.2,
         "courtyardAdd": 0.5,
@@ -430,33 +498,32 @@
             }
         ]
     },
-    "TSOP31238": {
-        "description": "TSOP 31238 IR receiver module",
-        "body": [10, 2, 12.5],
-        "offset": [0, 1, 0],
+    "TSOP38338": {
+        "description": "TSOP38338 IR receiver module",
+        "body": [5, 2, 8.25],
+        "offset": [0, 0.5, 0],
         "pads": [
             {
-                "position": [0, 1, 0],
-                "size": 1.4,
-                "drillSize": 0.7,
+                "position": [0, 0.5, 0],
+                "size": 1.5,
+                "drillSize": 0.9,
                 "pitch": 2.54,
-                "count": 4,
-                "names": ["1", "2", "", "3"]
+                "count": 3
             }
         ],
         "lines": [
             {
                 "layer": "Dwgs.User",
                 "width": 0.1,
-                "points": [-5, 0, 5, 0, 5, -12.5, -5, -12.5, -5, 0]
+                "points": [-2.5, 0, 2.5, 0, 2.5, -6.95, -2.5, -6.95, -2.5, 0]
             }
         ],
         "circles": [
             {
                 "layer": "Dwgs.User",
                 "width": 0.1,
-                "center": [0, -9.2],
-                "diameter": 5
+                "center": [0, -4.25],
+                "diameter": 4
             }
         ]
     }

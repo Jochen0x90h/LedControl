@@ -2224,7 +2224,7 @@
 				)
 			)
 		)
-		(symbol "Interface_Optical:TSOP312xx"
+		(symbol "Interface_Optical:TSOP382xx"
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -2237,7 +2237,7 @@
 					(justify left)
 				)
 			)
-			(property "Value" "TSOP312xx"
+			(property "Value" "TSOP382xx"
 				(at -10.16 -7.62 0)
 				(effects
 					(font
@@ -2246,7 +2246,7 @@
 					(justify left)
 				)
 			)
-			(property "Footprint" "OptoDevice:Vishay_CAST-3Pin"
+			(property "Footprint" "OptoDevice:Vishay_MINICAST-3Pin"
 				(at -1.27 -9.525 0)
 				(effects
 					(font
@@ -2255,7 +2255,7 @@
 					(hide yes)
 				)
 			)
-			(property "Datasheet" "http://www.vishay.com/docs/82492/tsop312.pdf"
+			(property "Datasheet" "http://www.vishay.com/docs/82491/tsop382.pdf"
 				(at 16.51 7.62 0)
 				(effects
 					(font
@@ -2282,7 +2282,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_fp_filters" "Vishay*CAST*"
+			(property "ki_fp_filters" "Vishay*MINICAST*"
 				(at 0 0 0)
 				(effects
 					(font
@@ -2291,7 +2291,7 @@
 					(hide yes)
 				)
 			)
-			(symbol "TSOP312xx_0_0"
+			(symbol "TSOP382xx_0_0"
 				(arc
 					(start -10.287 1.397)
 					(mid -11.0899 -0.1852)
@@ -2337,7 +2337,7 @@
 					)
 				)
 			)
-			(symbol "TSOP312xx_0_1"
+			(symbol "TSOP382xx_0_1"
 				(rectangle
 					(start -6.096 5.588)
 					(end 0.127 -5.588)
@@ -2588,11 +2588,11 @@
 					)
 				)
 			)
-			(symbol "TSOP312xx_1_1"
-				(pin power_in line
-					(at 10.16 -5.08 180)
+			(symbol "TSOP382xx_1_1"
+				(pin output line
+					(at 10.16 0 180)
 					(length 2.54)
-					(name "GND"
+					(name "OUT"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2608,9 +2608,9 @@
 					)
 				)
 				(pin power_in line
-					(at 10.16 5.08 180)
+					(at 10.16 -5.08 180)
 					(length 2.54)
-					(name "Vs"
+					(name "GND"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2625,10 +2625,10 @@
 						)
 					)
 				)
-				(pin output line
-					(at 10.16 0 180)
+				(pin power_in line
+					(at 10.16 5.08 180)
 					(length 2.54)
-					(name "OUT"
+					(name "Vs"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -5829,12 +5829,6 @@
 		(uuid "a1a33dd8-1f94-447c-a9e9-0961340f7f8c")
 	)
 	(junction
-		(at 186.055 111.125)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "a6d2eb87-4c25-4875-b3cd-d7141b873ba2")
-	)
-	(junction
 		(at 19.05 167.005)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -5847,10 +5841,22 @@
 		(uuid "b0877785-c41f-47f5-a353-17dfc5530ea3")
 	)
 	(junction
+		(at 185.42 110.49)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "b4ef2745-caa3-4d78-954d-b834b8364f94")
+	)
+	(junction
 		(at 26.67 167.005)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "b9cc7506-bee6-4923-bd57-7e597e0b3916")
+	)
+	(junction
+		(at 185.42 100.33)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "bb13dafd-5833-4387-9882-fdfc05a87582")
 	)
 	(junction
 		(at 54.61 182.245)
@@ -5869,12 +5875,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e4c66216-0737-464d-8620-e3f535e00463")
-	)
-	(junction
-		(at 186.055 100.965)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "e57389cb-1324-41f7-b6e7-58e80d0c9570")
 	)
 	(junction
 		(at 219.71 50.8)
@@ -7119,7 +7119,7 @@
 		)
 		(uuid "ca5113f6-9e43-4350-85ce-2494ecefb750")
 	)
-	(text "IR Sensor"
+	(text "IR Sensor 38kHz"
 		(exclude_from_sim no)
 		(at 167.005 92.075 0)
 		(effects
@@ -7678,7 +7678,7 @@
 	)
 	(global_label "IR"
 		(shape input)
-		(at 186.055 106.045 0)
+		(at 185.42 105.41 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -7688,7 +7688,7 @@
 		)
 		(uuid "54ccb3d8-c439-4d67-b39e-eba5057658f9")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 190.915 106.045 0)
+			(at 190.28 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8613,9 +8613,9 @@
 		(at 177.8 52.705 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom no)
+		(in_bom yes)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "03ba0946-7076-4cf3-a771-f89f9d745fc5")
 		(property "Reference" "U3"
@@ -9997,7 +9997,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 186.055 111.125 0)
+		(at 185.42 110.49 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -10006,7 +10006,7 @@
 		(fields_autoplaced yes)
 		(uuid "39e4f3c7-8a61-4a77-842d-333021624696")
 		(property "Reference" "#PWR010"
-			(at 186.055 117.475 0)
+			(at 185.42 116.84 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10015,7 +10015,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 186.055 116.205 0)
+			(at 185.42 115.57 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10023,7 +10023,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 186.055 111.125 0)
+			(at 185.42 110.49 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10032,7 +10032,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 186.055 111.125 0)
+			(at 185.42 110.49 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10041,7 +10041,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 186.055 111.125 0)
+			(at 185.42 110.49 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10167,7 +10167,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "local:STM32G431CBU"
+		(property "Footprint" "local:STM32-UFQFPN48"
 			(at 94.615 119.38 0)
 			(effects
 				(font
@@ -10358,7 +10358,7 @@
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(uuid "40c8c230-f56c-4b80-8775-95c84ba6f250")
 		(property "Reference" "C2"
 			(at 91.44 172.085 0)
@@ -10505,7 +10505,7 @@
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(uuid "49305f58-cc5f-495d-b8ec-2f9c0bdba902")
 		(property "Reference" "C2"
 			(at 99.06 172.085 0)
@@ -10709,7 +10709,7 @@
 	)
 	(symbol
 		(lib_id "power:+3V3")
-		(at 186.055 100.965 0)
+		(at 185.42 100.33 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -10718,7 +10718,7 @@
 		(fields_autoplaced yes)
 		(uuid "554754c1-a5a5-42bc-aa70-c801e087bf21")
 		(property "Reference" "#PWR02"
-			(at 186.055 104.775 0)
+			(at 185.42 104.14 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10727,7 +10727,7 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 186.055 95.885 0)
+			(at 185.42 95.25 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10735,7 +10735,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 186.055 100.965 0)
+			(at 185.42 100.33 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10744,7 +10744,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 186.055 100.965 0)
+			(at 185.42 100.33 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10753,7 +10753,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 186.055 100.965 0)
+			(at 185.42 100.33 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11141,6 +11141,76 @@
 			(project "control"
 				(path "/4b540715-c4ed-4902-8525-92fb403f6b2e"
 					(reference "#PWR020")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Interface_Optical:TSOP382xx")
+		(at 175.26 105.41 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "6a128c81-5764-43ba-9f35-5083b7cf2207")
+		(property "Reference" "U8"
+			(at 176.276 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TSOP38338"
+			(at 173.525 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "local:TSOP38338"
+			(at 173.99 114.935 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "http://www.vishay.com/docs/82491/tsop382.pdf"
+			(at 191.77 97.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Photo Modules for PCM Remote Control Systems"
+			(at 175.26 105.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "3"
+			(uuid "7045a15b-fd1d-4487-9bfa-2c1cf47e85f1")
+		)
+		(pin "1"
+			(uuid "b3112b2e-d37c-4677-8655-2845b91ad930")
+		)
+		(pin "2"
+			(uuid "7f8f83c6-7d29-47d1-bcca-7310c3f93190")
+		)
+		(instances
+			(project "control"
+				(path "/4b540715-c4ed-4902-8525-92fb403f6b2e"
+					(reference "U8")
 					(unit 1)
 				)
 			)
@@ -11794,76 +11864,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Interface_Optical:TSOP312xx")
-		(at 175.895 106.045 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "95635af0-d884-456e-a2bc-41877c9f11e4")
-		(property "Reference" "U7"
-			(at 171.45 95.25 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "TSOP312xx"
-			(at 174.16 97.79 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "local:TSOP31238"
-			(at 174.625 115.57 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "http://www.vishay.com/docs/82492/tsop312.pdf"
-			(at 192.405 98.425 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 175.895 106.045 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "12661e33-b468-4fb7-8716-121d9ebc7cab")
-		)
-		(pin "2"
-			(uuid "19948e35-1c6b-4720-8395-75a9b867105e")
-		)
-		(pin "3"
-			(uuid "04be70e4-077d-4c6b-84ac-aeb778cdc784")
-		)
-		(instances
-			(project "control"
-				(path "/4b540715-c4ed-4902-8525-92fb403f6b2e"
-					(reference "U7")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:C")
 		(at 62.23 174.625 0)
 		(unit 1)
@@ -12243,41 +12243,32 @@
 		)
 	)
 	(symbol
-		(lib_id "Interface_Optical:TSOP312xx")
-		(at 175.895 106.045 0)
+		(lib_id "Interface_Optical:TSOP382xx")
+		(at 175.26 105.41 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom no)
+		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "b25e4055-8eca-4218-abe0-46b36d0acbce")
-		(property "Reference" "U8"
-			(at 174.625 95.25 0)
+		(uuid "b80249b8-552b-460b-9b65-a678ceaad7c7")
+		(property "Reference" "U7"
+			(at 171.958 93.98 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Value" "TSOP312xx"
-			(at 174.16 97.79 0)
+		(property "Value" "TSOP38338"
+			(at 173.525 96.52 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Footprint" "local:TSOP31238"
-			(at 174.625 115.57 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "http://www.vishay.com/docs/82492/tsop312.pdf"
-			(at 192.405 98.425 0)
+		(property "Footprint" "local:TSOP38338"
+			(at 173.99 114.935 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12285,8 +12276,8 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
-			(at 175.895 106.045 0)
+		(property "Datasheet" "http://www.vishay.com/docs/82491/tsop382.pdf"
+			(at 191.77 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12294,19 +12285,28 @@
 				(hide yes)
 			)
 		)
-		(pin "1"
-			(uuid "19f6007f-0cbc-434c-a0b8-9ded15f812c4")
-		)
-		(pin "2"
-			(uuid "9a7c2e90-a958-4f12-bb66-f2a66e66d3d2")
+		(property "Description" "Photo Modules for PCM Remote Control Systems"
+			(at 175.26 105.41 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
 		)
 		(pin "3"
-			(uuid "1fdcb7fc-1ce6-4e0b-b17f-93dcbad2bf01")
+			(uuid "a774c1e1-2dc2-40fe-a0b0-545f8fd7367b")
+		)
+		(pin "1"
+			(uuid "4968536e-afe1-4638-b020-d73c1e04c9bb")
+		)
+		(pin "2"
+			(uuid "7e247864-c55d-4479-b8c4-16d45bcacb70")
 		)
 		(instances
-			(project "control"
+			(project ""
 				(path "/4b540715-c4ed-4902-8525-92fb403f6b2e"
-					(reference "U8")
+					(reference "U7")
 					(unit 1)
 				)
 			)
@@ -12869,7 +12869,7 @@
 				)
 			)
 		)
-		(property "Footprint" "local:USB4105-GF-A-120"
+		(property "Footprint" "local:TYPE-C-16PIN-2MD-073"
 			(at 138.43 167.005 0)
 			(effects
 				(font
