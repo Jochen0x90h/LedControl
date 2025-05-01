@@ -5787,6 +5787,12 @@
 		(uuid "76e6a6b3-60ee-442b-9c88-52de2ec6a7a0")
 	)
 	(junction
+		(at 185.42 100.33)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "85b7b51e-1bb9-489e-9ecf-93d9d02aec93")
+	)
+	(junction
 		(at 251.46 94.615)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -5841,22 +5847,10 @@
 		(uuid "b0877785-c41f-47f5-a353-17dfc5530ea3")
 	)
 	(junction
-		(at 185.42 110.49)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "b4ef2745-caa3-4d78-954d-b834b8364f94")
-	)
-	(junction
 		(at 26.67 167.005)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "b9cc7506-bee6-4923-bd57-7e597e0b3916")
-	)
-	(junction
-		(at 185.42 100.33)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "bb13dafd-5833-4387-9882-fdfc05a87582")
 	)
 	(junction
 		(at 54.61 182.245)
@@ -5881,6 +5875,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e71b15e4-acb8-42a2-aeea-4b480c6cdfc5")
+	)
+	(junction
+		(at 185.42 110.49)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "e90a2d4a-73c4-4550-b7ef-e5b55c2adf59")
 	)
 	(junction
 		(at 33.02 116.84)
@@ -7066,7 +7066,7 @@
 	)
 	(text "USART1"
 		(exclude_from_sim no)
-		(at 72.39 95.25 0)
+		(at 70.358 94.996 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -7154,7 +7154,7 @@
 	)
 	(text "USART1"
 		(exclude_from_sim no)
-		(at 72.39 57.15 0)
+		(at 70.612 57.15 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -7416,7 +7416,7 @@
 			)
 		)
 	)
-	(global_label "RS485_RX"
+	(global_label "RS485_1_RX"
 		(shape input)
 		(at 92.075 93.98 180)
 		(effects
@@ -8044,7 +8044,7 @@
 			)
 		)
 	)
-	(global_label "RS485_DE"
+	(global_label "RS485_1_DE"
 		(shape input)
 		(at 92.075 76.2 180)
 		(effects
@@ -8258,7 +8258,7 @@
 			)
 		)
 	)
-	(global_label "RS485_TX"
+	(global_label "RS485_1_TX"
 		(shape input)
 		(at 92.075 55.88 180)
 		(effects
@@ -11151,7 +11151,7 @@
 		(at 175.26 105.41 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "6a128c81-5764-43ba-9f35-5083b7cf2207")
@@ -12247,7 +12247,7 @@
 		(at 175.26 105.41 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "b80249b8-552b-460b-9b65-a678ceaad7c7")
@@ -12848,7 +12848,7 @@
 		(at 134.62 167.005 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom no)
+		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
@@ -12861,7 +12861,7 @@
 				)
 			)
 		)
-		(property "Value" "USB_C_Receptacle_USB2.0"
+		(property "Value" "TYPE-C 16PIN 2MD(073)"
 			(at 134.62 146.685 0)
 			(effects
 				(font

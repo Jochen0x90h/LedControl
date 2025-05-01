@@ -61,8 +61,9 @@ _Min_Stack_Size = 0x400; /* required amount of stack */
 /* Specify the memory areas */
 MEMORY
 {
-  RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 32K
   FLASH (rx)     : ORIGIN = 0x8000000, LENGTH = 64K /* 128K total, upper 64K for storage */
+  RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 32K
+  CCMRAM (xrw)   : ORIGIN = 0x10000000, LENGTH = 0K
 }
 
 /* Define output sections */
@@ -75,6 +76,25 @@ SECTIONS
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
   } >FLASH
+
+
+  /* Get address of .ccmram in flash */
+  _siccmram = LOADADDR(.ccmram);
+
+  /* CCMRAM section for fast execution
+   * Use __attribute__((section(".ccmram"))) to place functions into CCMRAM
+   * Note: Needs modified startup code!
+   */
+  .ccmram :
+  {
+    . = ALIGN(4);
+    _sccmram = .; /* define a global symbols at ccmram start */
+    *(.ccmram)
+    *(.ccmram*)
+    . = ALIGN(4);
+    _eccmram = .; /* define a global symbols at ccmram end */
+  } >CCMRAM AT> FLASH
+
 
   /* The program code and other data goes into FLASH */
   .text :

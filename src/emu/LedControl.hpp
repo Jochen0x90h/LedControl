@@ -36,15 +36,15 @@ IrReceiver_emu::Config config {
 };
 
 // emulated flash
-constexpr int PAGE_SIZE = 2048;
 constexpr int BLOCK_SIZE = 8;
+constexpr int PAGE_SIZE = 2048;
 constexpr BufferStorage::Info storageInfo {
 	0, // address
 	BLOCK_SIZE,
 	PAGE_SIZE,
 	8192, // sector size
 	2, // sector count
-	BufferStorage::Type::MEM_4N
+	BufferStorage::Type::MEM_4N // file
 };
 
 

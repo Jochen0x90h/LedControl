@@ -68,7 +68,7 @@ void run(Strip &strip, float brightness, float time, const void *parameters) {
         float3 color = {0, 0, 0};
 
         float t = fract(time);
-        float iteration = trunc(time);
+        //float iteration = trunc(time);
 
         int h = hash(int(position), int(time));
 

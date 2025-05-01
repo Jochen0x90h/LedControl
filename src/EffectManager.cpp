@@ -238,26 +238,29 @@ AwaitableCoroutine EffectManager::run(int presetIndex) {
     this->effect = run(effectInfo.end, effectInfo.run);
 }
 
-Coroutine EffectManager::run(EndFunction end, RunFunction run) {
+Coroutine EffectManager::run(EndFunction end, RunFunction calc) {
     auto start = this->loop.now();
     while (true) {
+        // get current time
         auto now = this->loop.now();
+
+        // calc effect time
         float time = float(now - start) / float(this->duration);
 
+        // check if effect time is at end
         if (end(time, this->effectParameters)) {
+            // yes: restart
             start = now;
             time = 0;
         }
 
-        /*auto t = now - start;
-        if (t > this->duration) {
-            start = now;
-            t = 0s;
-        }
-        float time = float(t) / float(this->duration);*/
+        // calculate the effect for the current effect time
+        calc(this->strip, this->brightness, time, this->effectParameters);
 
-        run(this->strip, this->brightness, time, this->effectParameters);
+        // copy into actual strip buffers
+        // todo
 
+        // show effect
         co_await strip.show();
     }
 }
