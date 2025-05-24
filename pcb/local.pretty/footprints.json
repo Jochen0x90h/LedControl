@@ -451,6 +451,21 @@
             }
         ]
     },
+    "JSO21": {
+        "description": "Automotive MEMS oscillator (https://www.jauch.com/downloadfile/5878a2bfe9a2a_54db3ac748d5c751f0d8/jso-ac_2.5-3.3v_180907.pdf)",
+        "body": [2, 1.6, 0.75],
+        "silkscreenAdd": 0.8,
+        "courtyardAdd": 0.3,
+        "pads": [
+            {
+                "type": "dual",
+                "pitch": 1.5,
+                "distance": 1.2,
+                "size": [0.9, 0.8],
+                "count": 4
+            }
+        ]
+    },
     "BME680": {
         "description": "Bosch air sensor (https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme680-ds001.pdf)",
         "body": [3.00, 3.00, 0.93],

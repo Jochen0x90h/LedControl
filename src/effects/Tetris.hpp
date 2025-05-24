@@ -53,7 +53,7 @@ bool end(float time, const void *parameters) {
     return t >= 1.0f;
 }
 
-void run(Strip &strip, float brightness, float time, const void *parameters) {
+void run(StripData strip, float brightness, float time, const void *parameters) {
     int count = strip.size();
     auto &p = *reinterpret_cast<const Parameters *>(parameters);
 

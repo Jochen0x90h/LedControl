@@ -32,3 +32,4 @@ constexpr int FLASH_SIZE = 0x20000; // 128K, use upper 64K for storage
 constexpr int MAX_LEDSTRIP_LENGTH = 300;
 
 #define SWAP_R_G
+#define DEFAULT_LED_TYPE LedType::GRB;

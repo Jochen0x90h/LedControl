@@ -1,6 +1,7 @@
 #include <LedControl.hpp> // drivers
 #include "E12.hpp"
 #include "EffectManager.hpp"
+#include "StripManager.hpp"
 #include "RemoteControl.hpp"
 #include "effects/StaticColor.hpp"
 #include "effects/ColorCycle3.hpp"
@@ -30,20 +31,20 @@
 
 /*
     Main progam
-    LED strip effects
-    https://www.tweaking4all.com/hardware/arduino/adruino-led-strip-effects/
 
     Usage
-    Power on: Current effect
-    Wheel: Change brightness (change first parameter)
-    Button press: Cycle though parameters where first parameter is the effect
-    Timeout: Switch back to brightness
+    Power on: Show main screen and current preset (gets saved in flash)
+    Wheel: Change brightness
+    Button press: Cycle though parameters (speed, preset, effect parameters...)
+    Wheel: Change current parameter
+    Timeout: Switch back to main screen where wheel changes brightness
     Button long press: Enter configuration menu
 */
 
 using namespace coco;
 
 
+constexpr Seconds<> TIMEOUT = 10s;
 
 
 // list of all effects
@@ -90,15 +91,18 @@ static const String hueNames[] = {
     "Cool Red",
 };
 
+static const String ledTypeNames[] = {
+    "RGB",
+    "GRB (WS1812)",
+};
 
 // Menu
 // ----
 
+// edit preset parameters (effect and effect parameters)
 AwaitableCoroutine parametersMenu(Loop &loop, SSD130x &display, InputDevice &buttons, EffectManager &effectManager,
-    int presetIndex)
+    int playerIndex, int presetIndex)
 {
-    //int effectIndex = effectManager.parameters.base.effectIndex;
-
     // menu
     Menu menu(display, coco::tahoma8pt1bpp);
     while (true) {
@@ -110,25 +114,25 @@ AwaitableCoroutine parametersMenu(Loop &loop, SSD130x &display, InputDevice &but
             int edit = menu.edit(1);
             if (edit > 0 && menu.delta() != 0) {
                 // change effect
-                effectManager.updateEffect(presetIndex, menu.delta());
-                co_await effectManager.run(presetIndex);
+                effectManager.updateEffect(playerIndex, presetIndex, menu.delta());
+                effectManager.run(playerIndex, presetIndex);
             }
 
             auto stream = menu.stream();
-            stream << "Effect: " << underline(effectManager.getPresetName(presetIndex)/*effectInfos[effectIndex].name*/, edit > 0);
+            stream << "Effect: " << underline(effectManager.getPresetName(playerIndex, presetIndex), edit > 0);
             menu.entry();
         }
 
         // edit parameters
-        int parameterCount = effectManager.getParameterCount(presetIndex);
+        int parameterCount = effectManager.getParameterCount(playerIndex, presetIndex);
         for (int parameterIndex = 0; parameterIndex < parameterCount; ++parameterIndex) {
             // print parameter name
             auto stream = menu.stream();
-            stream << effectManager.getParameterName(presetIndex, parameterIndex) << ": ";
+            stream << effectManager.getParameterName(playerIndex, presetIndex, parameterIndex) << ": ";
 
             int edit = menu.edit(1);
             int delta = edit > 0 ? menu.delta() : 0;
-            auto p = effectManager.updateParameter(presetIndex, parameterIndex, delta);
+            auto p = effectManager.updateParameter(playerIndex, presetIndex, parameterIndex, delta);
             switch (p.info.type) {
             case ParameterInfo::Type::COUNT:
                 stream << underline(dec(p.value), edit > 0);
@@ -168,13 +172,15 @@ AwaitableCoroutine parametersMenu(Loop &loop, SSD130x &display, InputDevice &but
             co_return;
         }
 
-        if (effectManager.getPresetCount() > 1) {
+        if (effectManager.getPresetCount(playerIndex) > 1) {
             if (menu.entry("Delete")) {
                 // delete preset
-                co_await effectManager.stop();
-                /*co_await*/ effectManager.deletePreset(presetIndex);
-                if (presetIndex < effectManager.getPresetCount()) {
-                    co_await effectManager.run(presetIndex);
+                effectManager.stop();
+                effectManager.deletePreset(playerIndex, presetIndex);
+
+                // run preset at presetIndex
+                if (presetIndex < effectManager.getPresetCount(playerIndex)) {
+                    effectManager.run(playerIndex, presetIndex);
                 }
                 co_return;
             }
@@ -186,11 +192,264 @@ AwaitableCoroutine parametersMenu(Loop &loop, SSD130x &display, InputDevice &but
     }
 }
 
+
+AwaitableCoroutine effectPlayerMenu(Loop &loop, SSD130x &display, InputDevice &buttons, EffectManager &effectManager,
+    int playerIndex)
+{
+    int currentPresetIndex = -2;
+
+    // menu
+    Menu menu(display, coco::tahoma8pt1bpp);
+    while (true) {
+        // build menu
+        menu.begin(buttons);
+
+        // stop effect when LED count is selected
+        if (menu.isSelected()) {
+            if (currentPresetIndex != -1)
+                effectManager.stop();
+            currentPresetIndex = -1;
+        }
+        {
+            int edit = menu.edit(1);
+            int delta = edit > 0 ? menu.delta() : 0;
+            int ledCount = effectManager.updateLedCount(playerIndex, delta);
+
+            auto stream = menu.stream();
+            stream << "LED Count: " << underline(dec(ledCount), edit > 0);
+            menu.entry();
+        }
+
+        menu.line();
+
+        // list presets
+        int presetCount = effectManager.getPresetCount(playerIndex);
+        for (int presetIndex = 0; presetIndex < presetCount; ++presetIndex) {
+            // run currently selected effect
+            if (menu.isSelected()) {
+                if (currentPresetIndex != presetIndex) {
+                    currentPresetIndex = presetIndex;
+
+                    // run preset only for the current player
+                    effectManager.run(playerIndex, presetIndex);
+                }
+            }
+
+            auto stream = menu.stream();
+            stream << effectManager.getPresetName(playerIndex, presetIndex);
+            if (menu.entry()) {
+                // edit preset parameters (effect index and parameters)
+                co_await parametersMenu(loop, display, buttons, effectManager, playerIndex, presetIndex);
+            }
+        }
+        menu.line();
+
+        // stop effect when "New..." is selected
+        if (menu.isSelected()) {
+            if (currentPresetIndex != -1)
+                effectManager.stop();
+            currentPresetIndex = -1;
+        }
+        if (effectManager.getPresetCount(playerIndex) < EffectManager::MAX_PLAYER_PRESET_COUNT) {
+            if (menu.entry("New Preset")) {
+                int presetIndex = effectManager.addPreset(playerIndex);
+                effectManager.run(presetIndex);
+
+                // edit preset parameters of new preset
+                co_await parametersMenu(loop, display, buttons, effectManager, playerIndex, presetIndex);
+            }
+        }
+
+        // stop effect when "Exit" is selected
+        if (menu.isSelected()) {
+            if (currentPresetIndex != -1)
+                effectManager.stop();
+            currentPresetIndex = -1;
+        }
+        if (menu.entry("Exit")) {
+            co_return;
+        }
+
+        // show on display and wait for input
+        co_await menu.show();
+        co_await menu.untilInput(buttons);
+    }
+}
+
+AwaitableCoroutine effectPlayersMenu(Loop &loop, SSD130x &display, InputDevice &buttons, EffectManager &effectManager)
+{
+    // menu
+    Menu menu(display, coco::tahoma8pt1bpp);
+    while (true) {
+        // build menu
+        menu.begin(buttons);
+
+        for (int i = 0; i < EffectManager::PLAYER_COUNT; ++i) {
+            menu.stream() << "Player " << dec(i + 1);
+            if (menu.entry()) {
+                // edit effect parameters
+                co_await effectPlayerMenu(loop, display, buttons, effectManager, i);
+            }
+        }
+
+        if (effectManager.modified()) {
+            if (menu.entry("Cancel")) {
+                // undo all modifications
+                co_await effectManager.load();
+                co_return;
+            }
+            if (menu.entry("Save")) {
+                // save all modified configs
+                co_await effectManager.save();
+                co_return;
+            }
+        } else {
+            if (menu.entry("Exit")) {
+                co_return;
+            }
+        }
+
+        // show on display and wait for input
+        co_await menu.show();
+        co_await menu.untilInput(buttons);
+    }
+}
+
+
+// edit led strip
+AwaitableCoroutine ledStripMenu(Loop &loop, SSD130x &display, InputDevice &buttons,
+    StripManager &stripManager, int index)
+{
+    StripManager::StripConfig stripConfig = stripManager.getStripConfig(index);
+
+    // menu
+    Menu menu(display, coco::tahoma8pt1bpp);
+    while (true) {
+        // build menu
+        menu.begin(buttons);
+
+        // LED type (e.g. WS1812)
+        {
+            int edit = menu.edit(1);
+            if (edit > 0) {
+                // change LED type
+                stripConfig.ledType = StripManager::LedType(
+                    (int(stripConfig.ledType) + std::size(ledTypeNames) * 256 + menu.delta())
+                    % std::size(ledTypeNames));
+            }
+            menu.stream() << "LED Type: " << underline(ledTypeNames[int(stripConfig.ledType)], edit > 0);
+            menu.entry();
+        }
+
+        // LED count (number of LEDs in the strip)
+        {
+            int edit = menu.edit(1);
+            if (edit > 0) {
+                // change LED type
+                stripConfig.ledCount = std::clamp(stripConfig.ledCount + menu.delta(), 1, MAX_LEDSTRIP_LENGTH);
+            }
+            menu.stream() << "LED Count: " << underline(dec(stripConfig.ledCount), edit > 0);
+            menu.entry();
+        }
+
+        // iterate over list of sources (players to copy data from)
+        for (int i = 0; i < stripConfig.sourceCount; ++i) {
+            auto &source = stripConfig.sources[i];
+            {
+                int edit = menu.edit(1);
+                if (edit > 0) {
+                    // change type
+                    source.playerIndex = (source.playerIndex + EffectManager::PLAYER_COUNT * 256 + menu.delta())
+                        % EffectManager::PLAYER_COUNT;
+                }
+                menu.stream() << "Player: " << underline(dec(source.playerIndex), edit > 0);
+                menu.entry();
+            }
+            {
+                int edit = menu.edit(1);
+                if (edit > 0) {
+                    // change type
+                    source.ledStart = (source.ledStart + 10 * 256 + menu.delta()) //!
+                        % 10;
+                }
+                menu.stream() << "Start: " << underline(dec(source.ledStart), edit > 0);
+                menu.entry();
+            }
+            {
+                int edit = menu.edit(1);
+                if (edit > 0) {
+                    // change type
+                    source.ledCount = (source.ledCount + 10 * 256 + menu.delta()) //!
+                        % 10;
+                }
+                menu.stream() << "Count: " << underline(dec(source.ledCount), edit > 0);
+                menu.entry();
+            }
+        }
+        if (stripConfig.sourceCount < EffectManager::MAX_STRIP_SOURCE_COUNT && menu.entry("Add Entry")) {
+            auto &source = stripConfig.sources[stripConfig.sourceCount];
+            source.playerIndex = 0;
+            source.ledStart = 0;
+            source.ledCount = 10; // remaining number of LEDs
+
+            ++stripConfig.sourceCount;
+        }
+
+        if (menu.entry("Exit")) {
+            stripManager.setStripConfig(index, stripConfig);
+            co_return;
+        }
+
+        // show on display and wait for input
+        co_await menu.show();
+        co_await menu.untilInput(buttons);
+    }
+}
+
+// select led stip to edit
+AwaitableCoroutine ledStripsMenu(Loop &loop, SSD130x &display, InputDevice &buttons, StripManager &stripManager) {
+    // menu
+    Menu menu(display, coco::tahoma8pt1bpp);
+    while (true) {
+        // build menu
+        menu.begin(buttons);
+
+        for (int i = 0; i < 3; ++i) {
+            menu.stream() << "LED Strip " << dec(i + 1);
+            if (menu.entry()) {
+                co_await ledStripMenu(loop, display, buttons, stripManager, i);
+            }
+        }
+
+        if (stripManager.modified()) {
+            if (menu.entry("Cancel")) {
+                // undo all modifications
+                co_await stripManager.load();
+                co_return;
+            }
+            if (menu.entry("Save")) {
+                // save all modified configs
+                co_await stripManager.save();
+                co_return;
+            }
+        } else {
+            if (menu.entry("Exit")) {
+                co_return;
+            }
+        }
+
+        // show on display and wait for input
+        co_await menu.show();
+        co_await menu.untilInput(buttons);
+    }
+}
+
+// edit one command of the remote control
 AwaitableCoroutine remoteCommandMenu(Loop &loop, SSD130x &display, InputDevice &buttons, RemoteControl &remoteControl) {
     Menu menu(display, coco::tahoma8pt1bpp);
 
     while (true) {
-        int seq2 = remoteControl.getSequenceNumber();
+        int seq = remoteControl.getSequenceNumber();
 
         // build menu
         menu.begin(buttons);
@@ -222,11 +481,12 @@ AwaitableCoroutine remoteCommandMenu(Loop &loop, SSD130x &display, InputDevice &
 
         // show on display and wait for input
         co_await menu.show();
-        co_await select(menu.untilInput(buttons), remoteControl.untilInput(seq2));
+        co_await select(menu.untilInput(buttons), remoteControl.untilInput(seq));
     }
 }
 
-AwaitableCoroutine remoteMenu(Loop &loop, SSD130x &display, InputDevice &buttons, RemoteControl &remoteControl) {
+// select remote control command to edit
+AwaitableCoroutine remoteControlMenu(Loop &loop, SSD130x &display, InputDevice &buttons, RemoteControl &remoteControl) {
     // menu
     Menu menu(display, coco::tahoma8pt1bpp);
     while (true) {
@@ -259,8 +519,20 @@ AwaitableCoroutine remoteMenu(Loop &loop, SSD130x &display, InputDevice &buttons
             remoteControl.setNormal();
         }
 
-        if (menu.entry("Exit")) {
-            co_return;
+        if (!remoteControl.modified()) {
+            if (menu.entry("Exit"))
+                co_return;
+        } else {
+            if (menu.entry("Cancel")) {
+                // undo all modifications
+                co_await remoteControl.load();
+                co_return;
+            }
+            if (menu.entry("Save")) {
+                // save all modified commands
+                co_await remoteControl.save();
+                co_return;
+            }
         }
 
         // show on display and wait for input
@@ -269,20 +541,23 @@ AwaitableCoroutine remoteMenu(Loop &loop, SSD130x &display, InputDevice &buttons
     }
 }
 
-AwaitableCoroutine effectsMenu(Loop &loop, SSD130x &display, InputDevice &buttons, EffectManager &effectManager, RemoteControl &remoteControl) {
+// main configuration menu
+AwaitableCoroutine configurationMenu(Loop &loop, SSD130x &display, InputDevice &buttons,
+    EffectManager &effectManager, StripManager &stripManager, RemoteControl &remoteControl)
+{
     // initialize and enable the display
     co_await drivers.resetDisplay();
     co_await display.init();
     co_await display.enable();
 
-    int currentPresetIndex = -1;
+    //int currentPresetIndex = -1;
 
     // menu
     Menu menu(display, coco::tahoma8pt1bpp);
     while (true) {
         // build menu
         menu.begin(buttons);
-
+/*
         // list presets
         for (int presetIndex = 0; presetIndex < effectManager.getPresetCount(); ++presetIndex) {
             // run currently selected effect
@@ -315,19 +590,30 @@ AwaitableCoroutine effectsMenu(Loop &loop, SSD130x &display, InputDevice &button
                 co_await parametersMenu(loop, display, buttons, effectManager, presetIndex);
             }
         }
-
-        if (menu.entry("Remote Control")) {
-            co_await remoteMenu(loop, display, buttons, remoteControl);
+*/
+        // configure effect players
+        if (menu.entry("Effects")) {
+            co_await effectPlayersMenu(loop, display, buttons, effectManager);
         }
 
-        // stop effect when "Save" is selected
+        // configure the LED strips
+        if (menu.entry("LED Strips")) {
+            co_await ledStripsMenu(loop, display, buttons, stripManager);
+        }
+
+        // configure remote control
+        if (menu.entry("Remote Control")) {
+            co_await remoteControlMenu(loop, display, buttons, remoteControl);
+        }
+
+/*        // stop effect when "Save" is selected
         if (menu.isSelected()) {
             if (currentPresetIndex != -1)
                 co_await effectManager.stop();
             currentPresetIndex = -1;
         }
         if (menu.entry("Save")) {
-            co_await effectManager.save();
+            co_await effectManager.savePresets();
             co_await remoteControl.save();
             co_return;
         }
@@ -343,6 +629,10 @@ AwaitableCoroutine effectsMenu(Loop &loop, SSD130x &display, InputDevice &button
             co_await remoteControl.load();
             co_return;
         }
+*/
+        if (menu.entry("Exit")) {
+            co_return;
+        }
 
         // show on display and wait for input
         co_await menu.show();
@@ -350,8 +640,8 @@ AwaitableCoroutine effectsMenu(Loop &loop, SSD130x &display, InputDevice &button
     }
 }
 
-Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &storage, EffectManager &effectManager,
-    RemoteControl &remoteControl)
+Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &storage,
+    EffectManager &effectManager, StripManager &stripManager, RemoteControl &remoteControl)
 {
     // initialize and enable the display
     co_await drivers.resetDisplay();
@@ -366,14 +656,21 @@ Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &st
 
     // load all presets and IR commands
     co_await effectManager.load();
+    co_await stripManager.load();
     co_await remoteControl.load();
+
+    // copy player infos to strip manager
+    //effectManager.getPlayerInfos(stripManager.playerInfos);
+
+    // run strip manager
+    stripManager.run();
 
     // run current effect
     int presetIndex = effectManager.getPresetIndex();
-    co_await effectManager.run(presetIndex);
+    effectManager.run(presetIndex);
 
     int parameterIndex = 0;
-    bool idle = true;
+    //bool idle = true;
     bool showParameter = false;
     Loop::Time parameterTimeout;
 
@@ -387,21 +684,26 @@ Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &st
         // get button state
         int8_t state[3];
         int seq = input.get(state);
+        int presetCount = effectManager.getPresetCount();
+        bool hasMultiplePresets = presetCount >= 2;
 
-        // rotary knob: change parameter value
+        // rotary knob: change parameter value or preset
+        // parameter index: 0 brightness, 1 speed, 2 preset, 3 - N + 1 are the remaining effect parameters 2 - N
         int delta = state[0] - lastState[0];
         if (delta != 0) {
             showParameter = true;
-            parameterTimeout = loop.now() + 5s;
+            parameterTimeout = loop.now() + TIMEOUT;
 
-            if (parameterIndex < 0) {
+            // changing of preset is inserted at parameterIndex 2 if there are multiple presets
+            if (parameterIndex == 2 && hasMultiplePresets) {
                 // change preset
-                presetIndex = (presetIndex + delta + effectManager.getPresetCount()) % effectManager.getPresetCount();
+                presetIndex = (presetIndex + presetCount * 256 + delta) % presetCount;
                 effectManager.setPresetIndex(presetIndex);
-                co_await effectManager.run(presetIndex);
+                effectManager.run(presetIndex);
             } else {
                 // update parameter
-                effectManager.updateParameter(presetIndex, parameterIndex, delta);
+                effectManager.updateGlobalParameter(parameterIndex + int(parameterIndex > 2 && hasMultiplePresets), delta);
+                //effectManager.updateParameter(i, presetIndex, parameterIndex + int(parameterIndex > 2 && hasMultiplePresets), delta);
             }
         }
 
@@ -409,33 +711,37 @@ Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &st
         delta = state[1] - lastState[1];
         if (delta != 0) {
             showParameter = true;
-            parameterTimeout = loop.now() + 5s;
+            parameterTimeout = loop.now() + TIMEOUT;
 
             // select next parameter on button press
             ++parameterIndex;
-            if (idle || parameterIndex >= effectManager.getParameterCount(presetIndex)) {
-                // select preset (parameterIndex = -1) only if there are at least two presets
-                parameterIndex = effectManager.getPresetCount() >= 2 ? -1 : int(idle);
-                idle = false;
+            if (parameterIndex >= 2/*effectManager.getParameterCount(presetIndex)*/ + int(hasMultiplePresets)) {
+                parameterIndex = 0;
             }
         }
 
         // long press: enter menu
         delta = state[2] - lastState[2];
         if (delta != 0) {
-            // enter effects menu
-            co_await effectsMenu(loop, display, input, effectManager, remoteControl);
+            // enter main configuration menu
+            co_await configurationMenu(loop, display, input, effectManager, stripManager, remoteControl);
+
+            // update presetCount
+            presetCount = effectManager.getPresetCount();
 
             // clamp preset index in case presets were deleted
-            presetIndex = std::max(std::min(presetIndex, effectManager.getPresetCount() - 1), 0);
+            presetIndex = std::max(std::min(presetIndex, presetCount - 1), 0);
 
-            // run preset
-            co_await effectManager.run(presetIndex);
+            // run preset for all players
+            effectManager.run(presetIndex);
 
             // init variables
             parameterIndex = 0;
             showParameter = false;
-            idle = true;
+            //idle = true;
+
+            // get current button state
+            seq = input.get(state);
 
             // clear pending remote control command
             lastSeq2 = remoteControl.getSequenceNumber();
@@ -453,20 +759,20 @@ Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &st
             int command = remoteControl.getCommand();
 
             showParameter = true;
-            parameterTimeout = loop.now() + 5s;
+            parameterTimeout = loop.now() + TIMEOUT;
 
             if (command < 4) {
-                // update brightness or duration
+                // update brightness or duration (set parameterIndex to 0 or 1)
                 parameterIndex = command >> 1;
-                effectManager.updateParameter(presetIndex, parameterIndex, (command & 1) == 0 ? 1 : -1);
+                effectManager.updateGlobalParameter(parameterIndex, (command & 1) == 0 ? 1 : -1);
             } else {
                 // next preset
-                parameterIndex = -1;
+                parameterIndex = 2;//-1;
                 presetIndex = (presetIndex + 1 + effectManager.getPresetCount()) % effectManager.getPresetCount();
                 effectManager.setPresetIndex(presetIndex);
-                co_await effectManager.run(presetIndex);
+                effectManager.run(presetIndex);
             }
-            idle = false;
+            //idle = false;
         }
 
 
@@ -476,7 +782,7 @@ Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &st
 
         if (!showParameter) {
             // idle: show preset name
-            String name = effectManager.getPresetName(presetIndex);
+            String name = "preset";//effectManager.getPresetName(presetIndex);
             int w = coco::tahoma8pt1bpp.calcWidth(name);
             bitmap.drawText((128 - w) >> 1, 24, coco::tahoma8pt1bpp, name);
 
@@ -490,22 +796,23 @@ Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &st
             int barX = 0;
             int barW;
             StringBuffer<16> value;
-            if (parameterIndex < 0) {
+            if (parameterIndex == 2 && hasMultiplePresets) {
                 // show preset name
-                String name = "Preset";//effectManager.getPresetName(presetIndex);
+                String name = "Preset";
                 int w = coco::tahoma8pt1bpp.calcWidth(name);
                 bitmap.drawText((128 - w) >> 1, 10, coco::tahoma8pt1bpp, name);
 
                 barW = 124 / effectManager.getPresetCount();
                 barX = presetIndex * (124 - barW) / std::max(effectManager.getPresetCount() - 1, 1);
 
-                value << effectManager.getPresetName(presetIndex);
+                value << "preset";//effectManager.getPresetName(presetIndex);
             } else {
                 // get parameter info and value
-                auto p = effectManager.updateParameter(presetIndex, parameterIndex, 0);
+                //auto p = effectManager.updateParameter(0, presetIndex, parameterIndex - int(parameterIndex > 2 && hasMultiplePresets), 0);
+                auto p = effectManager.updateGlobalParameter(parameterIndex, 0);
 
                 // show parameter name
-                String name = p.info.name;//effectManager.getParameterName(presetIndex, parameterIndex);
+                String name = p.info.name;
                 int w = coco::tahoma8pt1bpp.calcWidth(name);
                 bitmap.drawText((128 - w) >> 1, 10, coco::tahoma8pt1bpp, name);
 
@@ -559,12 +866,12 @@ Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &st
             int s = co_await select(input.untilInput(seq), remoteControl.untilInput(seq2), loop.sleep(parameterTimeout));
             if (s <= 2) {
                 // user input from rotary knob: renew timeout
-                parameterTimeout = loop.now() + 5s;
+                parameterTimeout = loop.now() + TIMEOUT;
             } else {
                 // timeout
                 parameterIndex = 0;
                 showParameter = false;
-                idle = true;
+                //idle = true;
             }
         }
     }
@@ -621,6 +928,7 @@ Coroutine noiseTest(Loop &loop, Strip &strip, Color color) {
 }
 */
 
+uint32_t stripData[MAX_LEDSTRIP_LENGTH];
 
 int main() {
     math::init();
@@ -629,17 +937,23 @@ int main() {
     BufferStorage storage(storageInfo, drivers.flashBuffer);
 
     // LED strip
-    Strip strip(drivers.ledBuffer1, drivers.ledBuffer2);
+    //Strip strip(drivers.ledBuffer1, drivers.ledBuffer2);
 
     // effect manager
-    EffectManager effectManager(drivers.loop, storage, strip, effectInfos);
+    //EffectManager effectManager(drivers.loop, storage, strip, effectInfos);
+    EffectManager effectManager(drivers.loop, storage, effectInfos, StripData(stripData, MAX_LEDSTRIP_LENGTH));
+
+    // strip manager
+    StripManager stripManager(drivers.loop, storage, StripData(stripData, MAX_LEDSTRIP_LENGTH),
+        effectManager.syncBarrier, effectManager.playerInfos,
+        drivers.ledBuffer1, drivers.ledBuffer2, drivers.ledBuffer3);
 
     // IR remote control
     RemoteControl remoteControl(drivers.loop, storage, drivers.irDevice);
 
     // start idle display
     SSD130x display(drivers.displayBuffer, DISPLAY_WIDTH, DISPLAY_HEIGHT, DISPLAY_FLAGS);
-    mainMenu(drivers.loop, display, drivers.input, storage, effectManager, remoteControl);
+    mainMenu(drivers.loop, display, drivers.input, storage, effectManager, stripManager, remoteControl);
 
     drivers.loop.run();
     return 0;

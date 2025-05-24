@@ -59,7 +59,7 @@ int hash(int x, int y) {
     return hash32shiftmult(x) * 53 + hash32shiftmult(y);
 }
 
-void run(Strip &strip, float brightness, float time, const void *parameters) {
+void run(StripData strip, float brightness, float time, const void *parameters) {
     int count = strip.size();
     auto &p = *reinterpret_cast<const Parameters *>(parameters);
 

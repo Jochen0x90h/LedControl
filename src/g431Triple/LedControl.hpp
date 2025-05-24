@@ -98,8 +98,7 @@ struct Drivers {
         inputPinConfigs,
         inputConfigs,
         timer::TIM4_INFO,
-        APB1_TIMER_CLOCK,
-        0}; // CC index
+        APB1_TIMER_CLOCK};
 
     // IR receiver
     using IrReceiver = IrReceiver_TIM;

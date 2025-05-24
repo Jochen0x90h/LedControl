@@ -1,5 +1,6 @@
 #pragma once
 
+#include "config.hpp"
 #include <coco/SSD130x.hpp>
 #include <coco/BufferStorage.hpp>
 #include <coco/platform/SSD130x_emu.hpp>
@@ -12,7 +13,7 @@
 
 using namespace coco;
 
-constexpr int LEDSTRIP_LENGTH = 300;
+//constexpr int LEDSTRIP_LENGTH = 300;
 
 // emulated display
 constexpr int DISPLAY_WIDTH = 128;
@@ -39,41 +40,46 @@ IrReceiver_emu::Config config {
 constexpr int BLOCK_SIZE = 8;
 constexpr int PAGE_SIZE = 2048;
 constexpr BufferStorage::Info storageInfo {
-	0, // address
-	BLOCK_SIZE,
-	PAGE_SIZE,
-	8192, // sector size
-	2, // sector count
-	BufferStorage::Type::MEM_4N // file
+    0, // address
+    BLOCK_SIZE,
+    PAGE_SIZE,
+    8192, // sector size
+    2, // sector count
+    BufferStorage::Type::MEM_4N // file
 };
 
 
 // drivers for LedControl
 struct Drivers {
-	Loop_emu loop;
+    Loop_emu loop;
 
-	// LED strip
-	LedStrip_emu ledStrip{loop};
-	LedStrip_emu::Buffer ledBuffer1{LEDSTRIP_LENGTH, ledStrip};
-	LedStrip_emu::Buffer ledBuffer2{LEDSTRIP_LENGTH, ledStrip};
-	Newline_emu newline1{loop}; // start a new line in the emulateor gui
+    // 3 LED strips
+    LedStrip_emu ledStrip1{loop};
+    LedStrip_emu::Buffer ledBuffer1{MAX_LEDSTRIP_LENGTH, ledStrip1};
+    Newline_emu newline1{loop}; // start a new line in the emulateor gui
+    LedStrip_emu ledStrip2{loop};
+    LedStrip_emu::Buffer ledBuffer2{MAX_LEDSTRIP_LENGTH, ledStrip2};
+    Newline_emu newline2{loop}; // start a new line in the emulateor gui
+    LedStrip_emu ledStrip3{loop};
+    LedStrip_emu::Buffer ledBuffer3{MAX_LEDSTRIP_LENGTH, ledStrip3};
+    Newline_emu newline3{loop}; // start a new line in the emulateor gui
 
-	// display
-	SSD130x_emu displayBuffer{loop, DISPLAY_WIDTH, DISPLAY_HEIGHT};
-	AwaitableCoroutine resetDisplay() {co_return;}
+    // display
+    SSD130x_emu displayBuffer{loop, DISPLAY_WIDTH, DISPLAY_HEIGHT};
+    AwaitableCoroutine resetDisplay() {co_return;}
 
-	// rotary knob
-	RotaryKnob_emu input{loop, true, 100}; // gui id
+    // rotary knob
+    RotaryKnob_emu input{loop, true, 100}; // gui id
 
-	// ir receiver
-	using IrReceiver = IrReceiver_emu;
-	IrReceiver irDevice{loop, config, 101}; // gui id
+    // ir receiver
+    using IrReceiver = IrReceiver_emu;
+    IrReceiver irDevice{loop, config, 101}; // gui id
     IrReceiver::Buffer irBuffer1{80, irDevice};
     IrReceiver::Buffer irBuffer2{80, irDevice};
 
-	// flash
-	Flash_File flash{"flash.bin", 16384, PAGE_SIZE, BLOCK_SIZE};
-	Flash_File::Buffer flashBuffer{256, flash};
+    // flash
+    Flash_File flash{"flash.bin", 16384, PAGE_SIZE, BLOCK_SIZE};
+    Flash_File::Buffer flashBuffer{256, flash};
 };
 
 Drivers drivers;

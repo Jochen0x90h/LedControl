@@ -1,6 +1,6 @@
 #include "RemoteControl.hpp"
 #include <coco/Storage.hpp>
-#include <coco/debug.hpp>
+//#include <coco/debug.hpp>
 
 
 // RemoteContol
@@ -13,19 +13,20 @@ AwaitableCoroutine RemoteControl::load() {
         command.type = Command::Type::NONE;
         co_await this->storage.read(FIRST_COMMAND_ID + i, &command, sizeof(Command), result);
     }
+    this->commandsModified = 0;
 }
 
 AwaitableCoroutine RemoteControl::save() {
     int result;
 
-    // save all dirty commands
+    // save all modified commands
     for (int i = 0; i < COMMAND_COUNT; ++i) {
-        if (this->dirty & (1 << i)) {
+        if (this->commandsModified & (1 << i)) {
             auto &command = this->commands[i];
             co_await this->storage.write(FIRST_COMMAND_ID + i, &command, sizeof(Command), result);
         }
     }
-    this->dirty = 0;
+    this->commandsModified = 0;
 }
 
 bool RemoteControl::compare(Command &c1, Command &c2) {
@@ -70,7 +71,7 @@ Coroutine RemoteControl::receive(Buffer &buffer) {
         }
 
         // check if one of the stored commands match
-        if (this->learn == -1) {
+        if (this->learnIndex == -1) {
             for (int i = 0; i < COMMAND_COUNT; ++i) {
                 auto &c2 = this->commands[i];
                 if (compare(c1, c2)) {
@@ -83,8 +84,8 @@ Coroutine RemoteControl::receive(Buffer &buffer) {
             }
         } else {
             // learn command
-            this->commands[this->learn] = c1;
-            this->dirty |= 1 << this->learn;
+            this->commands[this->learnIndex] = c1;
+            this->commandsModified |= 1 << this->learnIndex;
 
             // notify
             ++this->sequenceNumber;

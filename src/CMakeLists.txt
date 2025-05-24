@@ -14,6 +14,8 @@ function(firmware FW BOARD_LIB)
             EffectManager.hpp
             RemoteControl.cpp
             RemoteControl.hpp
+            StripManager.cpp
+            StripManager.hpp
             math.hpp
             Strip.hpp
             effects/ColorCycle3.hpp

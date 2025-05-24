@@ -8,6 +8,38 @@
 using namespace coco;
 
 
+class StripData {
+public:
+    StripData(uint32_t *data, int size) : buffer(data), length(size) {}
+
+    int size() {return this->length;}
+
+    void set(int index, float3 color) {
+        int r = clamp(int(color.x * 2047.0f + 0.5f), 0, 2047);
+        int g = clamp(int(color.y * 2047.0f + 0.5f), 0, 2047);
+        int b = clamp(int(color.z * 1023.0f + 0.5f), 0, 1023);
+        this->buffer[index] = r | (g << 11) | (b << 22);
+    }
+
+    void fill(uint32_t value) {
+        for (int i = 0; i < this->length; ++i) {
+            this->buffer[i] = value;
+        }
+    }
+
+    uint32_t *begin() {return this->buffer;}
+    uint32_t *end() {return this->buffer + this->length;}
+
+    StripData range(int start, int length) {
+        return {this->buffer + start, std::min(length, this->length - start)};
+    }
+
+protected:
+    uint32_t *buffer;
+    int length;
+};
+
+/*
 /// @brief LED strip with double buffering
 ///
 class Strip {
@@ -70,3 +102,4 @@ protected:
     Buffer *buffers[2];
     Buffer *buffer;
 };
+*/

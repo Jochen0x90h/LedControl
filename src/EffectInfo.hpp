@@ -37,15 +37,21 @@ struct ParameterInfo {
 
 using Hue = int;
 
+/// @brief Initialize function
+///
 using InitFunction = void (*)(void *parameters);
+
+/// @brief Function that determines if the end time was reached and the effect should be restarted
+///
 using EndFunction = bool (*)(float time, const void *parameters);
-using RunFunction = void (*)(Strip &strip, float brightness, float time, const void *parameters);
+
+/// @brief Function that caluclates the effect at the given time
+using CalcFunction = void (*)(StripData strip, float brightness, float time, const void *parameters);
 
 struct EffectInfo {
 	String name;
 	Array<const ParameterInfo> parameterInfos;
-	//int parametersSize;
 	InitFunction init;
 	EndFunction end;
-	RunFunction run;
+	CalcFunction run;
 };

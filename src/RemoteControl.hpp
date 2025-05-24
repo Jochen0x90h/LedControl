@@ -16,7 +16,7 @@ using namespace coco;
 
 class RemoteControl {
 public:
-    static constexpr int FIRST_COMMAND_ID = 100;
+    static constexpr int FIRST_COMMAND_ID = 200;
     static constexpr int COMMAND_COUNT = 5;
 
     struct Command {
@@ -46,6 +46,7 @@ public:
         : loop(loop)
         , storage(storage)
     {
+        // start two receive coroutines
         for (int i = 0; i < 2; ++i) {
             this->receiveCoroutines[i] = receive(irDevice.getBuffer(i));
         }
@@ -61,25 +62,37 @@ public:
     ///
     [[nodiscard]] AwaitableCoroutine load();
 
-    /// @brief Save configuration to flash
+    /// @brief Save modified configuration to flash
     ///
     [[nodiscard]] AwaitableCoroutine save();
 
+    /// @brief Check if the configuration is modified and needs to be saved
+    /// @return true if modified
+    bool modified() {return this->commandsModified != 0;}
+
+
     /// @brief Set to learning mode
-    /// @param index command index to learn
+    /// @param index Command index to learn
     void setLearn(int index) {
-        this->learn = index;
+        this->learnIndex = index;
     }
 
+    /// @brief Clear command to learn
+    ///
     void clear() {
-        this->commands[this->learn].type = Command::Type::NONE;
-        this->dirty = 1 << this->learn;
+        this->commands[this->learnIndex].type = Command::Type::NONE;
+        this->commandsModified = 1 << this->learnIndex;
     }
 
-    /// @brief  Set to normal mode
-    void setNormal() {this->learn = -1;}
+    /// @brief Set to normal mode
+    ///
+    void setNormal() {this->learnIndex = -1;}
 
-    const Command &getLearnCommand() {return this->commands[this->learn];}
+    /// @brief Get command to learn
+    /// @return Command to learn
+    const Command &getLearnCommand() {
+        return this->commands[this->learnIndex];
+    }
 
     Barrier<int &> commandBarrier;
 
@@ -103,10 +116,10 @@ protected:
     Storage &storage;
 
     Command commands[COMMAND_COUNT];
-    int dirty = 0;
+    int commandsModified = 0;
     int command;
     Command lastCommand;
-    int learn = -1;
+    int learnIndex = -1;
 
     int sequenceNumber = 0;
     CoroutineTaskList<> tasks;
