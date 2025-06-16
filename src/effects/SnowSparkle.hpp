@@ -22,12 +22,12 @@ struct Parameters {
     float percentage;
 };
 const ParameterInfo parameterInfos[] = {
-    {"Sparkle Hue", ParameterInfo::Type::HUE, 0, 23, 1, true},
-    {"Sparkle Saturation", ParameterInfo::Type::PERCENTAGE, 0, 100, 5},
-    {"Back Hue", ParameterInfo::Type::HUE, 0, 23, 1, true},
-    {"Back Saturation", ParameterInfo::Type::PERCENTAGE, 0, 100, 5},
-    {"Back Brightness", ParameterInfo::Type::PERCENTAGE_E12, 0, 24, 1},
-    {"Percentage", ParameterInfo::Type::PERCENTAGE, 0, 100, 2},
+    {"Sparkle Hue", ParameterInfo::Type::HUE},//, 0, 23, 1, true},
+    {"Sparkle Saturation", ParameterInfo::Type::PERCENTAGE, 5},//, 0, 100, 5},
+    {"Back Hue", ParameterInfo::Type::HUE},//, 0, 23, 1, true},
+    {"Back Saturation", ParameterInfo::Type::PERCENTAGE, 5},//, 0, 100, 5},
+    {"Back Brightness", ParameterInfo::Type::PERCENTAGE_E12},//, 0, 24, 1},
+    {"Percentage", ParameterInfo::Type::PERCENTAGE, 2},//, 0, 100, 2},
 };
 
 // initialize parameters with default values

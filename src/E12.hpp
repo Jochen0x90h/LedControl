@@ -13,6 +13,9 @@ extern const int e12Table[12];
 int toE12(int value);
 
 
+/// @brief E12 value wrapper
+/// @tparam T Base type
+/// @tparam P Power of ten, 10^P
 template <typename T, int P>
 struct E12 {
 	T value;
@@ -33,8 +36,10 @@ using MillisecondsE12 = E12<uint8_t, -3>;
 // logarithmic percentage: 1%, 1.2%, 1.5% ... 100%
 using PercentageE12 = E12<uint8_t, -1>;
 
+using KelvinE12 = E12<uint8_t, 0>;
 
-// stream operator
+
+// stream operator for E12
 template <typename S, typename T, int P>
 S &operator <<(S &s, E12<T, P> e12) {
 	int x = e12.value;

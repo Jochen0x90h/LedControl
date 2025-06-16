@@ -50,7 +50,8 @@ public:
     // preset parameter info and value
     struct ParameterValue {
         const ParameterInfo &info;
-        int value;
+        //int value;
+        const uint8_t *values;
     };
 
     struct Preset {
@@ -223,11 +224,15 @@ public:
         return this->effectInfos[config.presets[presetIndex].effectIndex].parameterInfos.size();
     }
 
+    /// @brief Get the name of a global parameter
+    /// @param parameterIndex Global parameter index (0: Brightness, 1: Speed)
+    /// @return Name of global parameter
     String getGlobalParameterName(int parameterIndex);
 
     /// @brief Get the name of the given parameter of the given preset
     ///
-    String getParameterName(int playerIndex, int presetIndex, int parameterIndex);
+    //String getParameterName(int playerIndex, int presetIndex, int parameterIndex);
+    const ParameterInfo &getParameterInfo(int playerIndex, int presetIndex, int parameterIndex);
 
     /// @brief Add a delta to a global parameter, clamp to valid range and return its current value
     /// @return Preset parameter info and value
@@ -235,11 +240,21 @@ public:
 
     /// @brief Add a delta to a parameter of a preset, clamp to valid range and return its current value
     /// @return Preset parameter info and value
-    ParameterValue updateParameter(int playerIndex, int presetIndex, int parameterIndex, int delta);
+    ParameterValue updateParameter(int playerIndex, int presetIndex, int parameterIndex, int componentIndex, int delta);
+
+
+    /// @brief Apply the parameters of a preset so that they are used by the effect.
+    /// @param playerIndex Index of the player
+    /// @param presetIndex Index of the preset
+    void applyParameters(int playerIndex, int presetIndex);
 
     /// @brief Run the preset with given index on all players.
     /// @param presetIndex Index of the preset (for all players)
     void run(int presetIndex);
+
+    /// @brief Run the preset with given index on one player.
+    /// @param playerIndex Index of the player
+    /// @param presetIndex Index of the preset
     void run(int playerIndex, int presetIndex);
 
     /// @brief Stop the current preset

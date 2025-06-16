@@ -51,17 +51,17 @@ void __attribute__((weak)) SystemInit() {
     while (!(RCC->CR & RCC_CR_PLLRDY)) {}
 
     // use PLL, set APB1 and APB2 prescaler
-    uint32_t CFGR = RCC_CFGR_SW_PLL // use PLL
+    uint32_t cfgr = RCC_CFGR_SW_PLL // use PLL
         | RCC_CFGR_PPRE1_DIV4 // APB1_CLOCK = AHB_CLOCK / 4
         | RCC_CFGR_PPRE2_DIV4; // APB2_CLOCK = AHB_CLOCK / 4
 
     // switch to medium speed clock, wait for at least 1us according to reference manual 7.2.7, then switch to high speed clock
-    RCC->CFGR = CFGR | RCC_CFGR_HPRE_DIV2; // medium speed: AHB_CLOCK = SYS_CLOCK / 2
+    RCC->CFGR = cfgr | RCC_CFGR_HPRE_DIV2; // medium speed: AHB_CLOCK = SYS_CLOCK / 2
     for (int i = 0; i < 170; ++i)
         __NOP();
 
     // switch to high speed clock
-    RCC->CFGR = CFGR | RCC_CFGR_HPRE_DIV1; // high speed: AHB_CLOCK = SYS_CLOCK
+    RCC->CFGR = cfgr | RCC_CFGR_HPRE_DIV1; // high speed: AHB_CLOCK = SYS_CLOCK
 
     // set clock source of ADC to PLL "P"
     RCC->CCIPR = RCC->CCIPR | RCC_CCIPR_ADC12SEL_0;

@@ -1,5 +1,5 @@
 (module TSOP38338 (layer F.Cu) (tedit 5EC043C1)
-  (descr "TSOP38338 IR receiver module")
+  (descr "TSOP38338 IR receiver module (https://www.vishay.com/docs/81743/tsop381.pdf)")
   (attr through_hole)
   (model "TSOP38338.wrl" (at (xyz 0 0 0)) (scale (xyz 1 1 1)) (rotate (xyz 0 0 0)))
   (fp_text reference REF** (at 0 0) (layer F.SilkS) (effects (font (size 1 1) (thickness 0.15))))

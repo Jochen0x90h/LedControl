@@ -6,7 +6,6 @@
 using namespace coco;
 
 
-
 class StripManager {
 public:
     // storage IDs for three LED strip configurations
@@ -42,7 +41,7 @@ public:
         LedType ledType;
 
         // number of LEDs
-        uint16_t ledCount;
+        //uint16_t ledCount;
 
         // list of sources
         StripSource sources[MAX_STRIP_SOURCE_COUNT];
@@ -88,13 +87,16 @@ public:
     /// @return true if modified
     bool modified() {return this->stripConfigsModified != 0;}
 
+    int getLedCount(int stripIndex);
+    int getSourceCount(int stripIndex) {return this->strips[stripIndex].config.sourceCount;}
+    void addSource(int stripIndex);
+    void removeSource(int stripIndex);
+    LedType updateLedType(int stripIndex, int delta);
+    int updatePlayerIndex(int stripIndex, int sourceIndex, int delta);
+    int updateLedStart(int stripIndex, int sourceIndex, int delta);
+    int updateLedCount(int stripIndex, int sourceIndex, int delta);
 
-    const StripConfig &getStripConfig(int index) {
-        //this->stripConfigDirty |= 1 << index;
-        return this->strips[index].config;
-    }
-
-    void setStripConfig(int index, StripConfig &newConfig);
+    void setEditMode(int stripIndex, int sourceIndex) {this->editStripIndex = stripIndex; this->editSourceIndex = sourceIndex;}
 
     Coroutine run();
 
@@ -110,4 +112,7 @@ protected:
     // three LED strips
     Strip strips[3];
     int stripConfigsModified = 0;
+
+    int editStripIndex = -1;
+    int editSourceIndex;
 };

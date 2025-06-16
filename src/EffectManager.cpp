@@ -1,7 +1,32 @@
 #include "EffectManager.hpp"
 #include "E12.hpp"
 #include <coco/BufferStorage.hpp>
+#include <coco/Vector2.hpp>
 #include <coco/debug.hpp>
+
+
+static const Vector2<float> colorTemperature[] = {
+    {0.0333333, 1}, // 1000K
+    {0.0535948, 1}, // 1200K
+    {0.072549, 1}, // 1500K
+    {0.0849673, 1}, // 1800K
+    {0.0864486, 0.839216}, // 2200K
+    {0.0877193, 0.670588}, // 2700K
+    {0.0903308, 0.513726}, // 3300K
+    {0.0925926, 0.388235}, // 3900K
+    {0.0899471, 0.247059}, // 4700K
+    {0.0777778, 0.117647}, // 5600K
+    {0.761905, 0.027451}, // 6800K
+    {0.636905, 0.109804}, // 8200K
+    {0.628472, 0.188235}, // 10000K
+    {0.627778, 0.235294}, // 12000K
+    {0.625, 0.282353}, // 15000K
+    {0.624473, 0.309804}, // 18000K
+    {0.626984, 0.329412}, // 22000K
+    {0.626894, 0.345098}, // 27000K
+    {0.626812, 0.360784}, // 33000K
+    {0.62766, 0.368627}, // 39000K
+};
 
 
 AwaitableCoroutine EffectManager::load() {
@@ -42,6 +67,7 @@ AwaitableCoroutine EffectManager::load() {
         auto &player = this->players[playerIndex];
         auto &config = player.config;
 
+        // read presets and data for preset names and preset parameters
         int id = FIRST_PLAYER_ID + playerIndex * 2;
         co_await this->storage.read(id, &config, offsetof(PlayerConfig, presets[MAX_PLAYER_PRESET_COUNT]), result);
         int a = int((result - int(offsetof(PlayerConfig, presets))) / int(sizeof(Preset)));
@@ -162,9 +188,9 @@ int EffectManager::updateLedCount(int playerIndex, int delta) {
         // determine maximum led count which is constrained by the strip data size
         int maxLedCount = this->stripData.size();
         for (int i = 0; i < PLAYER_COUNT; ++i) {
-            auto &player = this->players[i];
+            auto &p = this->players[i];
             if (i != playerIndex)
-                maxLedCount -= player.config.ledCount;
+                maxLedCount -= p.config.ledCount;
         }
 
         // also limit to maximum led strip length
@@ -264,36 +290,42 @@ int EffectManager::initParameters(int playerIndex, int presetIndex) {
     // convert effect parameters (float) to preset parameters (uint8_t)
     auto &parameterInfos = effectInfo.parameterInfos;
     int parameterCount = parameterInfos.size();
-    //int parametersOffset = preset.nameLength;// - 1;
-    uint8_t *data = config.getParametersData(presetIndex);
+    uint8_t *parameters = config.getParametersData(presetIndex);
+    float *effectParameters = player.effectParameters;
     for (int parameterIndex = 0; parameterIndex < parameterCount; ++parameterIndex) {
         auto &parameterInfo = parameterInfos[parameterIndex];
 
-        // get effect parameter
-        float effectParameter = player.effectParameters[parameterIndex];
-
         // convert into preset parameter
-        uint8_t &parameter = data[parameterIndex];//preset.data[parametersOffset + parameterIndex];
         switch (parameterInfo.type) {
         case ParameterInfo::Type::COUNT:
-            parameter = int(effectParameter);
+            parameters[0] = int(effectParameters[0]);
             break;
         case ParameterInfo::Type::DURATION_E12:
-            parameter = toE12(int(effectParameter * 1000.0f));
+            parameters[0] = toE12(int(effectParameters[0] * 1000.0f));
             break;
         case ParameterInfo::Type::PERCENTAGE:
-            parameter = int(effectParameter * 100.0f);
+            parameters[0] = int(effectParameters[0] * 100.0f);
             break;
         case ParameterInfo::Type::PERCENTAGE_E12:
-            parameter = toE12(int(effectParameter * 1000.0f));
+            parameters[0] = toE12(int(effectParameters[0] * 1000.0f));
             break;
         case ParameterInfo::Type::HUE:
-            parameter = int(effectParameter * 24.0f);
+            parameters[0] = int(effectParameters[0] * 24.0f);
+            break;
+        case ParameterInfo::Type::COLOR:
+            // hue and saturation
+            parameters[0] = int(effectParameters[0] * 24.0f);
+            parameters[1] = int(effectParameters[1] * 100.0f);
+            ++parameters;
+            ++effectParameters;
             break;
         }
+        ++parameters;
+        ++effectParameters;
     }
 
-    return parameterCount;
+    // return number of parameter values
+    return effectParameters - player.effectParameters;
 }
 
 int EffectManager::getPresetCount() {
@@ -306,17 +338,21 @@ int EffectManager::getPresetCount() {
 
 // infos for the global parameters
 const ParameterInfo globalParameterInfos[] = {
-    {"Brightness", ParameterInfo::Type::PERCENTAGE_E12, 0, 24, 1},
-    {"Duration", ParameterInfo::Type::DURATION_E12, 12, 72, 1},
+    {"Brightness", ParameterInfo::Type::PERCENTAGE_E12},//, 0, 24, 1},
+    {"Duration", ParameterInfo::Type::DURATION_E12, 12},//, 12, 72, 1},
 };
 
 String EffectManager::getGlobalParameterName(int parameterIndex) {
     return globalParameterInfos[parameterIndex].name;
 }
 
-String EffectManager::getParameterName(int playerIndex, int presetIndex, int parameterIndex) {
+//String EffectManager::getParameterName(int playerIndex, int presetIndex, int parameterIndex) {
+//    auto &config = this->players[playerIndex].config;
+//    return this->effectInfos[config.presets[presetIndex].effectIndex].parameterInfos[parameterIndex].name;
+//}
+const ParameterInfo &EffectManager::getParameterInfo(int playerIndex, int presetIndex, int parameterIndex) {
     auto &config = this->players[playerIndex].config;
-    return this->effectInfos[config.presets[presetIndex].effectIndex].parameterInfos[parameterIndex].name;
+    return this->effectInfos[config.presets[presetIndex].effectIndex].parameterInfos[parameterIndex];
 }
 
 EffectManager::ParameterValue EffectManager::updateGlobalParameter(int parameterIndex, int delta)
@@ -327,48 +363,42 @@ EffectManager::ParameterValue EffectManager::updateGlobalParameter(int parameter
         this->timerBarrier.doAll();
     }
 
-    uint8_t parameter;
+    uint8_t *values;
     if (parameterIndex == 0) {
         // brightness percentage E12 (0-24 -> 1.0%-100.0%)
-        parameter = this->global.brightness = std::clamp(this->global.brightness + delta, 0, 24);
-        this->brightness = PercentageE12{parameter}.get() * 0.001f;
+        this->global.brightness = std::clamp(this->global.brightness + delta, 0, 24);
+        this->brightness = PercentageE12{this->global.brightness}.get() * 0.001f;
+        values = &this->global.brightness;
     } else {
-        // duration E12 (12-72 -> 100ms - 10000s)
-        parameter = this->global.duration = std::clamp(this->global.duration + delta, 12, 60);
-        this->duration = MillisecondsE12{parameter}.get() * 1ms;
+        // duration E12 (12-72 -> 100ms - 1000000s)
+        this->global.duration = std::clamp(this->global.duration + delta, 12, 72);
+        this->duration = MillisecondsE12{this->global.duration}.get() * 1ms;
+        values = &this->global.duration;
     }
 
-    return {globalParameterInfos[parameterIndex], int(parameter)};
+    return {globalParameterInfos[parameterIndex], values};
 }
 
 EffectManager::ParameterValue EffectManager::updateParameter(int playerIndex, int presetIndex, int parameterIndex,
-    int delta)
+    int componentIndex, int delta)
 {
-    // parameter index 0 and 1 are the global parameters brighness and duration
-    //if (parameterIndex < 2) {
-   // }
-    //parameterIndex -= 2;
-
     auto &player = this->players[playerIndex];
     auto &config = player.config;
     auto &preset = config.presets[presetIndex];
-    //auto &preset = this->presetList[presetIndex];
+/*
     auto &parameterInfo = this->effectInfos[preset.effectIndex].parameterInfos[parameterIndex];
 
-    if (delta != 0) {
-        // mark preset as "dirty", to be saved on next save operation
-        //preset.dirty = true;
-
-        // mark player config as dirty
-        this->playerConfigsModified |= 1 << playerIndex;
-    }
-    //int parametersOffset = preset.nameLength;// - 1;
-    //uint8_t &parameter = preset.data[parametersOffset + parameterIndex];
-    uint8_t &parameter = config.getParametersData(presetIndex)[parameterIndex];
+    //if (delta != 0) {
+    //    // mark player config as modified
+    //    this->playerConfigsModified |= 1 << playerIndex;
+    //}
+    uint8_t *parameters = config.getParametersData(presetIndex);
+    uint8_t &parameter = parameters[parameterIndex];
+    //float *effectParameters = player.effectParameters[parameterIndex];
     float &effectParameter = player.effectParameters[parameterIndex];
-
+*/
     // update parameter
-    if (!parameterInfo.wrap) {
+    /*if (!parameterInfo.wrap) {
         parameter = std::clamp(parameter + delta * parameterInfo.step, int(parameterInfo.min), int(parameterInfo.max));
     } else {
         int m = parameterInfo.min;
@@ -379,37 +409,142 @@ EffectManager::ParameterValue EffectManager::updateParameter(int playerIndex, in
     // convert to effect parameter
     switch (parameterInfo.type) {
     case ParameterInfo::Type::COUNT:
+        parameter = std::clamp(parameter + delta, 1, parameterInfo.value);
+
         effectParameter = parameter;
         break;
     case ParameterInfo::Type::DURATION_E12:
+        parameter = std::clamp(parameter + delta, 12, 72); // 100ms - 1000000s
+
         effectParameter = MillisecondsE12{parameter}.get() * 0.001f;
         break;
     case ParameterInfo::Type::PERCENTAGE:
+        parameter = std::clamp(parameter + delta * parameterInfo.value, 1, 100);
+
         effectParameter = parameter * 0.01f;
         break;
     case ParameterInfo::Type::PERCENTAGE_E12:
-        effectParameter = PercentageE12{parameter}.get() * 0.001f;
+        parameter = std::clamp(parameter + delta, 0, 24); // 1.0% - 100%
+
+        effectParameter = PercentageE12(parameter).get() * 0.001f; // 24 -> 1000 -> 100%
         break;
     case ParameterInfo::Type::HUE:
+        parameter = (parameter + delta + 24 * 256) % 24;
+
         effectParameter = parameter / 24.0f;
         break;
     }
-    return {parameterInfo, int(parameter)};
+
+    */
+
+    auto &effectInfo = this->effectInfos[preset.effectIndex];
+    auto &info = effectInfo.parameterInfos[parameterIndex];
+    int precedingValues = effectInfo.getPrecedingValueCount(parameterIndex);
+    uint8_t *values = config.getParametersData(presetIndex) + precedingValues;
+
+    if (delta != 0) {
+        this->playerConfigsModified |= 1 << playerIndex;
+
+        // modify parameter
+        switch (info.type) {
+        case ParameterInfo::Type::COUNT:
+            if (componentIndex == 0)
+                values[0] = clampCount(values[0] + delta, info.value);
+            break;
+        case ParameterInfo::Type::DURATION_E12:
+            if (componentIndex == 0)
+                values[0] = clampDurationE12(values[0] + delta, info.value); // 10ms - 1000000s
+            break;
+        case ParameterInfo::Type::PERCENTAGE:
+            if (componentIndex == 0)
+                values[0] = clampPercentage(values[0] + delta * info.value); // 1% - 100%
+            break;
+        case ParameterInfo::Type::PERCENTAGE_E12:
+            if (componentIndex == 0)
+                values[0] = clampPercentageE12(values[0] + delta); // 1.0% - 100%
+            break;
+        case ParameterInfo::Type::HUE:
+            if (componentIndex == 0)
+                values[0] = wrapHue(values[0] + delta);
+            break;
+        case ParameterInfo::Type::COLOR:
+            if (componentIndex == 0)
+                values[0] = wrapColorHue(values[0] + delta); // hue or temperature
+            if (componentIndex == 1) {
+                if (values[0] < 24)
+                    values[1] = clampPercentage(values[1] + delta * info.value); // saturation
+                else
+                    values[1] = clampColorTemperature(values[1] + delta);
+            }
+            break;
+        }
+    }
+
+    return {info, values};
+}
+
+void EffectManager::applyParameters(int playerIndex, int presetIndex) {
+    auto &player = this->players[playerIndex];
+    auto &config = player.config;
+    auto &preset = config.presets[presetIndex];
+
+    auto &parameterInfos = this->effectInfos[preset.effectIndex].parameterInfos;
+    uint8_t *values = config.getParametersData(presetIndex);
+    float *effectValues = player.effectParameters;
+
+    for (int i = 0; i < parameterInfos.size(); ++i) {
+        auto &info = parameterInfos[i];
+        int value = values[0];
+        switch (info.type) {
+        case ParameterInfo::Type::COUNT:
+            effectValues[0] = clampCount(value, info.value);
+            break;
+        case ParameterInfo::Type::DURATION_E12:
+            effectValues[0] = MillisecondsE12(clampDurationE12(value, info.value)).get() * 0.001f;
+            break;
+        case ParameterInfo::Type::PERCENTAGE:
+            effectValues[0] = clampPercentage(value) * 0.01f;
+            break;
+        case ParameterInfo::Type::PERCENTAGE_E12:
+            effectValues[0] = PercentageE12(clampPercentageE12(value)).get() * 0.001f; // 24 -> 1000 -> 100%
+            break;
+        case ParameterInfo::Type::HUE:
+            effectValues[0] = wrapHue(value) / 24.0f;
+            break;
+        case ParameterInfo::Type::COLOR:
+            if (value < 24) {
+                // hue and saturation
+                effectValues[0] = value / 24.0f;
+                effectValues[1] = clampPercentage(values[1]) * 0.01f;
+            } else {
+                // color temperature
+                auto hs = colorTemperature[clampColorTemperature(values[1]) - 24];
+                effectValues[0] = hs.x;
+                effectValues[1] = hs.y;
+            }
+            ++values;
+            ++effectValues;
+            break;
+        }
+        ++values;
+        ++effectValues;
+    }
 }
 
 void EffectManager::run(int presetIndex) {
     stop();
     int ledStart = 0;
-    for (int i = 0; i < PLAYER_COUNT; ++i) {
-        auto &player = this->players[i];
+    for (int playerIndex = 0; playerIndex < PLAYER_COUNT; ++playerIndex) {
+        auto &player = this->players[playerIndex];
         auto &config = player.config;
 
         if (presetIndex < config.presetCount) {
             auto &effectInfo = this->effectInfos[config.presets[presetIndex].effectIndex];
 
             // transfer preset parameters into effect parameters
-            for (int parameterIndex = 0; parameterIndex < effectInfo.parameterInfos.size(); ++parameterIndex)
-                updateParameter(i, presetIndex, parameterIndex, 0);
+            applyParameters(playerIndex, presetIndex);
+            //for (int parameterIndex = 0; parameterIndex < effectInfo.parameterInfos.size(); ++parameterIndex)
+            //    updateParameter(i, presetIndex, parameterIndex, 0);
 
             // start new effect
             player.effect = run(ledStart, player, effectInfo.end, effectInfo.run);
@@ -429,8 +564,9 @@ void EffectManager::run(int playerIndex, int presetIndex) {
             auto &effectInfo = this->effectInfos[config.presets[presetIndex].effectIndex];
 
             // transfer preset parameters into effect parameters
-            for (int parameterIndex = 0; parameterIndex < effectInfo.parameterInfos.size(); ++parameterIndex)
-                updateParameter(i, presetIndex, parameterIndex, 0);
+            applyParameters(playerIndex, presetIndex);
+            //for (int parameterIndex = 0; parameterIndex < effectInfo.parameterInfos.size(); ++parameterIndex)
+            //    updateParameter(i, presetIndex, parameterIndex, 0);
 
             // start new effect
             player.effect = run(ledStart, player, effectInfo.end, effectInfo.run);

@@ -14,7 +14,7 @@ struct Parameters {
     float size;
 };
 const ParameterInfo parameterInfos[] = {
-    {"Size", ParameterInfo::Type::PERCENTAGE_E12, 0, 24, 1},
+    {"Size", ParameterInfo::Type::PERCENTAGE_E12},//, 0, 24, 1},
 };
 
 // initialize parameters with default values

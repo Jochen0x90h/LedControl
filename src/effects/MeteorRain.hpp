@@ -20,10 +20,10 @@ struct Parameters {
     float randomDecay;
 };
 const ParameterInfo parameterInfos[] = {
-    {"Hue", ParameterInfo::Type::HUE, 0, 23, 1, true},
-    {"Saturation", ParameterInfo::Type::PERCENTAGE, 0, 100, 5},
-    {"Size", ParameterInfo::Type::PERCENTAGE_E12, 0, 24, 1},
-    {"Random Decay", ParameterInfo::Type::PERCENTAGE_E12, 0, 24, 1},
+    {"Hue", ParameterInfo::Type::HUE},//, 0, 23, 1, true},
+    {"Saturation", ParameterInfo::Type::PERCENTAGE, 5},//0, 100, 5},
+    {"Size", ParameterInfo::Type::PERCENTAGE_E12},//, 0, 24, 1},
+    {"Random Decay", ParameterInfo::Type::PERCENTAGE_E12},//, 0, 24, 1},
 };
 
 // initialize parameters with default values

@@ -51,17 +51,17 @@ void __attribute__((weak)) SystemInit() {
     while (!(RCC->CR & RCC_CR_PLLRDY)) {}
 
     // use PLL, set APB1 and APB2 prescaler
-    uint32_t CFGR = RCC_CFGR_SW_PLL // use PLL
+    uint32_t cfgr = RCC_CFGR_SW_PLL // use PLL
         | RCC_CFGR_PPRE1_DIV4 // APB1_CLOCK = AHB_CLOCK / 4
         | RCC_CFGR_PPRE2_DIV4; // APB2_CLOCK = AHB_CLOCK / 4
 
     // switch to medium speed clock, wait for at least 1us according to reference manual 7.2.7, then switch to high speed clock
-    RCC->CFGR = CFGR | RCC_CFGR_HPRE_DIV2; // medium speed: AHB_CLOCK = SYS_CLOCK / 2
+    RCC->CFGR = cfgr | RCC_CFGR_HPRE_DIV2; // medium speed: AHB_CLOCK = SYS_CLOCK / 2
     for (int i = 0; i < 170; ++i)
         __NOP();
 
     // switch to high speed clock
-    RCC->CFGR = CFGR | RCC_CFGR_HPRE_DIV1; // high speed: AHB_CLOCK = SYS_CLOCK
+    RCC->CFGR = cfgr | RCC_CFGR_HPRE_DIV1; // high speed: AHB_CLOCK = SYS_CLOCK
 
     // set clock source of ADC to PLL "P"
     RCC->CCIPR = RCC->CCIPR | RCC_CCIPR_ADC12SEL_0;
@@ -94,71 +94,6 @@ void __attribute__((weak)) SystemInit() {
 
     // enable reference voltage
     //vref::enable(vref::Config::INTERNAL_2V9);
-
-/*
-    // set flash latency
-    FLASH->ACR = FLASH_ACR_LATENCY_4WS // 4 wait states
-        | FLASH_ACR_ICEN // instruction cache enable
-        | FLASH_ACR_DCEN // data cache enable
-        | FLASH_ACR_DBG_SWEN; // debug enable
-
-    // set boost mode
-    PWR->CR5 = 0;
-
-    // configure PLL: 16MHz / 1 * 20 = 320MHz / 2 = 160MHz
-    RCC->PLLCFGR = RCC_PLLCFGR_PLLSRC_HSI // source is internal oscillator HSI16
-        | ((1 - 1) << RCC_PLLCFGR_PLLM_Pos) // PLL M divisor
-        | (20 << RCC_PLLCFGR_PLLN_Pos) // PLL N multiplier
-        | RCC_PLLCFGR_PLLREN // enable PLL R output
-        | RCC_PLLCFGR_PLLPEN // enable PLL P output (for ADC)
-        | (7 << RCC_PLLCFGR_PLLPDIV_Pos); // ADC clock: 320MHz / 7 = 45.7MHz
-
-    // enable internal oscillator and PLL
-    RCC->CR = 0x63 // bits 0-7 must be kept at reset value
-        | RCC_CR_HSION // enable internal oscillator
-        | RCC_CR_PLLON; // enable PLL
-
-    // wait until PLL is ready
-    while (!(RCC->CR & RCC_CR_PLLRDY)) {}
-
-    // use PLL, set APB1 and APB2 prescaler
-    uint32_t CFGR = RCC_CFGR_SW_PLL // use PLL
-        | RCC_CFGR_PPRE1_DIV8 // APB1_CLOCK = AHB_CLOCK / 8
-        | RCC_CFGR_PPRE2_DIV8; // APB2_CLOCK = AHB_CLOCK / 8
-        //| RCC_CFGR_PPRE2_DIV1; // APB2_CLOCK = AHB_CLOCK
-
-    // switch to medium speed clock, wait for at least 1us according to reference manual 7.2.7, then switch to high speed clock
-    RCC->CFGR = CFGR | RCC_CFGR_HPRE_DIV2; // medium speed: AHB_CLOCK = SYS_CLOCK / 2
-    for (int i = 0; i < 170; ++i)
-        __NOP();
-
-    // switch to high speed clock
-    RCC->CFGR = CFGR | RCC_CFGR_HPRE_DIV1; // high speed: AHB_CLOCK = SYS_CLOCK
-
-    // set clock source of ADC to PLL "P"
-    RCC->CCIPR = RCC->CCIPR | RCC_CCIPR_ADC12SEL_0;
-
-    // enable FPU, depends on compiler flags
-#if (__FPU_USED == 1)
-    SCB->CPACR = SCB->CPACR | (3UL << 20) | (3UL << 22);
-    __DSB();
-    __ISB();
-#else
-    #warning "FPU is not used"
-#endif
-
-
-    // enable clocks of GPIO and SYSCFG
-    RCC->AHB2ENR = RCC->AHB2ENR
-        | RCC_AHB2ENR_GPIOAEN
-        | RCC_AHB2ENR_GPIOBEN
-        | RCC_AHB2ENR_GPIOCEN;
-        //| RCC_AHB2ENR_GPIOFEN;
-    RCC->APB2ENR = RCC->APB2ENR | RCC_APB2ENR_SYSCFGEN;
-
-    // enable voltage reference
-    //vref::configure(vref::Config::INTERNAL_2V048);
-*/
 
     coco::debug::init();
 }

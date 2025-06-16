@@ -17,12 +17,12 @@ struct Parameters {
     float saturation3;
 };
 const ParameterInfo parameterInfos[] = {
-    {"Hue 1", ParameterInfo::Type::HUE, 0, 23, 1, true},
-    {"Saturation 1", ParameterInfo::Type::PERCENTAGE, 0, 100, 5},
-    {"Hue 2", ParameterInfo::Type::HUE, 0, 23, 1, true},
-    {"Saturation 2", ParameterInfo::Type::PERCENTAGE, 0, 100, 5},
-    {"Hue 3", ParameterInfo::Type::HUE, 0, 23, 1, true},
-    {"Saturation 3", ParameterInfo::Type::PERCENTAGE, 0, 100, 5},
+    {"Hue 1", ParameterInfo::Type::HUE},//, 0, 23, 1, true},
+    {"Saturation 1", ParameterInfo::Type::PERCENTAGE, 5},//0, 100, 5},
+    {"Hue 2", ParameterInfo::Type::HUE},//, 0, 23, 1, true},
+    {"Saturation 2", ParameterInfo::Type::PERCENTAGE, 5},//0, 100, 5},
+    {"Hue 3", ParameterInfo::Type::HUE},//, 0, 23, 1, true},
+    {"Saturation 3", ParameterInfo::Type::PERCENTAGE, 5},//0, 100, 5},
 };
 
 

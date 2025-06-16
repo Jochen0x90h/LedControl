@@ -18,7 +18,7 @@ struct Parameters {
     float count;
 };
 const ParameterInfo parameterInfos[] = {
-    {"Count", ParameterInfo::Type::COUNT, 1, 50, 1},
+    {"Count", ParameterInfo::Type::COUNT, 50},//1, 50, 1},
 };
 
 

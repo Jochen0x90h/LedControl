@@ -3276,7 +3276,7 @@
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
-		(dnp yes)
+		(dnp no)
 		(uuid "370425ae-9235-4d45-b851-2bdae9583593")
 		(property "Reference" "R14"
 			(at 157.3784 126.238 0)
@@ -3626,7 +3626,7 @@
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
-		(dnp yes)
+		(dnp no)
 		(uuid "4c4024fe-cfcb-4316-9773-082116a38b31")
 		(property "Reference" "R13"
 			(at 155.0416 117.602 0)
@@ -3690,7 +3690,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 45.085 179.705 0)
+		(at 45.72 180.34 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3698,7 +3698,7 @@
 		(dnp no)
 		(uuid "523a3df4-c6e5-4987-ac76-aed3664b5cba")
 		(property "Reference" "C2"
-			(at 45.085 177.165 0)
+			(at 45.72 177.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3707,7 +3707,7 @@
 			)
 		)
 		(property "Value" "100n"
-			(at 41.275 182.245 0)
+			(at 41.91 182.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3716,7 +3716,7 @@
 			)
 		)
 		(property "Footprint" "local:0603"
-			(at 46.0502 183.515 0)
+			(at 46.6852 184.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3725,7 +3725,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 45.085 179.705 0)
+			(at 45.72 180.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3734,7 +3734,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 45.085 179.705 0)
+			(at 45.72 180.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3757,7 +3757,7 @@
 			)
 			(project "control"
 				(path "/4b540715-c4ed-4902-8525-92fb403f6b2e/20eb032d-dad8-4c28-86ad-cc4f262ed8e2"
-					(reference "C16")
+					(reference "C17")
 					(unit 1)
 				)
 			)
@@ -3834,7 +3834,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 53.975 183.515 0)
+		(at 54.61 184.15 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3843,7 +3843,7 @@
 		(fields_autoplaced yes)
 		(uuid "5a450425-99b1-4c55-b5c5-412ded26c35f")
 		(property "Reference" "#PWR010"
-			(at 53.975 189.865 0)
+			(at 54.61 190.5 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3852,7 +3852,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 53.975 188.595 0)
+			(at 54.61 189.23 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3860,7 +3860,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 53.975 183.515 0)
+			(at 54.61 184.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3869,7 +3869,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 53.975 183.515 0)
+			(at 54.61 184.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3878,7 +3878,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 53.975 183.515 0)
+			(at 54.61 184.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4119,7 +4119,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 36.83 179.705 0)
+		(at 36.83 180.34 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4127,7 +4127,7 @@
 		(dnp no)
 		(uuid "7705eb54-d36c-4f11-bbf0-058203079067")
 		(property "Reference" "C2"
-			(at 36.83 177.165 0)
+			(at 36.83 177.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4136,7 +4136,7 @@
 			)
 		)
 		(property "Value" "100n"
-			(at 33.02 182.245 0)
+			(at 33.02 182.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4145,7 +4145,7 @@
 			)
 		)
 		(property "Footprint" "local:0603"
-			(at 37.7952 183.515 0)
+			(at 37.7952 184.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4154,7 +4154,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 36.83 179.705 0)
+			(at 36.83 180.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4163,7 +4163,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 36.83 179.705 0)
+			(at 36.83 180.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4186,7 +4186,7 @@
 			)
 			(project "control"
 				(path "/4b540715-c4ed-4902-8525-92fb403f6b2e/20eb032d-dad8-4c28-86ad-cc4f262ed8e2"
-					(reference "C15")
+					(reference "C16")
 					(unit 1)
 				)
 			)
@@ -5273,7 +5273,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 53.975 179.705 0)
+		(at 54.61 180.34 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5281,7 +5281,7 @@
 		(dnp no)
 		(uuid "adea4da5-01f5-417e-a645-27af7839710d")
 		(property "Reference" "C2"
-			(at 53.975 177.165 0)
+			(at 54.61 177.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5290,7 +5290,7 @@
 			)
 		)
 		(property "Value" "100n"
-			(at 50.165 182.245 0)
+			(at 50.8 182.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5299,7 +5299,7 @@
 			)
 		)
 		(property "Footprint" "local:0603"
-			(at 54.9402 183.515 0)
+			(at 55.5752 184.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5308,7 +5308,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 53.975 179.705 0)
+			(at 54.61 180.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5317,7 +5317,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 53.975 179.705 0)
+			(at 54.61 180.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5340,7 +5340,7 @@
 			)
 			(project "control"
 				(path "/4b540715-c4ed-4902-8525-92fb403f6b2e/20eb032d-dad8-4c28-86ad-cc4f262ed8e2"
-					(reference "C17")
+					(reference "C18")
 					(unit 1)
 				)
 			)
@@ -6092,7 +6092,7 @@
 	)
 	(symbol
 		(lib_id "power:+3V3")
-		(at 45.085 175.895 0)
+		(at 45.72 176.53 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6101,7 +6101,7 @@
 		(fields_autoplaced yes)
 		(uuid "dd0437e2-00c7-48ce-b330-2b15d03ffb14")
 		(property "Reference" "#PWR09"
-			(at 45.085 179.705 0)
+			(at 45.72 180.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6110,7 +6110,7 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 45.085 170.815 0)
+			(at 45.72 171.45 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6118,7 +6118,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 45.085 175.895 0)
+			(at 45.72 176.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6127,7 +6127,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 45.085 175.895 0)
+			(at 45.72 176.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6136,7 +6136,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 45.085 175.895 0)
+			(at 45.72 176.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6164,7 +6164,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 45.085 183.515 0)
+		(at 45.72 184.15 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6173,7 +6173,7 @@
 		(fields_autoplaced yes)
 		(uuid "e371dc35-5fb3-4207-8c47-0b1288918ef1")
 		(property "Reference" "#PWR010"
-			(at 45.085 189.865 0)
+			(at 45.72 190.5 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6182,7 +6182,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 45.085 188.595 0)
+			(at 45.72 189.23 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6190,7 +6190,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 45.085 183.515 0)
+			(at 45.72 184.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6199,7 +6199,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 45.085 183.515 0)
+			(at 45.72 184.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6208,7 +6208,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 45.085 183.515 0)
+			(at 45.72 184.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6236,7 +6236,7 @@
 	)
 	(symbol
 		(lib_id "power:+3V3")
-		(at 36.83 175.895 0)
+		(at 36.83 176.53 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6245,7 +6245,7 @@
 		(fields_autoplaced yes)
 		(uuid "e5ad81c2-2866-4fe7-b51d-0915f517a9aa")
 		(property "Reference" "#PWR09"
-			(at 36.83 179.705 0)
+			(at 36.83 180.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6254,7 +6254,7 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 36.83 170.815 0)
+			(at 36.83 171.45 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6262,7 +6262,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 36.83 175.895 0)
+			(at 36.83 176.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6271,7 +6271,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 36.83 175.895 0)
+			(at 36.83 176.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6280,7 +6280,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 36.83 175.895 0)
+			(at 36.83 176.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6308,7 +6308,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 36.83 183.515 0)
+		(at 36.83 184.15 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6317,7 +6317,7 @@
 		(fields_autoplaced yes)
 		(uuid "e6818f26-d5c5-4c1b-b21f-dcb584fc5b79")
 		(property "Reference" "#PWR010"
-			(at 36.83 189.865 0)
+			(at 36.83 190.5 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6326,7 +6326,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 36.83 188.595 0)
+			(at 36.83 189.23 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6334,7 +6334,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 36.83 183.515 0)
+			(at 36.83 184.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6343,7 +6343,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 36.83 183.515 0)
+			(at 36.83 184.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6352,7 +6352,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 36.83 183.515 0)
+			(at 36.83 184.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6737,7 +6737,7 @@
 	)
 	(symbol
 		(lib_id "power:+3V3")
-		(at 53.975 175.895 0)
+		(at 54.61 176.53 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6746,7 +6746,7 @@
 		(fields_autoplaced yes)
 		(uuid "fe63ba11-d5f1-43cf-81e1-233bd4a60822")
 		(property "Reference" "#PWR09"
-			(at 53.975 179.705 0)
+			(at 54.61 180.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6755,7 +6755,7 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 53.975 170.815 0)
+			(at 54.61 171.45 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6763,7 +6763,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 53.975 175.895 0)
+			(at 54.61 176.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6772,7 +6772,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 53.975 175.895 0)
+			(at 54.61 176.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6781,7 +6781,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 53.975 175.895 0)
+			(at 54.61 176.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)

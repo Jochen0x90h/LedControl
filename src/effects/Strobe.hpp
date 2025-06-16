@@ -19,10 +19,10 @@ struct Parameters {
     float strobePercentage;
 };
 const ParameterInfo parameterInfos[] = {
-    {"Hue", ParameterInfo::Type::HUE, 0, 23, 1, true},
-    {"Saturation", ParameterInfo::Type::PERCENTAGE, 0, 100, 5},
-    {"Strobe Count", ParameterInfo::Type::COUNT, 1, 100, 1},
-    {"Percentage", ParameterInfo::Type::PERCENTAGE, 0, 100, 5},
+    {"Hue", ParameterInfo::Type::HUE},//, 0, 23, 1, true},
+    {"Saturation", ParameterInfo::Type::PERCENTAGE, 5},//, 0, 100, 5},
+    {"Strobe Count", ParameterInfo::Type::COUNT, 100},//1, 100, 1},
+    {"Percentage", ParameterInfo::Type::PERCENTAGE, 5},//0, 100, 5},
 };
 
 // initialize parameters with default values

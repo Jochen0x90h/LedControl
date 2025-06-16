@@ -1,6 +1,19 @@
 {
+    "0402": {
+        "description": "Generic 0402 resistor/capacitor footprint (pad length = (body length) / 4 + 0.2, pitch = (body length) - (pad length) + 0.4)",
+        "body": [1.0, 0.5, 0.5],
+        "courtyardAdd": 0.2,
+        "silkscreenAdd": [0.3, 0.1],
+        "pads": [
+            {
+                "pitch": 0.95,
+                "size": [0.5, 0.6],
+                "count": 2
+            }
+        ]
+    },
     "0603": {
-        "description": "Generic 0603 resistor/capacitor footprint (pad with = (body width) / 4 + 0.3, pitch = (body width) - (pad width) + 0.6)",
+        "description": "Generic 0603 resistor/capacitor footprint (pad length = (body length) / 4 + 0.3, pitch = (body length) - (pad length) + 0.6)",
         "body": [1.6, 0.8, 0.8],
         "courtyardAdd": 0.2,
         "pads": [
@@ -13,7 +26,7 @@
     },
     "0805": {
         "description": "Generic 0805 resistor/capacitor footprint",
-        "body": [2, 1.25, 1.0],
+        "body": [2.0, 1.25, 1.0],
         "courtyardAdd": 0.3,
         "pads": [
             {
@@ -60,33 +73,116 @@
             }
         ]
     },*/
-    "PEC12R-4217F-S0024": {
-        "description": "PEC12R - 12 mm Incremental Encoder (https://www.bourns.com/docs/product-datasheets/pec12r.pdf)",
-        "body": [12.4, 13.4, 5.1],
-        "silkscreenAdd": -0.3,
+    "PMEG6010ELR": {
+        "description": "Schottky Diode, 60V, 1A",
+        "body": [2.8, 1.9, 1.1],
         "pads": [
             {
-                "position": [0, 7.5],
-                "pitch": 2.5,
-                "size": 1.6,
-                "drillSize": 1,
-                "count": 3,
-                "names": ["A", "C", "B"]
-            },
-            {
-                "position": [0, -7.0],
-                "pitch": 5,
-                "size": 1.6,
-                "drillSize": 1,
-                "count": 2,
-                "names": ["S1", "S2"]
-            },
-            {
-                "position": [0, 0],
-                "pitch": 11.2,
-                "size": [2.2, 3.6],
-                "drillSize": [1.6, 3.0],
+                "size": [1.2, 1.2],
+                "pitch": 2.8,
                 "count": 2
+            }
+        ]
+    },
+    "SO-8": {
+        "description": "Generic SO-8 footprint (https://en.wikipedia.org/wiki/Small_outline_integrated_circuit)",
+        "body": [4.90, 3.90, 1.75],
+        "silkscreenAdd": 0.2,
+        "courtyardAdd": 0.5,
+        "pads": [
+            {
+                "type": "dual",
+                "distance": 6.20,
+                "size": [0.6, 1.2],
+                "offset": [0, -0.6],
+                "pitch": 1.27,
+                "count": 8
+            }
+        ]
+    },
+    "SOT23-SC70": {
+        "description": "Compromise footprint for SOT23 and SC70",
+        "body": [2.8, 1.5, 1.0],
+        "pads": [
+            {
+                "type": "dual",
+                "distance": 2.5,
+                "size": [0.6, 1.2],
+                "pitch": 0.8,
+                "count": 6,
+                "names": ["1", "2", "3", "4", "", "5"]
+            }
+        ]
+    },
+    "TPS82130": {
+        "description": "Texas Instruments buck converter (https://www.ti.com/product/de-de/TPS82130)",
+        "body": [2.80, 3.00, 1.53],
+        "silkscreenAdd": 0.2,
+        "courtyardAdd": 0.5,
+        "orientation": "top-left",
+        "pads": [
+            {
+                "type": "dual",
+                "distance": 2.1,
+                "size": [0.5, 0.4],
+                "pitch": 0.65,
+                "count": 8
+            },
+            {
+                "size": [1.1, 1.9],
+                "number": 9
+            }
+        ]
+    },
+    "JSO21": {
+        "description": "Automotive MEMS oscillator (https://www.jauch.com/downloadfile/5878a2bfe9a2a_54db3ac748d5c751f0d8/jso-ac_2.5-3.3v_180907.pdf)",
+        "body": [2, 1.6, 0.75],
+        "silkscreenAdd": 0.8,
+        "courtyardAdd": 0.3,
+        "pads": [
+            {
+                "type": "dual",
+                "pitch": 1.5,
+                "distance": 1.2,
+                "size": [0.9, 0.8],
+                "count": 4
+            }
+        ]
+    },
+    "BME680": {
+        "description": "Bosch air sensor (https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme680-ds001.pdf)",
+        "body": [3.00, 3.00, 0.93],
+        "silkscreenAdd": 0.2,
+        "courtyardAdd": 0.5,
+        "pads": [
+            {
+                "type": "dual",
+                "distance": 2.4,
+                "size": [0.5, 0.5],
+                "pitch": 0.8,
+                "count": 8,
+                "mirror": true
+            }
+        ]
+    },
+    "STM32-UFQFPN48": {
+        "description": "STM32 UFQFPN48 package",
+        "body": [7, 7, 0.6],
+        "silkscreenAdd": 0.2,
+        "courtyardAdd": 0.5,
+        "pads": [
+            {
+                "type": "quad",
+                "distance": 7.4,
+                "size": [0.3, 0.60],
+                "offset": [0, -0.30],
+                "pitch": 0.5,
+                "count": 48
+            },
+            {
+                "size": [5.6, 5.6],
+                "shape": 0.01,
+                "number": 49
             }
         ]
     },
@@ -191,37 +287,6 @@
                 "pitch": 1.27,
                 "count": 14,
                 "numbering": "columns"
-            }
-        ]
-    },
-    "ProgPads": {
-        "description": "Programming pads 1.6mm 1x5",
-        "pads": [
-            {
-                "size": 1.2,
-                "drillSize": 0.7,
-                "pitch": 1.6,
-                "count": 5
-            }
-        ]
-    },
-    "Jumper": {
-        "description": "Jumper with 2 pads and 0.15mm gap",
-        "pads": [
-            {
-                "pitch": 0.65,
-                "size": [0.5, 1.0],
-                "shape": 0,
-                "count": 2,
-                "jumper": true
-            }
-        ],
-        "circles": [
-            {
-                "layer": "F.Mask",
-                "fill": true,
-                "radius": 0.51,
-                "center": [0, 0]
             }
         ]
     },
@@ -404,119 +469,6 @@
             }
         ]
     },*/
-    "PMEG6010ELR": {
-        "description": "Schottky Diode, 60V, 1A",
-        "body": [2.8, 1.9, 1.1],
-        "pads": [
-            {
-                "size": [1.2, 1.2],
-                "pitch": 2.8,
-                "count": 2
-            }
-        ]
-    },
-    "SO-8": {
-        "description": "Generic SO-8 footprint (https://en.wikipedia.org/wiki/Small_outline_integrated_circuit)",
-        "body": [4.90, 3.90, 1.75],
-        "silkscreenAdd": 0.2,
-        "courtyardAdd": 0.5,
-        "pads": [
-            {
-                "type": "dual",
-                "distance": 6.20,
-                "size": [0.6, 1.2],
-                "offset": [0, -0.6],
-                "pitch": 1.27,
-                "count": 8
-            }
-        ]
-    },
-    "TPS82130": {
-        "description": "Texas Instruments buck converter (https://www.ti.com/product/de-de/TPS82130)",
-        "body": [2.80, 3.00, 1.53],
-        "silkscreenAdd": 0.2,
-        "courtyardAdd": 0.5,
-        "orientation": "top-left",
-        "pads": [
-            {
-                "type": "dual",
-                "distance": 2.1,
-                "size": [0.5, 0.4],
-                "pitch": 0.65,
-                "count": 8
-            },
-            {
-                "size": [1.1, 1.9],
-                "number": 9
-            }
-        ]
-    },
-    "JSO21": {
-        "description": "Automotive MEMS oscillator (https://www.jauch.com/downloadfile/5878a2bfe9a2a_54db3ac748d5c751f0d8/jso-ac_2.5-3.3v_180907.pdf)",
-        "body": [2, 1.6, 0.75],
-        "silkscreenAdd": 0.8,
-        "courtyardAdd": 0.3,
-        "pads": [
-            {
-                "type": "dual",
-                "pitch": 1.5,
-                "distance": 1.2,
-                "size": [0.9, 0.8],
-                "count": 4
-            }
-        ]
-    },
-    "BME680": {
-        "description": "Bosch air sensor (https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme680-ds001.pdf)",
-        "body": [3.00, 3.00, 0.93],
-        "silkscreenAdd": 0.2,
-        "courtyardAdd": 0.5,
-        "pads": [
-            {
-                "type": "dual",
-                "distance": 2.4,
-                "size": [0.5, 0.5],
-                "pitch": 0.8,
-                "count": 8,
-                "mirror": true
-            }
-        ]
-    },
-    "STM32-UFQFPN48": {
-        "description": "STM32 UFQFPN48 package",
-        "body": [7, 7, 0.6],
-        "silkscreenAdd": 0.2,
-        "courtyardAdd": 0.5,
-        "pads": [
-            {
-                "type": "quad",
-                "distance": 7.4,
-                "size": [0.3, 0.60],
-                "offset": [0, -0.30],
-                "pitch": 0.5,
-                "count": 48
-            },
-            {
-                "size": [5.6, 5.6],
-                "shape": 0.01,
-                "number": 49
-            }
-        ]
-    },
-    "SOT23-SC70": {
-        "description": "Compromise footprint for SOT23 and SC70",
-        "body": [2.8, 1.5, 1.0],
-        "pads": [
-            {
-                "type": "dual",
-                "distance": 2.5,
-                "size": [0.6, 1.2],
-                "pitch": 0.8,
-                "count": 6,
-                "names": ["1", "2", "3", "4", "", "5"]
-            }
-        ]
-    },
     "PhotoDiode": {
         "description": "Pads for photo diode",
         "body": [4.4, 2, 10],
@@ -538,7 +490,7 @@
         ]
     },
     "TSOP38338": {
-        "description": "TSOP38338 IR receiver module",
+        "description": "TSOP38338 IR receiver module (https://www.vishay.com/docs/81743/tsop381.pdf)",
         "body": [5, 2, 8.25],
         "offset": [0, 0.5, 0],
         "pads": [
@@ -563,6 +515,67 @@
                 "width": 0.1,
                 "center": [0, -4.25],
                 "diameter": 4
+            }
+        ]
+    },
+    "PEC12R-4217F-S0024": {
+        "description": "PEC12R - 12 mm Incremental Encoder (https://www.bourns.com/docs/product-datasheets/pec12r.pdf)",
+        "body": [12.4, 13.4, 5.1],
+        "silkscreenAdd": -0.3,
+        "pads": [
+            {
+                "position": [0, 7.5],
+                "pitch": 2.5,
+                "size": 1.6,
+                "drillSize": 1,
+                "count": 3,
+                "names": ["A", "C", "B"]
+            },
+            {
+                "position": [0, -7.0],
+                "pitch": 5,
+                "size": 1.6,
+                "drillSize": 1,
+                "count": 2,
+                "names": ["S1", "S2"]
+            },
+            {
+                "position": [0, 0],
+                "pitch": 11.2,
+                "size": [2.2, 3.6],
+                "drillSize": [1.6, 3.0],
+                "count": 2
+            }
+        ]
+    },
+    "Jumper": {
+        "description": "Jumper with 2 pads and 0.15mm gap",
+        "pads": [
+            {
+                "pitch": 0.65,
+                "size": [0.5, 1.0],
+                "shape": 0,
+                "count": 2,
+                "jumper": true
+            }
+        ],
+        "circles": [
+            {
+                "layer": "F.Mask",
+                "fill": true,
+                "radius": 0.51,
+                "center": [0, 0]
+            }
+        ]
+    },
+    "ProgPads": {
+        "description": "Programming pads 1.6mm 1x5",
+        "pads": [
+            {
+                "size": 1.2,
+                "drillSize": 0.7,
+                "pitch": 1.6,
+                "count": 5
             }
         ]
     }

@@ -89,6 +89,7 @@ static const String hueNames[] = {
     "Warm Magenta",
     "Red Magenta",
     "Cool Red",
+    "Temp.",
 };
 
 static const String ledTypeNames[] = {
@@ -123,55 +124,54 @@ AwaitableCoroutine parametersMenu(Loop &loop, SSD130x &display, InputDevice &but
             menu.entry();
         }
 
-        // edit parameters
+        // list of parameters
         int parameterCount = effectManager.getParameterCount(playerIndex, presetIndex);
         for (int parameterIndex = 0; parameterIndex < parameterCount; ++parameterIndex) {
+            auto &info = effectManager.getParameterInfo(playerIndex, presetIndex, parameterIndex);
+            int editCount = info.type == ParameterInfo::Type::COLOR ? 2 : 1;
+            int edit = menu.edit(editCount);
+
             // print parameter name
             auto stream = menu.stream();
-            stream << effectManager.getParameterName(playerIndex, presetIndex, parameterIndex) << ": ";
+            if (editCount == 1 || edit == 0)
+                stream << info.name << ": ";
 
-            int edit = menu.edit(1);
-            int delta = edit > 0 ? menu.delta() : 0;
-            auto p = effectManager.updateParameter(playerIndex, presetIndex, parameterIndex, delta);
-            switch (p.info.type) {
+            // edit parameter
+            auto p = effectManager.updateParameter(playerIndex, presetIndex, parameterIndex, edit - 1, menu.delta());
+            switch (info.type) {
             case ParameterInfo::Type::COUNT:
-                stream << underline(dec(p.value), edit > 0);
+                stream << underline(dec(p.values[0]), edit > 0);
                 break;
             case ParameterInfo::Type::DURATION_E12:
-                stream << underline(MillisecondsE12(p.value), edit > 0) << 's';
+                stream << underline(MillisecondsE12(p.values[0]), edit > 0) << 's';
                 break;
             case ParameterInfo::Type::PERCENTAGE:
-                stream << underline(dec(p.value), edit > 0) << '%';
+                stream << underline(dec(p.values[0]), edit > 0) << '%';
                 break;
             case ParameterInfo::Type::PERCENTAGE_E12:
-                stream << underline(PercentageE12(p.value), edit > 0) << '%';
+                stream << underline(PercentageE12(p.values[0]), edit > 0) << '%';
                 break;
             case ParameterInfo::Type::HUE:
-                stream << underline(hueNames[p.value], edit > 0);
+                stream << underline(hueNames[p.values[0]], edit > 0);
+                break;
+            case ParameterInfo::Type::COLOR:
+                stream << underline(hueNames[p.values[0]], edit == 1) << ' ';
+                if (p.values[0] < 24)
+                    stream << underline(dec(clampPercentage(p.values[1])), edit == 2) << '%';
+                else
+                    stream << underline(KelvinE12(clampColorTemperature(p.values[1])), edit == 2) << 'K';
                 break;
             }
             menu.entry();
         }
+        effectManager.applyParameters(playerIndex, presetIndex);
 
-        /*if (menu.entry("Save")) {
-            // save preset to flash
-            co_await effectManager.savePreset(presetIndex);
-            co_return;
-        }
-
-        if (menu.entry("Cancel")) {
-            // reload preset from flash
-            co_await effectManager.stop();
-            if (presetIndex < effectManager.getPresetCount()) {
-                co_await effectManager.loadPreset(presetIndex);
-                co_await effectManager.run(presetIndex);
-            }
-            co_return;
-        }*/
+        // exit
         if (menu.entry("Exit")) {
             co_return;
         }
 
+        // delete
         if (effectManager.getPresetCount(playerIndex) > 1) {
             if (menu.entry("Delete")) {
                 // delete preset
@@ -192,7 +192,7 @@ AwaitableCoroutine parametersMenu(Loop &loop, SSD130x &display, InputDevice &but
     }
 }
 
-
+// edit a player (led count and list of presets)
 AwaitableCoroutine effectPlayerMenu(Loop &loop, SSD130x &display, InputDevice &buttons, EffectManager &effectManager,
     int playerIndex)
 {
@@ -204,8 +204,9 @@ AwaitableCoroutine effectPlayerMenu(Loop &loop, SSD130x &display, InputDevice &b
         // build menu
         menu.begin(buttons);
 
-        // stop effect when LED count is selected
+        // led count
         if (menu.isSelected()) {
+            // stop effect when LED count is selected
             if (currentPresetIndex != -1)
                 effectManager.stop();
             currentPresetIndex = -1;
@@ -222,7 +223,7 @@ AwaitableCoroutine effectPlayerMenu(Loop &loop, SSD130x &display, InputDevice &b
 
         menu.line();
 
-        // list presets
+        // list of presets
         int presetCount = effectManager.getPresetCount(playerIndex);
         for (int presetIndex = 0; presetIndex < presetCount; ++presetIndex) {
             // run currently selected effect
@@ -244,14 +245,15 @@ AwaitableCoroutine effectPlayerMenu(Loop &loop, SSD130x &display, InputDevice &b
         }
         menu.line();
 
-        // stop effect when "New..." is selected
+        // add preset
         if (menu.isSelected()) {
+            // stop effect when "Add Preset" is selected
             if (currentPresetIndex != -1)
                 effectManager.stop();
             currentPresetIndex = -1;
         }
         if (effectManager.getPresetCount(playerIndex) < EffectManager::MAX_PLAYER_PRESET_COUNT) {
-            if (menu.entry("New Preset")) {
+            if (menu.entry("Add Preset")) {
                 int presetIndex = effectManager.addPreset(playerIndex);
                 effectManager.run(presetIndex);
 
@@ -260,8 +262,9 @@ AwaitableCoroutine effectPlayerMenu(Loop &loop, SSD130x &display, InputDevice &b
             }
         }
 
-        // stop effect when "Exit" is selected
+        // exit
         if (menu.isSelected()) {
+            // stop effect when "Exit" is selected
             if (currentPresetIndex != -1)
                 effectManager.stop();
             currentPresetIndex = -1;
@@ -276,8 +279,7 @@ AwaitableCoroutine effectPlayerMenu(Loop &loop, SSD130x &display, InputDevice &b
     }
 }
 
-AwaitableCoroutine effectPlayersMenu(Loop &loop, SSD130x &display, InputDevice &buttons, EffectManager &effectManager)
-{
+AwaitableCoroutine effectPlayersMenu(Loop &loop, SSD130x &display, InputDevice &buttons, EffectManager &effectManager) {
     // menu
     Menu menu(display, coco::tahoma8pt1bpp);
     while (true) {
@@ -318,10 +320,8 @@ AwaitableCoroutine effectPlayersMenu(Loop &loop, SSD130x &display, InputDevice &
 
 // edit led strip
 AwaitableCoroutine ledStripMenu(Loop &loop, SSD130x &display, InputDevice &buttons,
-    StripManager &stripManager, int index)
+    StripManager &stripManager, int stripIndex)
 {
-    StripManager::StripConfig stripConfig = stripManager.getStripConfig(index);
-
     // menu
     Menu menu(display, coco::tahoma8pt1bpp);
     while (true) {
@@ -331,72 +331,62 @@ AwaitableCoroutine ledStripMenu(Loop &loop, SSD130x &display, InputDevice &butto
         // LED type (e.g. WS1812)
         {
             int edit = menu.edit(1);
-            if (edit > 0) {
-                // change LED type
-                stripConfig.ledType = StripManager::LedType(
-                    (int(stripConfig.ledType) + std::size(ledTypeNames) * 256 + menu.delta())
-                    % std::size(ledTypeNames));
-            }
-            menu.stream() << "LED Type: " << underline(ledTypeNames[int(stripConfig.ledType)], edit > 0);
+            auto ledType = stripManager.updateLedType(stripIndex, edit > 0 ? menu.delta() : 0);
+            menu.stream() << "LED Type: " << underline(ledTypeNames[int(ledType)], edit > 0);
             menu.entry();
         }
 
         // LED count (number of LEDs in the strip)
-        {
+        /*{
             int edit = menu.edit(1);
-            if (edit > 0) {
-                // change LED type
-                stripConfig.ledCount = std::clamp(stripConfig.ledCount + menu.delta(), 1, MAX_LEDSTRIP_LENGTH);
-            }
-            menu.stream() << "LED Count: " << underline(dec(stripConfig.ledCount), edit > 0);
+            auto ledCount = stripManager.updateLedCount(stripIndex, edit > 0 ? menu.delta() : 0);
+            menu.stream() << "LED Count: " << underline(dec(ledCount), edit > 0);
             menu.entry();
-        }
+        }*/
 
         // iterate over list of sources (players to copy data from)
-        for (int i = 0; i < stripConfig.sourceCount; ++i) {
-            auto &source = stripConfig.sources[i];
+        menu.line();
+        int sourceCount = stripManager.getSourceCount(stripIndex);
+        stripManager.setEditMode(-1, 0);
+        for (int sourceIndex = 0; sourceIndex < sourceCount; ++sourceIndex) {
             {
                 int edit = menu.edit(1);
-                if (edit > 0) {
-                    // change type
-                    source.playerIndex = (source.playerIndex + EffectManager::PLAYER_COUNT * 256 + menu.delta())
-                        % EffectManager::PLAYER_COUNT;
-                }
-                menu.stream() << "Player: " << underline(dec(source.playerIndex), edit > 0);
+                int playerIndex = stripManager.updatePlayerIndex(stripIndex, sourceIndex, edit > 0 ? menu.delta() : 0);
+                menu.stream() << "Player: " << underline(dec(playerIndex), edit > 0);
                 menu.entry();
             }
             {
                 int edit = menu.edit(1);
-                if (edit > 0) {
-                    // change type
-                    source.ledStart = (source.ledStart + 10 * 256 + menu.delta()) //!
-                        % 10;
-                }
-                menu.stream() << "Start: " << underline(dec(source.ledStart), edit > 0);
+                int ledStart = stripManager.updateLedStart(stripIndex, sourceIndex, edit > 0 ? menu.delta() : 0);
+                menu.stream() << "Start: " << underline(dec(ledStart), edit > 0);
                 menu.entry();
             }
             {
-                int edit = menu.edit(1);
-                if (edit > 0) {
-                    // change type
-                    source.ledCount = (source.ledCount + 10 * 256 + menu.delta()) //!
-                        % 10;
+                if (menu.isSelected()) {
+                    stripManager.setEditMode(stripIndex, sourceIndex);
                 }
-                menu.stream() << "Count: " << underline(dec(source.ledCount), edit > 0);
+                int edit = menu.edit(1);
+                int ledCount = stripManager.updateLedCount(stripIndex, sourceIndex, edit > 0 ? menu.delta() : 0);
+                menu.stream() << "Count: " << underline(dec(ledCount), edit > 0);
                 menu.entry();
             }
+            menu.line();
         }
-        if (stripConfig.sourceCount < EffectManager::MAX_STRIP_SOURCE_COUNT && menu.entry("Add Entry")) {
-            auto &source = stripConfig.sources[stripConfig.sourceCount];
-            source.playerIndex = 0;
-            source.ledStart = 0;
-            source.ledCount = 10; // remaining number of LEDs
 
-            ++stripConfig.sourceCount;
+        // add entry
+        if (sourceCount < EffectManager::MAX_STRIP_SOURCE_COUNT
+            && stripManager.getLedCount(stripIndex) < MAX_LEDSTRIP_LENGTH
+            && menu.entry("Add Entry"))
+        {
+            stripManager.addSource(stripIndex);
+        }
+
+        // remove entry
+        if (sourceCount > 1 && menu.entry("Remove Entry")) {
+            stripManager.removeSource(stripIndex);
         }
 
         if (menu.entry("Exit")) {
-            stripManager.setStripConfig(index, stripConfig);
             co_return;
         }
 
@@ -689,7 +679,7 @@ Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &st
 
         // rotary knob: change parameter value or preset
         // parameter index: 0 brightness, 1 speed, 2 preset, 3 - N + 1 are the remaining effect parameters 2 - N
-        int delta = state[0] - lastState[0];
+        int delta = int8_t(state[0] - lastState[0]);
         if (delta != 0) {
             showParameter = true;
             parameterTimeout = loop.now() + TIMEOUT;
@@ -708,7 +698,7 @@ Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &st
         }
 
         // button press: next parameter (increment parameter index)
-        delta = state[1] - lastState[1];
+        delta = int8_t(state[1] - lastState[1]);
         if (delta != 0) {
             showParameter = true;
             parameterTimeout = loop.now() + TIMEOUT;
@@ -721,7 +711,7 @@ Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &st
         }
 
         // long press: enter menu
-        delta = state[2] - lastState[2];
+        delta = int8_t(state[2] - lastState[2]);
         if (delta != 0) {
             // enter main configuration menu
             co_await configurationMenu(loop, display, input, effectManager, stripManager, remoteControl);
@@ -816,8 +806,8 @@ Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &st
                 int w = coco::tahoma8pt1bpp.calcWidth(name);
                 bitmap.drawText((128 - w) >> 1, 10, coco::tahoma8pt1bpp, name);
 
-                // calc x-coordinate and widht of display bar
-                {
+                // calc x-coordinate and width of display bar
+                /*{
                     int value = p.value - p.info.min;
                     int range = p.info.max + p.info.min;
                     if (!p.info.wrap) {
@@ -826,31 +816,31 @@ Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &st
                         barW = 124 / range + 1; // width of bar is at least 1 pixel
                         barX = value * (124 - barW) / range;
                     }
-                }
+                }*/
 
                 // create display value
                 switch (p.info.type) {
                 case ParameterInfo::Type::COUNT:
                     //barW = p.value * 124 / 20;
-                    value << dec(p.value);
+                    value << dec(p.values[0]);
                     break;
                 case ParameterInfo::Type::DURATION_E12:
                     //barW = p.value * 124 / 36;
-                    //barW = (p.value - 12) * 124 / 48;
-                    value << MillisecondsE12(p.value) << "s";
+                    barW = (p.values[0] - p.info.value) * 124 / 60;
+                    value << MillisecondsE12(p.values[0]) << "s";
                     break;
                 case ParameterInfo::Type::PERCENTAGE:
                     //barW = p.value * 124 / 100;
-                    value << dec(p.value) << "%";
+                    value << dec(p.values[0]) << "%";
                     break;
                 case ParameterInfo::Type::PERCENTAGE_E12:
-                    //barW = p.value * 124 / 24;
-                    value << PercentageE12(p.value) << "%";
+                    barW = p.values[0] * 124 / 24;
+                    value << PercentageE12(p.values[0]) << "%";
                     break;
                 case ParameterInfo::Type::HUE:
                     //barW = 124 / 24;
                     //barX = p.value * (124 - barW) / 23;
-                    value << hueNames[p.value];
+                    value << hueNames[p.values[0]];
                     break;
                 }
             }
@@ -928,6 +918,7 @@ Coroutine noiseTest(Loop &loop, Strip &strip, Color color) {
 }
 */
 
+// size must be at least MAX_LEDSTRIP_LENGTH
 uint32_t stripData[MAX_LEDSTRIP_LENGTH];
 
 int main() {

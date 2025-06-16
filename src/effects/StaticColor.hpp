@@ -13,8 +13,9 @@ struct Parameters {
     float saturation;
 };
 const ParameterInfo parameterInfos[] = {
-    {"Hue", ParameterInfo::Type::HUE, 0, 23, 1, true},
-    {"Saturation", ParameterInfo::Type::PERCENTAGE, 0, 100, 5},
+    //{"Hue", ParameterInfo::Type::HUE},//, 0, 23, 1, true},
+    //{"Saturation", ParameterInfo::Type::PERCENTAGE, 5}//, 0, 100, 5},
+    {"Color", ParameterInfo::Type::COLOR, 5}
 };
 
 // initialize parameters with default values

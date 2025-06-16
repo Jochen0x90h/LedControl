@@ -1,5 +1,5 @@
 (module 0603 (layer F.Cu) (tedit 5EC043C1)
-  (descr "Generic 0603 resistor/capacitor footprint (pad with = (body width) / 4 + 0.3, pitch = (body width) - (pad width) + 0.6)")
+  (descr "Generic 0603 resistor/capacitor footprint (pad length = (body length) / 4 + 0.3, pitch = (body length) - (pad length) + 0.6)")
   (attr smd)
   (model "0603.wrl" (at (xyz 0 0 0)) (scale (xyz 1 1 1)) (rotate (xyz 0 0 0)))
   (fp_text reference REF** (at 0 0) (layer F.SilkS) (effects (font (size 1 1) (thickness 0.15))))
