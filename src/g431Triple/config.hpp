@@ -26,7 +26,10 @@ constexpr auto I2C3_CLOCK = APB1_CLOCK;
 
 // flash start address and size
 constexpr int FLASH_ADDRESS = 0x8000000;
-constexpr int FLASH_SIZE = 0x20000; // 128K, use upper 64K for storage
+constexpr int FLASH_SIZE = 0x20000; // 128K
+
+constexpr int STORAGE_SIZE = 0x8000; // 32K for storage, also configure in link.ld
+constexpr int STORAGE_ADDRESS = FLASH_ADDRESS + FLASH_SIZE - STORAGE_SIZE;
 
 
 constexpr int MAX_LEDSTRIP_LENGTH = 300;

@@ -38,7 +38,7 @@ AwaitableCoroutine StripManager::save() {
         if (this->stripConfigsModified & (1 << stripIndex)) {
             auto &strip = this->strips[stripIndex];
             auto &config = strip.config;
-            int size = offsetof(StripConfig, sources[config.sourceCount]);
+            int size = getOffset(StripConfig, sources[config.sourceCount]);
             co_await this->storage.write(FIRST_STRIP_ID + stripIndex, &config, size, result);
         }
     }
@@ -127,7 +127,7 @@ Coroutine StripManager::run() {
         // calculate all effects
         this->syncBarrier.doAll();
 
-        for (int stripIndex = 0; stripIndex < std::size(this->strips); ++stripIndex) {
+        for (int stripIndex = 0; stripIndex < int(std::size(this->strips)); ++stripIndex) {
             auto &strip = this->strips[stripIndex];
             auto &config = strip.config;
 

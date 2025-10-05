@@ -19,7 +19,9 @@
 #include <coco/nec.hpp>
 #include <coco/nubert.hpp>
 #include <coco/rc6.hpp>
+#include <coco/ArrayBuffer.hpp>
 #include <coco/BufferStorage.hpp>
+#include <coco/BufferWriter.hpp>
 #include <coco/Menu.hpp>
 #include <coco/font/tahoma8pt1bpp.hpp>
 #include <coco/PseudoRandom.hpp>
@@ -99,6 +101,95 @@ static const String ledTypeNames[] = {
 
 // Menu
 // ----
+
+// edit preset names
+AwaitableCoroutine presetNamesMenu(Loop &loop, SSD130x &display, InputDevice &buttons, EffectManager &effectManager) {
+    // menu
+    Menu menu(display, coco::tahoma8pt1bpp);
+    int bufferPresetIndex = -1;
+    ArrayBuffer<int, EffectManager::MAX_PRESET_NAME_SIZE> buffer;
+    int s = 0;
+    int e = 0;
+    while (true) {
+        // build menu
+        menu.begin(buttons);
+
+        for (int presetIndex = 0; presetIndex < EffectManager::PRESET_COUNT; ++presetIndex) {
+            auto &name = effectManager.getPresetName(presetIndex);
+
+            int l = 1;
+            if (presetIndex == menu.getSelected()) {
+                for (l = 0; l < buffer.size(); ++l) {
+                    if (buffer[l] == 0)
+                        break;
+                }
+                l = std::min(l + 1, EffectManager::MAX_PRESET_NAME_SIZE);
+            }
+
+            int edit = menu.edit(l);
+            if (edit > 0) {
+                int charIndex = edit - 1;
+
+                if (bufferPresetIndex != presetIndex) {
+                    bufferPresetIndex = presetIndex;
+
+                    // from UTF-8
+                    String n = name;
+                    buffer.clear();
+                    while (!n.empty()) {
+                        auto result = utf8(n);
+                        buffer.push_back(*result);
+                        n = n.substring(result.length);
+                    }
+                }
+
+                // extend buffer if necessary
+                if (charIndex == buffer.size())
+                    buffer.push_back(0);
+
+                // modify
+                if (menu.delta() != 0) {
+                    int code = buffer[charIndex];
+                    if (menu.delta() > 0)
+                        code = coco::tahoma8pt1bpp.nextCode(code, true);
+                    else
+                        code = coco::tahoma8pt1bpp.prevCode(code, true);
+                    buffer[charIndex] = code;
+                }
+
+                // to UTF-8
+                std::ranges::fill(name, 0);
+                BufferWriter w((uint8_t *)std::begin(name), (uint8_t *)std::end(name));
+                int i = 0;
+                for (auto code : buffer) {
+                    w << utf8(code);
+                    int length = w - (uint8_t *)std::begin(name);
+                    if (i < charIndex)
+                        s = length;
+                    if (i <= charIndex)
+                        e = length;
+                    ++i;
+                }
+            } else {
+                s = e = 0;
+            }
+
+            // show preset name with underline between s and e
+            l = std::max(length(name), e);
+            String n(name, l);
+            menu.stream() << n.substring(0, s) << underline(n.substring(s, e)) << n.substring(e);
+            if (menu.entry()) {
+                // edit effect parameters
+                //co_await effectPlayerMenu(loop, display, buttons, effectManager, i);
+            }
+        }
+
+
+        // show on display and wait for input
+        co_await menu.show();
+        co_await menu.untilInput(buttons);
+    }
+}
 
 // edit preset parameters (effect and effect parameters)
 AwaitableCoroutine parametersMenu(Loop &loop, SSD130x &display, InputDevice &buttons, EffectManager &effectManager,
@@ -192,7 +283,7 @@ AwaitableCoroutine parametersMenu(Loop &loop, SSD130x &display, InputDevice &but
     }
 }
 
-// edit a player (led count and list of presets)
+// edit an effect player (led count and list of presets)
 AwaitableCoroutine effectPlayerMenu(Loop &loop, SSD130x &display, InputDevice &buttons, EffectManager &effectManager,
     int playerIndex)
 {
@@ -252,7 +343,7 @@ AwaitableCoroutine effectPlayerMenu(Loop &loop, SSD130x &display, InputDevice &b
                 effectManager.stop();
             currentPresetIndex = -1;
         }
-        if (effectManager.getPresetCount(playerIndex) < EffectManager::MAX_PLAYER_PRESET_COUNT) {
+        if (effectManager.getPresetCount(playerIndex) < EffectManager::PRESET_COUNT) {
             if (menu.entry("Add Preset")) {
                 int presetIndex = effectManager.addPreset(playerIndex);
                 effectManager.run(presetIndex);
@@ -279,6 +370,7 @@ AwaitableCoroutine effectPlayerMenu(Loop &loop, SSD130x &display, InputDevice &b
     }
 }
 
+// select an effect player to edit
 AwaitableCoroutine effectPlayersMenu(Loop &loop, SSD130x &display, InputDevice &buttons, EffectManager &effectManager) {
     // menu
     Menu menu(display, coco::tahoma8pt1bpp);
@@ -294,6 +386,7 @@ AwaitableCoroutine effectPlayersMenu(Loop &loop, SSD130x &display, InputDevice &
             }
         }
 
+        // check if something is modified
         if (effectManager.modified()) {
             if (menu.entry("Cancel")) {
                 // undo all modifications
@@ -332,7 +425,7 @@ AwaitableCoroutine ledStripMenu(Loop &loop, SSD130x &display, InputDevice &butto
         {
             int edit = menu.edit(1);
             auto ledType = stripManager.updateLedType(stripIndex, edit > 0 ? menu.delta() : 0);
-            menu.stream() << "LED Type: " << underline(ledTypeNames[int(ledType)], edit > 0);
+            menu.stream() << "Type: " << underline(ledTypeNames[int(ledType)], edit > 0);
             menu.entry();
         }
 
@@ -374,7 +467,7 @@ AwaitableCoroutine ledStripMenu(Loop &loop, SSD130x &display, InputDevice &butto
         }
 
         // add entry
-        if (sourceCount < EffectManager::MAX_STRIP_SOURCE_COUNT
+        if (sourceCount < StripManager::MAX_STRIP_SOURCE_COUNT
             && stripManager.getLedCount(stripIndex) < MAX_LEDSTRIP_LENGTH
             && menu.entry("Add Entry"))
         {
@@ -581,8 +674,13 @@ AwaitableCoroutine configurationMenu(Loop &loop, SSD130x &display, InputDevice &
             }
         }
 */
+        // configure preset names
+        if (menu.entry("Preset Names")) {
+            co_await presetNamesMenu(loop, display, buttons, effectManager);
+        }
+
         // configure effect players
-        if (menu.entry("Effects")) {
+        if (menu.entry("Effect Players")) {
             co_await effectPlayersMenu(loop, display, buttons, effectManager);
         }
 
@@ -675,7 +773,7 @@ Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &st
         int8_t state[3];
         int seq = input.get(state);
         int presetCount = effectManager.getPresetCount();
-        bool hasMultiplePresets = presetCount >= 2;
+        bool hasMultiplePresets = presetCount > 1;
 
         // rotary knob: change parameter value or preset
         // parameter index: 0 brightness, 1 speed, 2 preset, 3 - N + 1 are the remaining effect parameters 2 - N
@@ -772,10 +870,37 @@ Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &st
 
         if (!showParameter) {
             // idle: show preset name
-            String name = "preset";//effectManager.getPresetName(presetIndex);
+
+            // get player index of first strip for default preset name
+            int playerIndex = stripManager.updatePlayerIndex(0, 0, 0);
+
+            String name = effectManager.getPresetName(playerIndex, presetIndex);
             int w = coco::tahoma8pt1bpp.calcWidth(name);
             bitmap.drawText((128 - w) >> 1, 24, coco::tahoma8pt1bpp, name);
+/*
+            int y = 10;
+            StringBuffer<32> value;
+            for (int stripIndex = 0; stripIndex < StripManager::STRIP_COUNT; ++stripIndex) {
+                int sourceCount = stripManager.getSourceCount(stripIndex);
 
+                // check if led strip is in use
+                if (sourceCount > 0) {
+                    for (int sourceIndex = 0; sourceIndex < sourceCount; ++sourceIndex) {
+                        int playerIndex = stripManager.updatePlayerIndex(stripIndex, sourceIndex, 0);
+
+                        if (sourceIndex != 0)
+                            value << "   ";
+                        value << effectManager.getPresetName(playerIndex, presetIndex);
+
+                    }
+
+                    int x = (128 - coco::tahoma8pt1bpp.calcWidth(value)) >> 1;
+                    bitmap.drawText(x, y, coco::tahoma8pt1bpp, value);
+                    y += coco::tahoma8pt1bpp.height + 2;
+                    value.clear();
+                }
+            }
+*/
             // show bitmap on display
             co_await display.show();
 
@@ -787,7 +912,7 @@ Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &st
             int barW;
             StringBuffer<16> value;
             if (parameterIndex == 2 && hasMultiplePresets) {
-                // show preset name
+                // show "Preset", bar and preset name
                 String name = "Preset";
                 int w = coco::tahoma8pt1bpp.calcWidth(name);
                 bitmap.drawText((128 - w) >> 1, 10, coco::tahoma8pt1bpp, name);
@@ -795,9 +920,12 @@ Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &st
                 barW = 124 / effectManager.getPresetCount();
                 barX = presetIndex * (124 - barW) / std::max(effectManager.getPresetCount() - 1, 1);
 
-                value << "preset";//effectManager.getPresetName(presetIndex);
+                // get player index of first strip for default preset name
+                int playerIndex = stripManager.updatePlayerIndex(0, 0, 0);
+
+                value << effectManager.getPresetName(playerIndex, presetIndex);
             } else {
-                // get parameter info and value
+                // show parameter name, bar and value
                 //auto p = effectManager.updateParameter(0, presetIndex, parameterIndex - int(parameterIndex > 2 && hasMultiplePresets), 0);
                 auto p = effectManager.updateGlobalParameter(parameterIndex, 0);
 
@@ -843,7 +971,9 @@ Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &st
                     value << hueNames[p.values[0]];
                     break;
                 }
+
             }
+
             bitmap.drawRectangle(0, 32, 128, 10);
             bitmap.fillRectangle(2 + barX, 34, barW, 6);
             int w = coco::tahoma8pt1bpp.calcWidth(value);
@@ -919,7 +1049,7 @@ Coroutine noiseTest(Loop &loop, Strip &strip, Color color) {
 */
 
 // size must be at least MAX_LEDSTRIP_LENGTH
-uint32_t stripData[MAX_LEDSTRIP_LENGTH];
+uint32_t stripData[1000];
 
 int main() {
     math::init();
@@ -932,10 +1062,10 @@ int main() {
 
     // effect manager
     //EffectManager effectManager(drivers.loop, storage, strip, effectInfos);
-    EffectManager effectManager(drivers.loop, storage, effectInfos, StripData(stripData, MAX_LEDSTRIP_LENGTH));
+    EffectManager effectManager(drivers.loop, storage, effectInfos, StripData(stripData));
 
     // strip manager
-    StripManager stripManager(drivers.loop, storage, StripData(stripData, MAX_LEDSTRIP_LENGTH),
+    StripManager stripManager(drivers.loop, storage, StripData(stripData),
         effectManager.syncBarrier, effectManager.playerInfos,
         drivers.ledBuffer1, drivers.ledBuffer2, drivers.ledBuffer3);
 

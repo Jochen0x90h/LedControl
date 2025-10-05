@@ -1,21 +1,8 @@
 {
-    "0402": {
-        "description": "Generic 0402 resistor/capacitor footprint (pad length = (body length) / 4 + 0.2, pitch = (body length) - (pad length) + 0.4)",
-        "body": [1.0, 0.5, 0.5],
-        "courtyardAdd": 0.2,
-        "silkscreenAdd": [0.3, 0.1],
-        "pads": [
-            {
-                "pitch": 0.95,
-                "size": [0.5, 0.6],
-                "count": 2
-            }
-        ]
-    },
     "0603": {
-        "description": "Generic 0603 resistor/capacitor footprint (pad length = (body length) / 4 + 0.3, pitch = (body length) - (pad length) + 0.6)",
+        "description": "Generic 0603 footprint (pad length = (body length) / 4 + 0.3, pitch = (body length) - (pad length) + 0.6)",
         "body": [1.6, 0.8, 0.8],
-        "courtyardAdd": 0.2,
+        "courtyardAdd": 0.18,
         "pads": [
             {
                 "pitch": 1.5,
@@ -25,9 +12,9 @@
         ]
     },
     "0805": {
-        "description": "Generic 0805 resistor/capacitor footprint",
+        "description": "Generic 0805 footprint",
         "body": [2.0, 1.25, 1.0],
-        "courtyardAdd": 0.3,
+        "courtyardAdd": 0.2,
         "pads": [
             {
                 "pitch": 1.8,
@@ -37,9 +24,9 @@
         ]
     },
     "1206": {
-        "description": "Generic 1206 resistor/capacitor footprint",
+        "description": "Generic 1206 footprint",
         "body": [3.2, 1.5, 1.2],
-        "courtyardAdd": 0.4,
+        "courtyardAdd": 0.35,
         "pads": [
             {
                 "pitch": 2.7,
@@ -51,6 +38,7 @@
     "1206-term": {
         "description": "1206 resistor footprint for serial or parallel termination",
         "body": [3.2, 1.5, 1.2],
+        "courtyardAdd": 0.35,
         "pads": [
             {
                 "pitch": 2.2,
@@ -59,20 +47,6 @@
             }
         ]
     },
-    /*"Termination": {
-        "description": "Pads for serial or parallel termination",
-        "pads": [
-            {
-                "type": "dual",
-                "size": [1.6, 1.7],
-                "pitch": 2,
-                "distance": 1.9,
-                "count": 4,
-                "numbering": "rows",
-                "names": ["a1", "a2", "b1", "b2"]
-            }
-        ]
-    },*/
     "PMEG6010ELR": {
         "description": "Schottky Diode, 60V, 1A",
         "body": [2.8, 1.9, 1.1],
@@ -87,8 +61,8 @@
     "SO-8": {
         "description": "Generic SO-8 footprint (https://en.wikipedia.org/wiki/Small_outline_integrated_circuit)",
         "body": [4.90, 3.90, 1.75],
-        "silkscreenAdd": 0.2,
         "courtyardAdd": 0.5,
+        "silkscreenAdd": [0.2, 0],
         "pads": [
             {
                 "type": "dual",
@@ -117,8 +91,8 @@
     "TPS82130": {
         "description": "Texas Instruments buck converter (https://www.ti.com/product/de-de/TPS82130)",
         "body": [2.80, 3.00, 1.53],
-        "silkscreenAdd": 0.2,
         "courtyardAdd": 0.5,
+        "silkscreenAdd": 0.2,
         "orientation": "top-left",
         "pads": [
             {
@@ -227,30 +201,6 @@
             }
         ]
     },
-    /*"Harting14110413002000": {
-        "description": "har-flexicon 2,54 MSH-4 T32 (https://b2b.harting.com/ebusiness/de/har-flexicon-254-MSH-4-T32-BK-600pcs/14110413002000?newPDP=true#)",
-        "body": [15.8, 6.1, 5],
-        "offset": [0, -0.5, 0],
-        "silkscreenAdd": -0.3,
-        "pads": [
-            {
-                "size": [1.1, 6],
-                "pitch": 2.54,
-                "count": 6,
-                "names": ["MP1", "1", "2", "3", "4", "MP2"]
-            },
-            {
-                "drillSize": 0.9,
-                "count": 1,
-                "position": [-5.08, -0.25]
-            },
-            {
-                "drillSize": 0.9,
-                "count": 1,
-                "position": [5.08, 0.25]
-            }
-        ]
-    },*/
     "Harting14110413002000": {
         "description": "har-flexicon 2,54 MSH-4 T32 (https://www.harting.com/de-DE/p/har-flexicon-254-MSH-4-T32-BK-600pcs-14110413002000)",
         "body": [15.8, 6.1, 5],
@@ -276,7 +226,7 @@
         ]
     },
     "PinHeader-2x7-1.27mm-smd": {
-        "description": "Pin header, 2x7 pins, 1.27mm raster (FTSH-107-01-L-DV-K https://suddendocs.samtec.com/catalog_english/ftsh_smt.pdf or BD125-16-A-0305-0580-L-B https://gct.co/connector/bd125)",
+        "description": "Pin header, 2x7 pins, 1.27mm pitch (FTSH-107-01-L-DV-K https://suddendocs.samtec.com/catalog_english/ftsh_smt.pdf or BD125-14-A-0305-0580-L-B https://gct.co/connector/bd125)",
         "body": [8.89, 5, 6.12],
         "pads": [
             {
@@ -573,9 +523,26 @@
         "pads": [
             {
                 "size": 1.2,
+                "shape": 0.5,
                 "drillSize": 0.7,
                 "pitch": 1.6,
                 "count": 5
+            }
+        ],
+        "circles": [
+            {
+                "layer": "F.SilkS",
+                "width": 0.3,
+                "fill": false,
+                "radius": 0.85,
+                "center": [-3.2, 0]
+            },
+            {
+                "layer": "B.SilkS",
+                "width": 0.3,
+                "fill": false,
+                "radius": 0.85,
+                "center": [-3.2, 0]
             }
         ]
     }

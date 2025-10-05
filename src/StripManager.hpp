@@ -10,7 +10,11 @@ class StripManager {
 public:
     // storage IDs for three LED strip configurations
     static constexpr int FIRST_STRIP_ID = 100;
+
+    // number of LED strips
     static constexpr int STRIP_COUNT = 3;
+
+    // maximum number of sources per strip (i.e. how many effect players can be displayed on one strip)
     static constexpr int MAX_STRIP_SOURCE_COUNT = 10;
 
 
@@ -107,6 +111,8 @@ protected:
 
     StripData stripData;
     Barrier<> &syncBarrier;
+
+    // points to EffectManager::playerInfos
     const EffectManager::PlayerInfo *playerInfos;
 
     // three LED strips

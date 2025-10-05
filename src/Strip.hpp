@@ -12,6 +12,9 @@ class StripData {
 public:
     StripData(uint32_t *data, int size) : buffer(data), length(size) {}
 
+    template <int N>
+    StripData(uint32_t (&data)[N]) : buffer(data), length(N) {}
+
     int size() {return this->length;}
 
     void set(int index, float3 color) {

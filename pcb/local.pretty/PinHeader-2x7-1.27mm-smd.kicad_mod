@@ -1,5 +1,5 @@
 (module PinHeader-2x7-1.27mm-smd (layer F.Cu) (tedit 5EC043C1)
-  (descr "Pin header, 2x7 pins, 1.27mm raster (FTSH-107-01-L-DV-K https://suddendocs.samtec.com/catalog_english/ftsh_smt.pdf or BD125-16-A-0305-0580-L-B https://gct.co/connector/bd125)")
+  (descr "Pin header, 2x7 pins, 1.27mm pitch (FTSH-107-01-L-DV-K https://suddendocs.samtec.com/catalog_english/ftsh_smt.pdf or BD125-14-A-0305-0580-L-B https://gct.co/connector/bd125)")
   (attr smd)
   (model "PinHeader-2x7-1.27mm-smd.wrl" (at (xyz 0 0 0)) (scale (xyz 1 1 1)) (rotate (xyz 0 0 0)))
   (fp_text reference REF** (at 0 0) (layer F.SilkS) (effects (font (size 1 1) (thickness 0.15))))

@@ -1,6 +1,8 @@
 #include "EffectManager.hpp"
 #include "E12.hpp"
 #include <coco/BufferStorage.hpp>
+#include <coco/BufferWriter.hpp>
+#include <coco/StreamOperators.hpp>
 #include <coco/Vector2.hpp>
 #include <coco/debug.hpp>
 
@@ -60,6 +62,20 @@ AwaitableCoroutine EffectManager::load() {
 
     */
 
+    // load prset names
+    for (int i = 0; i < PRESET_COUNT; ++i) {
+        auto &name = this->presetNames[i];
+        //std::ranges::fill(name, 1);
+
+        int id = FIRST_PRESET_NAME_ID + i;
+        co_await this->storage.read(id, &name, sizeof(name), result);
+        if (result <= 0) {
+            // set default preset name
+            BufferWriter w((uint8_t *)std::begin(name), (uint8_t *)std::end(name));
+            w << "Preset " << dec(i + 1) << '\0';
+        }
+    }
+
     // load players
     int presetCount = 0;
     int ledCount = 0;
@@ -69,8 +85,8 @@ AwaitableCoroutine EffectManager::load() {
 
         // read presets and data for preset names and preset parameters
         int id = FIRST_PLAYER_ID + playerIndex * 2;
-        co_await this->storage.read(id, &config, offsetof(PlayerConfig, presets[MAX_PLAYER_PRESET_COUNT]), result);
-        int a = int((result - int(offsetof(PlayerConfig, presets))) / int(sizeof(Preset)));
+        co_await this->storage.read(id, &config, offsetof(PlayerConfig, presets[PRESET_COUNT]), result);
+        //int a = int((result - int(offsetof(PlayerConfig, presets))) / int(sizeof(Preset)));
         config.presetCount = std::max(int((result - int(offsetof(PlayerConfig, presets))) / int(sizeof(Preset))), 0);
         co_await this->storage.read(id + 1, config.data, MAX_PLAYER_DATA_SIZE, result);
 
@@ -86,6 +102,8 @@ AwaitableCoroutine EffectManager::load() {
         config.ledCount = std::min(int(config.ledCount), this->stripData.size() - ledCount);
         ledCount += config.ledCount;
     }
+
+    // clear modified flags
     this->playerConfigsModified = 0;
 
     // update the list of player infos
@@ -148,8 +166,9 @@ AwaitableCoroutine EffectManager::save() {
             auto &player = this->players[playerIndex];
             auto &config = player.config;
 
+            // save player config and data separately
             int id = FIRST_PLAYER_ID + playerIndex * 2;
-            co_await this->storage.write(id, &config, offsetof(PlayerConfig, presets[config.presetCount]), result);
+            co_await this->storage.write(id, &config, getOffset(PlayerConfig, presets[config.presetCount]), result);
             co_await this->storage.write(id + 1, config.data, config.getDataOffset(config.presetCount), result);
         }
     }
@@ -196,8 +215,8 @@ int EffectManager::updateLedCount(int playerIndex, int delta) {
         // also limit to maximum led strip length
         maxLedCount = std::min(maxLedCount, MAX_LEDSTRIP_LENGTH);
 
-        // range is [1, maxLedCount]
-        config.ledCount = (config.ledCount - 1 + delta + maxLedCount * 256) % maxLedCount + 1;
+        // range is [0, maxLedCount]
+        config.ledCount = (config.ledCount + delta + (maxLedCount + 1) * 256) % (maxLedCount + 1);
 
         // update the list of player infos
         updatePlayerInfos();
@@ -229,7 +248,6 @@ int EffectManager::addPreset(int playerIndex) {
     // initialize preset
     auto &preset = config.presets[presetIndex];
     preset.effectIndex = 0;
-    preset.nameLength = 0;
     preset.parameterCount = initParameters(playerIndex, presetIndex);
 
     // mark as dirty

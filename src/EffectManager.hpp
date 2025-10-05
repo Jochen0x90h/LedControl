@@ -7,44 +7,37 @@
 #include <coco/Loop.hpp>
 #include <coco/Coroutine.hpp>
 
+#define getOffset(type, member) intptr_t(&((type *)nullptr)->member)
+
 
 using namespace coco;
 
-// preset (effect and parameters), gets stored in flash
-/*struct Preset {
-    uint8_t effectIndex;
-
-    // length of name
-    uint8_t nameLength;
-
-    // name and parameters
-    uint8_t data[30];
-
-    bool dirty;
-};*/
 
 class EffectManager {
 public:
     // storage ID for global parameters
     static constexpr int GLOBAL_ID = 0;
 
-    /*static constexpr int DIRECTORY_ID = 1;
-    static constexpr int FIRST_PRESET_ID = 2;
-    static constexpr int LAST_PRESET_ID = 99;
-*/
+    // id of first preset name
+    static constexpr int FIRST_PRESET_NAME_ID = 10;
 
-    // player configurations, each player needs 2 storage IDs
-    static constexpr int FIRST_PLAYER_ID = 1;
-    static constexpr int PLAYER_COUNT = 2;
-    static constexpr int MAX_PLAYER_PRESET_COUNT = 32;
-    static constexpr int MAX_PLAYER_DATA_SIZE = 300;
+    // id of first player configuration, each player needs 2 storage IDs (presets and data)
+    static constexpr int FIRST_PLAYER_ID = 60;
 
-    // storage IDs for three LED strip configurations
-    static constexpr int STRIP1_ID = 100;
-    static constexpr int STRIP2_ID = 101;
-    static constexpr int STRIP3_ID = 102;
-    static constexpr int MAX_STRIP_SOURCE_COUNT = 10;
+    // maximum preset name size
+    static constexpr int MAX_PRESET_NAME_SIZE = 24;
 
+    // number of presets
+    static constexpr int PRESET_COUNT = 32;
+
+    // number of players
+    static constexpr int PLAYER_COUNT = 10;
+
+    // maximum player data size
+    static constexpr int MAX_PLAYER_DATA_SIZE = PRESET_COUNT * 8;
+
+
+    // timeout for saving brightness, speed and preset index to flash
     static constexpr Milliseconds<> SAVE_TIMEOUT = 2s;
 
     // preset parameter info and value
@@ -56,7 +49,6 @@ public:
 
     struct Preset {
         uint8_t effectIndex;
-        uint8_t nameLength;
         uint8_t parameterCount;
     };
 
@@ -66,23 +58,23 @@ public:
         uint16_t ledCount;
 
         // list of presets
-        Preset presets[MAX_PLAYER_PRESET_COUNT];
+        Preset presets[PRESET_COUNT];
         uint8_t presetCount;
 
-        // data for names and parameters
+        // data for preset parameters
         uint8_t data[MAX_PLAYER_DATA_SIZE];
 
         int getDataOffset(int presetIndex) {
             int offset = 0;
             for (int i = 0; i < presetIndex; ++i) {
                 auto &preset = this->presets[i];
-                offset += preset.nameLength + preset.parameterCount;
+                offset += preset.parameterCount;
             }
             return offset;
         }
 
         uint8_t *getParametersData(int presetIndex) {
-            return this->data + this->getDataOffset(presetIndex) + this->presets[presetIndex].nameLength;
+            return this->data + this->getDataOffset(presetIndex);
         }
     };
 
@@ -101,32 +93,7 @@ public:
         uint16_t ledStart;
         uint16_t ledCount;
     };
-/*
-    // source for the LED strip configuration
-    struct StripSource {
-        // index of effect player
-        uint8_t playerIndex;
 
-        // index of copy operation
-        CopyOp copyOp;
-
-        // start LED index and count
-        uint16_t start;
-        uint16_t count;
-    };
-
-    // LED strip configuration
-    struct StripConfig {
-        // type of LEDs
-        uint8_t ledType;
-
-        // number of LEDs
-        uint16_t ledCount;
-
-        // list of sources
-        StripSource sources[MAX_STRIP_SOURCE_COUNT];
-        uint8_t sourceCount;
-    };*/
 
     /// @brief Constructor
     /// @param loop Event loop
@@ -171,18 +138,6 @@ public:
     void setPresetIndex(int index);
 
 
-    /// @brief Get LED offsets of all players
-    /// @param offsets
-    /*void getPlayerInfos(PlayerInfo *infos) {
-        int start = 0;
-        for (int i = 0; i < PLAYER_COUNT; ++i) {
-            int count = this->players[i].config.ledCount;
-            infos[i].ledStart = start;
-            infos[i].ledCount = count;
-            start += count;
-        }
-    }*/
-
     int updateLedCount(int playerIndex, int delta);
 
     /// @brief Add a new preset at the end of the list. Make sure getPresetCount() is < MAX_PRESET_COUNT
@@ -209,7 +164,11 @@ public:
     ///
     int getPresetCount(int playerIndex) {return this->players[playerIndex].config.presetCount;}
 
-    /// @brief Get the name of the given preset. The effect name is the default name
+    auto &getPresetName(int presetIndex) {
+        return this->presetNames[presetIndex];
+    }
+
+        /// @brief Get the name of the given preset. The effect name is the default name
     ///
     String getPresetName(int playerIndex, int presetIndex) {
         // use effect name for now
@@ -262,13 +221,6 @@ public:
     void stop();
 
 
-/*
-    StripConfig &getStripConfig(int index) {
-        this->stripConfigDirty |= 1 << index;
-        return this->stripConfigs[index];
-    }
-*/
-
     Barrier<> syncBarrier;
     PlayerInfo playerInfos[PLAYER_COUNT];
 
@@ -304,7 +256,8 @@ protected:
     Preset presetList[MAX_PRESET_COUNT];
 */
 
-    // global preset parameters which get stored in flash automatically
+
+    // global preset parameters which get stored to flash automatically
     struct Global {
         // global brightness
         uint8_t brightness;
@@ -321,24 +274,15 @@ protected:
     float brightness;
     Milliseconds<> duration;
 
+    // preset names
+    char presetNames[PRESET_COUNT][MAX_PRESET_NAME_SIZE];
+
     // effect players
     int playerCount = 0;
     Player players[PLAYER_COUNT];
     int playerConfigsModified = 0;
 
- /*
-    // effect parameters (get converted from global and current preset)
-    float effectParameters[32];
-
-    Coroutine effect;
-*/
-
-    // configurations of the tree LED strips
-    //StripConfig stripConfigs[3];
-    //int stripConfigDirty = 0;
-
-
-    // save timeout
+     // save timeout
     Loop::Time timeout;
 
     // timer waits on barrier until it gets started
