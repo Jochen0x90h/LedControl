@@ -7763,7 +7763,7 @@
 	)
 	(text "USART2"
 		(exclude_from_sim no)
-		(at 71.12 85.09 0)
+		(at 71.12 84.836 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -7807,7 +7807,7 @@
 	)
 	(text "DEAD\nBATTERY"
 		(exclude_from_sim no)
-		(at 137.16 64.135 0)
+		(at 137.922 64.262 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -7840,7 +7840,7 @@
 	)
 	(text "USART3"
 		(exclude_from_sim no)
-		(at 71.12 62.23 0)
+		(at 71.12 61.976 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -7928,7 +7928,7 @@
 	)
 	(text "USART2"
 		(exclude_from_sim no)
-		(at 140.335 77.47 0)
+		(at 140.208 77.216 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -7950,7 +7950,7 @@
 	)
 	(text "SPI1"
 		(exclude_from_sim no)
-		(at 137.795 52.07 0)
+		(at 137.668 51.816 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -7972,7 +7972,7 @@
 	)
 	(text "USART1"
 		(exclude_from_sim no)
-		(at 71.247 57.15 0)
+		(at 71.12 56.896 0)
 		(effects
 			(font
 				(size 1.27 1.27)

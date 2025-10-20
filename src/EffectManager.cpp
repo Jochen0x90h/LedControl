@@ -62,19 +62,26 @@ AwaitableCoroutine EffectManager::load() {
 
     */
 
-    // load prset names
-    for (int i = 0; i < PRESET_COUNT; ++i) {
-        auto &name = this->presetNames[i];
+    // load preset names
+    for (int presetIndex = 0; presetIndex < PRESET_COUNT; ++presetIndex) {
+        auto &name = this->presetNames[presetIndex];
         //std::ranges::fill(name, 1);
 
-        int id = FIRST_PRESET_NAME_ID + i;
-        co_await this->storage.read(id, &name, sizeof(name), result);
+        int id = FIRST_PRESET_NAME_ID + presetIndex;
+        name.resize(MAX_PRESET_NAME_SIZE);
+        co_await this->storage.read(id, name.data(), MAX_PRESET_NAME_SIZE, result);
         if (result <= 0) {
             // set default preset name
-            BufferWriter w((uint8_t *)std::begin(name), (uint8_t *)std::end(name));
-            w << "Preset " << dec(i + 1) << '\0';
+            //BufferWriter w((uint8_t *)std::begin(name), (uint8_t *)std::end(name));
+            name.clear();
+            name << "Preset " << dec(presetIndex + 1);// << '\0';
+        } else {
+            name.resize(result);
         }
     }
+
+    // clear modified flags
+    this->presetNamesModified = 0;
 
     // load players
     int presetCount = 0;
@@ -160,6 +167,15 @@ AwaitableCoroutine EffectManager::save() {
         this->directoryDirty = false;
     }
 */
+    for (int presetIndex = 0; presetIndex < PRESET_COUNT; ++presetIndex) {
+        if (this->presetNamesModified & (1 << presetIndex)) {
+            auto &name = this->presetNames[presetIndex];
+
+            int id = FIRST_PRESET_NAME_ID + presetIndex;
+            co_await this->storage.write(id, name.data(), name.size(), result);
+        }
+    }
+    this->presetNamesModified = 0;
 
     for (int playerIndex = 0; playerIndex < PLAYER_COUNT; ++playerIndex) {
         if (this->playerConfigsModified & (1 << playerIndex)) {

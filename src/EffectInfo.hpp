@@ -31,7 +31,7 @@ struct ParameterInfo {
         // depending on the previous hue value
         //SATURATION_OR_COLOR_TEMPERATURE_E12,
 
-        // color has two values
+        // color has two values and can be set as hue/saturation or color temperature
         // [0] hue (0 - 23) or temperature (24)
         // [1] saturation (0 - 100 -> 0% - 100%) or temperature in E12 series steps (24 - 43 -> 1000K, 1200K, 1500K ... 33000K, 39000K)
         COLOR

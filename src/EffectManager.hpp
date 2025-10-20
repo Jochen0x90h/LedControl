@@ -4,8 +4,9 @@
 #include "Strip.hpp"
 #include <coco/Storage.hpp>
 #include <coco/Buffer.hpp>
-#include <coco/Loop.hpp>
 #include <coco/Coroutine.hpp>
+#include <coco/Loop.hpp>
+#include <coco/StringBuffer.hpp>
 
 #define getOffset(type, member) intptr_t(&((type *)nullptr)->member)
 
@@ -126,7 +127,7 @@ public:
 
     /// @brief Check if the configuration is modified and needs to be saved
     /// @return true if modified
-    bool modified() {return this->playerConfigsModified != 0;}
+    bool modified() {return (this->presetNamesModified | this->playerConfigsModified) != 0;}
 
 
     /// @brief Set global preset index (for all players).
@@ -164,13 +165,23 @@ public:
     ///
     int getPresetCount(int playerIndex) {return this->players[playerIndex].config.presetCount;}
 
-    auto &getPresetName(int presetIndex) {
+    /// @brief Get preset name.
+    /// @param presetIndex Preset index
+    /// @return Reference to StringBuffer containing the preset name
+    StringBuffer<MAX_PRESET_NAME_SIZE> &getPresetName(int presetIndex) {
         return this->presetNames[presetIndex];
     }
 
-        /// @brief Get the name of the given preset. The effect name is the default name
-    ///
-    String getPresetName(int playerIndex, int presetIndex) {
+    /// @brief Set preset name modified.
+    /// @param presetIndex Preset index
+    void setPresetNameModified(int presetIndex) {
+        this->presetNamesModified |= (1 << presetIndex);
+    }
+
+    /// @brief Get the name of an effect. The effect name is the default name
+    /// @param playerIndex Player index
+    /// @param presetIndex Preset index
+    String getEffectName(int playerIndex, int presetIndex) {
         // use effect name for now
         auto &config = this->players[playerIndex].config;
         return this->effectInfos[config.presets[presetIndex].effectIndex].name;
@@ -275,7 +286,9 @@ protected:
     Milliseconds<> duration;
 
     // preset names
-    char presetNames[PRESET_COUNT][MAX_PRESET_NAME_SIZE];
+    StringBuffer<MAX_PRESET_NAME_SIZE> presetNames[PRESET_COUNT];
+    //char presetNames[PRESET_COUNT][MAX_PRESET_NAME_SIZE];
+    int presetNamesModified = 0;
 
     // effect players
     int playerCount = 0;

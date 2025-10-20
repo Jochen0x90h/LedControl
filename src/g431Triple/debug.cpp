@@ -16,7 +16,7 @@ const auto txPin = gpio::PC10 | gpio::AF7;
 constexpr auto uartClock = USART3_CLOCK;
 constexpr auto uartConfig = usart::Config::ENABLE_FIFO;
 constexpr auto uartFormat = usart::Format::DEFAULT;
-constexpr int baudRate = 115200;
+constexpr auto baudRate = 115200Hz;
 
 void init() {
     // initialize debug LEDs
@@ -27,8 +27,10 @@ void init() {
     // initialize UART for debug output to virtual COM port
     gpio::enableAlternate(txPin);
     UART_INFO.enableClock()
-        .initBaudRate(uartConfig, uartClock, baudRate)
-        .enable(uartConfig, uartFormat, usart::Function::TX);
+        .enable(UART_INFO.enablePins(gpio::NONE, txPin, uartConfig), uartFormat, uartClock, baudRate)
+        .startTx();
+        //.initBaudRate(uartConfig, uartClock, baudRate)
+        //.enable(uartConfig, uartFormat, usart::Function::TX);
 }
 
 void set(uint32_t bits, uint32_t function) {
