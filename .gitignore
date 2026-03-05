@@ -1,6 +1,7 @@
 build/
 __pycache__/
-CMakeUserPresets.json
+/cpresets.txt
+/CMakeUserPresets.json
 
 # VSCode
 .vscode/
@@ -31,16 +32,5 @@ _autosave-*
 *-save.pro
 *-save.kicad_pcb
 fp-info-cache
-
-# Netlist files (exported from Eeschema)
-*.net
-
-# Autorouter files (exported from Pcbnew)
-*.dsn
-*.ses
-
-# Exported BOM files
-*.xml
-*.csv
 
 gerber/

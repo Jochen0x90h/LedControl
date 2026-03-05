@@ -9,10 +9,10 @@ using namespace coco::literals;
 constexpr auto SYS_CLOCK = 160MHz;
 constexpr auto AHB_CLOCK = SYS_CLOCK;
 
-constexpr auto APB1_CLOCK = AHB_CLOCK / 4;
+constexpr auto APB1_CLOCK = AHB_CLOCK / 8;
 constexpr auto APB1_TIMER_CLOCK = APB1_CLOCK * 2;
 
-constexpr auto APB2_CLOCK = AHB_CLOCK / 4;
+constexpr auto APB2_CLOCK = AHB_CLOCK / 8;
 constexpr auto APB2_TIMER_CLOCK = APB2_CLOCK * 2;
 
 constexpr auto USART1_CLOCK = APB2_CLOCK;
@@ -32,6 +32,7 @@ constexpr int STORAGE_SIZE = 0x8000; // 32K for storage, also configure in link.
 constexpr int STORAGE_ADDRESS = FLASH_ADDRESS + FLASH_SIZE - STORAGE_SIZE;
 
 
+constexpr int LEDSTRIP_COUNT = 2;//3;
 constexpr int MAX_LEDSTRIP_LENGTH = 300;
 
 #define SWAP_R_G

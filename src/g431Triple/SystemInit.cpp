@@ -31,13 +31,13 @@ void __attribute__((weak)) SystemInit() {
         | FLASH_ACR_PRFTEN // prefetch enable
         | FLASH_ACR_DBG_SWEN; // debug enable
 
-    // configure PLL: 16MHz / 1 * 20 = 320MHz / 2 = 160MHz
+    // configure PLL: 16MHz / 1 * 20 = 320MHz
     RCC->PLLCFGR = RCC_PLLCFGR_PLLSRC_HSI // source is internal oscillator HSI16
-        | ((1 - 1) << RCC_PLLCFGR_PLLM_Pos) // PLL M divisor
-        | (20 << RCC_PLLCFGR_PLLN_Pos) // PLL N multiplier
-        | RCC_PLLCFGR_PLLREN // enable PLL R output
-        | RCC_PLLCFGR_PLLPEN // enable PLL P output (for ADC)
-        | (7 << RCC_PLLCFGR_PLLPDIV_Pos); // ADC clock: 320MHz / 7 = 45.7MHz
+        | ((1 - 1) << RCC_PLLCFGR_PLLM_Pos) // /M
+        | (20 << RCC_PLLCFGR_PLLN_Pos) // *N
+        | RCC_PLLCFGR_PLLREN // enable PLLR output, PLLR: 320MHz / 2 = 160MHz (set SYS_CLOCK in config.hpp accordingly)
+        | RCC_PLLCFGR_PLLPEN // enable PLLP output (for ADC)
+        | (7 << RCC_PLLCFGR_PLLPDIV_Pos); // PLLP: 320MHz / 7 = 45.7MHz
 
     // enable internal oscillator and PLL
     RCC->CR = 0x63 // bits 0-7 must be kept at reset value
@@ -52,8 +52,8 @@ void __attribute__((weak)) SystemInit() {
 
     // use PLL, set APB1 and APB2 prescaler
     uint32_t cfgr = RCC_CFGR_SW_PLL // use PLL
-        | RCC_CFGR_PPRE1_DIV4 // APB1_CLOCK = AHB_CLOCK / 4
-        | RCC_CFGR_PPRE2_DIV4; // APB2_CLOCK = AHB_CLOCK / 4
+        | RCC_CFGR_PPRE1_DIV8 // APB1_CLOCK = AHB_CLOCK / 8 (set divisors in config.hpp accordingly)
+        | RCC_CFGR_PPRE2_DIV8; // APB2_CLOCK = AHB_CLOCK / 8
 
     // switch to medium speed clock, wait for at least 1us according to reference manual 7.2.7, then switch to high speed clock
     RCC->CFGR = cfgr | RCC_CFGR_HPRE_DIV2; // medium speed: AHB_CLOCK = SYS_CLOCK / 2
@@ -63,7 +63,7 @@ void __attribute__((weak)) SystemInit() {
     // switch to high speed clock
     RCC->CFGR = cfgr | RCC_CFGR_HPRE_DIV1; // high speed: AHB_CLOCK = SYS_CLOCK
 
-    // set clock source of ADC to PLL "P"
+    // set clock source of ADC to PLLP
     RCC->CCIPR = RCC->CCIPR | RCC_CCIPR_ADC12SEL_0;
 
     // enable FPU, depends on compiler flags
@@ -90,7 +90,7 @@ void __attribute__((weak)) SystemInit() {
     //RCC->AHB1ENR = RCC->AHB1ENR | RCC_AHB1ENR_CORDICEN;
 
     // disable dead battery pull-ups (when not using UCPD, otherwise do this after initializing UCPD)
-    PWR->CR3 = PWR->CR3 | PWR_CR3_UCPD_DBDIS;
+    //PWR->CR3 = PWR->CR3 | PWR_CR3_UCPD_DBDIS;
 
     // enable reference voltage
     //vref::enable(vref::Config::INTERNAL_2V9);

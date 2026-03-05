@@ -1,55 +1,113 @@
 {
-    "0603": {
-        "description": "Generic 0603 footprint (pad length = (body length) / 4 + 0.3, pitch = (body length) - (pad length) + 0.6)",
-        "body": [1.6, 0.8, 0.8],
-        "courtyardAdd": 0.18,
+    "version": "0.3.0",
+    "0402": {
+        "description": "Generic 0402 footprint (padLength = bodyLength / 4 + 0.2, pitch = bodyLength - padLength + 0.4)",
+        "body": {"size": [1.0, 0.5, 0.5]},
+        "silkscreen": {"margin": [0.15, 0]},
+        "courtyard": {"margin": 0.08},
         "pads": [
             {
-                "pitch": 1.5,
+                "size": [0.5, 0.6],
+                "pitch": 0.95,
+                "count": 2
+            }
+        ]
+    },
+    "0603": {
+        "description": "Generic 0603 footprint (padLength = bodyLength / 4 + 0.3, pitch = bodyLength - padLength + 0.6)",
+        "body": {"size": [1.6, 0.8, 0.8]},
+        "courtyard": {"margin": 0.09},
+        "pads": [
+            {
                 "size": [0.7, 0.9],
+                "pitch": 1.5,
+                "count": 2
+            }
+        ]
+    },
+    "0603D": {
+        "description": "Generic 0603 diode footprint (padLength = bodyLength / 4 + 0.3, pitch = bodyLength - padLength + 0.6)",
+        "body": {"size": [1.6, 0.8, 0.8]},
+        "silkscreen": {
+            "marker": "bar",
+            "margin": [0.5, 0.3]
+        },
+        "courtyard": {"margin": 0.09},
+        "pads": [
+            {
+                "size": [0.7, 0.9],
+                "pitch": 1.5,
                 "count": 2
             }
         ]
     },
     "0805": {
-        "description": "Generic 0805 footprint",
-        "body": [2.0, 1.25, 1.0],
-        "courtyardAdd": 0.2,
+        "description": "Generic 0805 footprint (padLength = bodyLength / 4 + 0.3, pitch = bodyLength - padLength + 0.6)",
+        "body": {"size": [2.0, 1.25, 1.0]},
+        "courtyard": {"margin": 0.1},
         "pads": [
             {
-                "pitch": 1.8,
                 "size": [0.8, 1.4],
+                "pitch": 1.8,
+                "count": 2
+            }
+        ]
+    },
+    "1008": {
+        "description": "Generic 1008 footprint (padLength = bodyLength / 4 + 0.3, pitch = bodyLength - padLength + 0.6)",
+        "body": {"size": [2.5, 2.0, 0.9]},
+        "courtyard": {"margin": 0.15},
+        "pads": [
+            {
+                "size": [0.925, 2.2],
+                "pitch": 2.175,
                 "count": 2
             }
         ]
     },
     "1206": {
-        "description": "Generic 1206 footprint",
-        "body": [3.2, 1.5, 1.2],
-        "courtyardAdd": 0.35,
+        "description": "Generic 1206 footprint (padLength = bodyLength / 4 + 0.3, pitch = bodyLength - padLength + 0.6)",
+        "body": {"size": [3.2, 1.5, 1.2]},
+        "courtyard": {"margin": 0.18},
         "pads": [
             {
-                "pitch": 2.7,
                 "size": [1.1, 1.7],
+                "pitch": 2.7,
+                "count": 2
+            }
+        ]
+    },
+    "1812": {
+        "description": "Generic 1812 footprint (padLength = bodyLength / 4 + 0.3, pitch = bodyLength - padLength + 0.6)",
+        "body": {"size": [4.5, 3.2, 1.5]},
+        "courtyard": {"margin": 0.2},
+        "pads": [
+            {
+                "size": [1.425, 3.4],
+                "pitch": 3.675,
                 "count": 2
             }
         ]
     },
     "1206-term": {
         "description": "1206 resistor footprint for serial or parallel termination",
-        "body": [3.2, 1.5, 1.2],
-        "courtyardAdd": 0.35,
+        "body": {"size": [3.2, 1.5, 1.2]},
+        "courtyard": {"margin": 0.18},
         "pads": [
             {
-                "pitch": 2.2,
                 "size": [1.6, 1.7],
+                "pitch": 2.2,
                 "count": 2
             }
         ]
     },
     "PMEG6010ELR": {
         "description": "Schottky Diode, 60V, 1A",
-        "body": [2.8, 1.9, 1.1],
+        "body": {"size": [2.8, 1.9, 1.1]},
+        "silkscreen": {
+            "marker": "bar"
+        },
+        "courtyard": {"margin": 0.18},
         "pads": [
             {
                 "size": [1.2, 1.2],
@@ -60,9 +118,9 @@
     },
     "SO-8": {
         "description": "Generic SO-8 footprint (https://en.wikipedia.org/wiki/Small_outline_integrated_circuit)",
-        "body": [4.90, 3.90, 1.75],
-        "courtyardAdd": 0.5,
-        "silkscreenAdd": [0.2, 0],
+        "body": {"size": [4.90, 3.90, 1.75]},
+        "silkscreen": {"margin": [0.1, 0]},
+        "courtyard": {"margin": 0.25},
         "pads": [
             {
                 "type": "dual",
@@ -76,7 +134,7 @@
     },
     "SOT23-SC70": {
         "description": "Compromise footprint for SOT23 and SC70",
-        "body": [2.8, 1.5, 1.0],
+        "body": {"size": [2.8, 1.5, 1.0]},
         "pads": [
             {
                 "type": "dual",
@@ -90,9 +148,9 @@
     },
     "TPS82130": {
         "description": "Texas Instruments buck converter (https://www.ti.com/product/de-de/TPS82130)",
-        "body": [2.80, 3.00, 1.53],
-        "courtyardAdd": 0.5,
-        "silkscreenAdd": 0.2,
+        "body": {"size": [2.80, 3.00, 1.53]},
+        "silkscreen": {"margin": 0.1},
+        "courtyard": {"margin": 0.25},
         "orientation": "top-left",
         "pads": [
             {
@@ -110,9 +168,9 @@
     },
     "JSO21": {
         "description": "Automotive MEMS oscillator (https://www.jauch.com/downloadfile/5878a2bfe9a2a_54db3ac748d5c751f0d8/jso-ac_2.5-3.3v_180907.pdf)",
-        "body": [2, 1.6, 0.75],
-        "silkscreenAdd": 0.8,
-        "courtyardAdd": 0.3,
+        "body": {"size": [2, 1.6, 0.75]},
+        "silkscreen": {"margin": 0.4},
+        "courtyard": {"margin": 0.15},
         "pads": [
             {
                 "type": "dual",
@@ -125,9 +183,9 @@
     },
     "BME680": {
         "description": "Bosch air sensor (https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme680-ds001.pdf)",
-        "body": [3.00, 3.00, 0.93],
-        "silkscreenAdd": 0.2,
-        "courtyardAdd": 0.5,
+        "body": {"size": [3.00, 3.00, 0.93]},
+        "silkscreen": {"margin": 0.1},
+        "courtyard": {"margin": 0.25},
         "pads": [
             {
                 "type": "dual",
@@ -141,9 +199,9 @@
     },
     "STM32-UFQFPN48": {
         "description": "STM32 UFQFPN48 package",
-        "body": [7, 7, 0.6],
-        "silkscreenAdd": 0.2,
-        "courtyardAdd": 0.5,
+        "body": {"size": [7, 7, 0.6]},
+        "silkscreen": {"margin": 0.1},
+        "courtyard": {"margin": 0.25},
         "pads": [
             {
                 "type": "quad",
@@ -162,8 +220,10 @@
     },
     "Connector-Flat-24-0.5mm": {
         "description": "Flat display connector 0.5mm pitch 24 pin (https://www.lcsc.com/product-detail/FFC-FPC-Flat-Flexible-Connector-Assemblies_JUSHUO-AFC07-S24FCC-00_C11057.html?s_z=n_C11057)",
-        "body": [17.6, 6.0, 2.0],
-        "offset": [0, 2.75, 0],
+        "body": {
+            "size": [17.6, 6.0, 2.0],
+            "offset": [0, 2.75]},
+        "silkscreen": {"margin": -0.15},
         "pads": [
             {
                 "position": [0, -1.1],
@@ -183,9 +243,9 @@
     },
     "WAGO2061-602": {
         "description": "SMD terminal block 2 positions, 0.25 - 1.5mm² / 20 - 16 AWG (https://www.wago.com/de/leiterplattenanschluss/smd-leiterplattenklemme-mit-betaetigungsdrueckern-im-gurt/p/2061-602_998-404)",
-        "body": [11.70, 15.2, 5.6],
-        "courtyardAdd": [0.3, 0],
-        "silkscreenAdd": [0, -0.3],
+        "body": {"size": [11.70, 15.2, 5.6]},
+        "silkscreen": {"margin": [0, -0.15]},
+        "courtyard": {"margin": [0.15, 0]},
         "pads": [
             {
                 "position": [0, 4.75],
@@ -203,9 +263,11 @@
     },
     "Harting14110413002000": {
         "description": "har-flexicon 2,54 MSH-4 T32 (https://www.harting.com/de-DE/p/har-flexicon-254-MSH-4-T32-BK-600pcs-14110413002000)",
-        "body": [15.8, 6.1, 5],
-        "offset": [0, 0.6, 0],
-        "silkscreenAdd": -0.3,
+        "body": {
+            "size": [15.8, 6.1, 5],
+            "offset": [0, 0.6, 0]
+        },
+        "silkscreen": {"margin": -0.15},
         "pads": [
             {
                 "size": [1.1, 6],
@@ -227,7 +289,7 @@
     },
     "PinHeader-2x7-1.27mm-smd": {
         "description": "Pin header, 2x7 pins, 1.27mm pitch (FTSH-107-01-L-DV-K https://suddendocs.samtec.com/catalog_english/ftsh_smt.pdf or BD125-14-A-0305-0580-L-B https://gct.co/connector/bd125)",
-        "body": [8.89, 5, 6.12],
+        "body": {"size": [8.89, 5, 6.12]},
         "pads": [
             {
                 "type": "dual",
@@ -242,10 +304,12 @@
     },
     "TYPE-C-16PIN-2MD-073": {
         "description": "USB-C Recepatce for USB 2.0 and JLCPCB (https://www.lcsc.com/datasheet/lcsc_datasheet_2501101719_SHOU-HAN-TYPE-C-16PIN-2MD-073_C2765186.pdf)",
-        "body": [8.94, 7.35, 3.31],
-        "offset": [0, -3.675, 0],
+        "body": {
+            "size": [8.94, 7.35, 3.31],
+            "offset": [0, -3.675, 0]
+        },
         "position": [0, 5.0],
-        "silkscreen": false,
+        "silkscreen": {"enabled": false},
         "pads": [
             {
                 // inner small pads
@@ -300,9 +364,9 @@
     },
     /*"USB4510-03-1-A": {
         "description": "USB-C Recepatce for USB 2.0 (https://gct.co/connector/usb4510)",
-        "body": [8.94, 6.5, 3.16],
+        "body": {"size": [8.94, 6.5, 3.16]},
         "offset": [0, -2.75, -1.6],
-        "silkscreen": false,
+        "silkscreen": {"enabled": false},
         "pads": [
             {
                 // inner small pads
@@ -364,9 +428,9 @@
     },
     "USB4105-GF-A-120": {
         "description": "USB-C Recepatce for USB 2.0 (https://gct.co/connector/usb4105)",
-        "body": [8.94, 7.35, 3.31],
+        "body": {"size": [8.94, 7.35, 3.31]},
         "offset": [0, -3.675, 0],
-        "silkscreen": false,
+        "silkscreen": {"enabled": false},
         "pads": [
             {
                 // inner small pads
@@ -421,7 +485,7 @@
     },*/
     "PhotoDiode": {
         "description": "Pads for photo diode",
-        "body": [4.4, 2, 10],
+        "body": {"size": [4.4, 2, 10]},
         "pads": [
             {
                 "pitch": 2.54,
@@ -441,8 +505,10 @@
     },
     "TSOP38338": {
         "description": "TSOP38338 IR receiver module (https://www.vishay.com/docs/81743/tsop381.pdf)",
-        "body": [5, 2, 8.25],
-        "offset": [0, 0.5, 0],
+        "body": {
+            "size": [5, 2, 8.25],
+            "offset": [0, 0.5, 0]
+        },
         "pads": [
             {
                 "position": [0, 0.5, 0],
@@ -470,8 +536,9 @@
     },
     "PEC12R-4217F-S0024": {
         "description": "PEC12R - 12 mm Incremental Encoder (https://www.bourns.com/docs/product-datasheets/pec12r.pdf)",
-        "body": [12.4, 13.4, 5.1],
-        "silkscreenAdd": -0.3,
+        "body": {"size": [12.4, 13.4, 5.1]},
+        "silkscreen": {"margin": -0.15},
+        "courtyard": {"margin": 0.15},
         "pads": [
             {
                 "position": [0, 7.5],
@@ -500,13 +567,13 @@
     },
     "Jumper": {
         "description": "Jumper with 2 pads and 0.15mm gap",
+        "jumper": true,
         "pads": [
             {
                 "pitch": 0.65,
                 "size": [0.5, 1.0],
                 "shape": 0,
-                "count": 2,
-                "jumper": true
+                "count": 2
             }
         ],
         "circles": [

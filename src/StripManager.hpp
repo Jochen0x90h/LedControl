@@ -1,5 +1,6 @@
 #pragma once
 
+#include <config.hpp>
 #include "EffectManager.hpp"
 
 
@@ -12,7 +13,7 @@ public:
     static constexpr int FIRST_STRIP_ID = 100;
 
     // number of LED strips
-    static constexpr int STRIP_COUNT = 3;
+    //static constexpr int STRIP_COUNT = 3;
 
     // maximum number of sources per strip (i.e. how many effect players can be displayed on one strip)
     static constexpr int MAX_STRIP_SOURCE_COUNT = 10;
@@ -53,25 +54,30 @@ public:
     };
 
     struct Strip {
-        Buffer &buffer;
+        Buffer *buffer;
 
         StripConfig config;
 
 
-        Strip(Buffer &buffer) : buffer(buffer) {}
+        //Strip(Buffer &buffer) : buffer(buffer) {}
     };
 
 
     StripManager(Loop &loop, Storage &storage, StripData stripData,
         Barrier<> &syncBarrier, const EffectManager::PlayerInfo *playerInfos,
-        Buffer &stripBuffer1, Buffer &stripBuffer2, Buffer &stripBuffer3)
+        Buffer **stripBuffers)
+        //Buffer &stripBuffer1, Buffer &stripBuffer2, Buffer &stripBuffer3)
         : loop(loop)
         , storage(storage)
         , stripData(stripData)
         , syncBarrier(syncBarrier)
         , playerInfos(playerInfos)
-        , strips{{stripBuffer1}, {stripBuffer2}, {stripBuffer3}}
+        //, strips{{stripBuffer1}, {stripBuffer2}, {stripBuffer3}}
     {
+        for (int i = 0; i < LEDSTRIP_COUNT; ++i) {
+            this->strips[i].buffer = stripBuffers[i];
+        }
+
         // start coroutine
         //run();
     }
@@ -115,8 +121,8 @@ protected:
     // points to EffectManager::playerInfos
     const EffectManager::PlayerInfo *playerInfos;
 
-    // three LED strips
-    Strip strips[3];
+    // LED strips
+    Strip strips[LEDSTRIP_COUNT];
     int stripConfigsModified = 0;
 
     int editStripIndex = -1;

@@ -1,13 +1,15 @@
 (kicad_sch
-	(version 20231120)
+	(version 20250114)
 	(generator "eeschema")
-	(generator_version "8.0")
+	(generator_version "9.0")
 	(uuid "af95d023-b36a-43d4-bbf9-9eb234284cf2")
 	(paper "A4")
 	(lib_symbols
 		(symbol "Connector_Generic:Conn_01x02"
 			(pin_names
-				(offset 1.016) hide)
+				(offset 1.016)
+				(hide yes)
+			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -74,14 +76,14 @@
 			)
 			(symbol "Conn_01x02_1_1"
 				(rectangle
-					(start -1.27 -2.413)
-					(end 0 -2.667)
+					(start -1.27 1.27)
+					(end 1.27 -3.81)
 					(stroke
-						(width 0.1524)
+						(width 0.254)
 						(type default)
 					)
 					(fill
-						(type none)
+						(type background)
 					)
 				)
 				(rectangle
@@ -96,14 +98,14 @@
 					)
 				)
 				(rectangle
-					(start -1.27 1.27)
-					(end 1.27 -3.81)
+					(start -1.27 -2.413)
+					(end 0 -2.667)
 					(stroke
-						(width 0.254)
+						(width 0.1524)
 						(type default)
 					)
 					(fill
-						(type background)
+						(type none)
 					)
 				)
 				(pin passive line
@@ -143,10 +145,13 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "Connector_Generic:Conn_01x04"
 			(pin_names
-				(offset 1.016) hide)
+				(offset 1.016)
+				(hide yes)
+			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -213,19 +218,19 @@
 			)
 			(symbol "Conn_01x04_1_1"
 				(rectangle
-					(start -1.27 -4.953)
-					(end 0 -5.207)
+					(start -1.27 3.81)
+					(end 1.27 -6.35)
 					(stroke
-						(width 0.1524)
+						(width 0.254)
 						(type default)
 					)
 					(fill
-						(type none)
+						(type background)
 					)
 				)
 				(rectangle
-					(start -1.27 -2.413)
-					(end 0 -2.667)
+					(start -1.27 2.667)
+					(end 0 2.413)
 					(stroke
 						(width 0.1524)
 						(type default)
@@ -246,8 +251,8 @@
 					)
 				)
 				(rectangle
-					(start -1.27 2.667)
-					(end 0 2.413)
+					(start -1.27 -2.413)
+					(end 0 -2.667)
 					(stroke
 						(width 0.1524)
 						(type default)
@@ -257,14 +262,14 @@
 					)
 				)
 				(rectangle
-					(start -1.27 3.81)
-					(end 1.27 -6.35)
+					(start -1.27 -4.953)
+					(end 0 -5.207)
 					(stroke
-						(width 0.254)
+						(width 0.1524)
 						(type default)
 					)
 					(fill
-						(type background)
+						(type none)
 					)
 				)
 				(pin passive line
@@ -340,11 +345,16 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "Device:C_Small"
-			(pin_numbers hide)
+			(pin_numbers
+				(hide yes)
+			)
 			(pin_names
-				(offset 0.254) hide)
+				(offset 0.254)
+				(hide yes)
+			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -414,10 +424,10 @@
 			(symbol "C_Small_0_1"
 				(polyline
 					(pts
-						(xy -1.524 -0.508) (xy 1.524 -0.508)
+						(xy -1.524 0.508) (xy 1.524 0.508)
 					)
 					(stroke
-						(width 0.3302)
+						(width 0.3048)
 						(type default)
 					)
 					(fill
@@ -426,10 +436,10 @@
 				)
 				(polyline
 					(pts
-						(xy -1.524 0.508) (xy 1.524 0.508)
+						(xy -1.524 -0.508) (xy 1.524 -0.508)
 					)
 					(stroke
-						(width 0.3048)
+						(width 0.3302)
 						(type default)
 					)
 					(fill
@@ -475,11 +485,16 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "Device:D_Schottky"
-			(pin_numbers hide)
+			(pin_numbers
+				(hide yes)
+			)
 			(pin_names
-				(offset 1.016) hide)
+				(offset 1.016)
+				(hide yes)
+			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -547,10 +562,10 @@
 			(symbol "D_Schottky_0_1"
 				(polyline
 					(pts
-						(xy 1.27 0) (xy -1.27 0)
+						(xy -1.905 0.635) (xy -1.905 1.27) (xy -1.27 1.27) (xy -1.27 -1.27) (xy -0.635 -1.27) (xy -0.635 -0.635)
 					)
 					(stroke
-						(width 0)
+						(width 0.254)
 						(type default)
 					)
 					(fill
@@ -571,10 +586,10 @@
 				)
 				(polyline
 					(pts
-						(xy -1.905 0.635) (xy -1.905 1.27) (xy -1.27 1.27) (xy -1.27 -1.27) (xy -0.635 -1.27) (xy -0.635 -0.635)
+						(xy 1.27 0) (xy -1.27 0)
 					)
 					(stroke
-						(width 0.254)
+						(width 0)
 						(type default)
 					)
 					(fill
@@ -620,9 +635,12 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "Device:R"
-			(pin_numbers hide)
+			(pin_numbers
+				(hide yes)
+			)
 			(pin_names
 				(offset 0)
 			)
@@ -741,6 +759,7 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "Interface_UART:SP3485CN"
 			(pin_names
@@ -900,6 +919,24 @@
 					)
 				)
 				(pin power_in line
+					(at 0 10.16 270)
+					(length 2.54)
+					(name "VCC"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
 					(at 0 -10.16 90)
 					(length 2.54)
 					(name "GND"
@@ -953,29 +990,14 @@
 						)
 					)
 				)
-				(pin power_in line
-					(at 0 10.16 270)
-					(length 2.54)
-					(name "VCC"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "8"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "Jumper:Jumper_2_Open"
 			(pin_names
-				(offset 0) hide)
+				(offset 0)
+				(hide yes)
+			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -1066,9 +1088,9 @@
 			)
 			(symbol "Jumper_2_Open_0_1"
 				(arc
-					(start 1.524 1.27)
+					(start -1.524 1.27)
 					(mid 0 1.778)
-					(end -1.524 1.27)
+					(end 1.524 1.27)
 					(stroke
 						(width 0)
 						(type default)
@@ -1116,6 +1138,7 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "power:+15V"
 			(power)
@@ -1193,7 +1216,7 @@
 				)
 				(polyline
 					(pts
-						(xy 0 0) (xy 0 2.54)
+						(xy 0 2.54) (xy 0.762 1.27)
 					)
 					(stroke
 						(width 0)
@@ -1205,7 +1228,7 @@
 				)
 				(polyline
 					(pts
-						(xy 0 2.54) (xy 0.762 1.27)
+						(xy 0 0) (xy 0 2.54)
 					)
 					(stroke
 						(width 0)
@@ -1219,7 +1242,8 @@
 			(symbol "+15V_1_1"
 				(pin power_in line
 					(at 0 0 90)
-					(length 0) hide
+					(length 0)
+					(hide yes)
 					(name "+15V"
 						(effects
 							(font
@@ -1236,6 +1260,7 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "power:+3V3"
 			(power)
@@ -1313,7 +1338,7 @@
 				)
 				(polyline
 					(pts
-						(xy 0 0) (xy 0 2.54)
+						(xy 0 2.54) (xy 0.762 1.27)
 					)
 					(stroke
 						(width 0)
@@ -1325,7 +1350,7 @@
 				)
 				(polyline
 					(pts
-						(xy 0 2.54) (xy 0.762 1.27)
+						(xy 0 0) (xy 0 2.54)
 					)
 					(stroke
 						(width 0)
@@ -1339,7 +1364,8 @@
 			(symbol "+3V3_1_1"
 				(pin power_in line
 					(at 0 0 90)
-					(length 0) hide
+					(length 0)
+					(hide yes)
 					(name "+3V3"
 						(effects
 							(font
@@ -1356,6 +1382,7 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
 		(symbol "power:GND"
 			(power)
@@ -1435,7 +1462,8 @@
 			(symbol "GND_1_1"
 				(pin power_in line
 					(at 0 0 270)
-					(length 0) hide
+					(length 0)
+					(hide yes)
 					(name "GND"
 						(effects
 							(font
@@ -1452,7 +1480,129 @@
 					)
 				)
 			)
+			(embedded_fonts no)
 		)
+	)
+	(text "Can be used to detect\ninput voltage of strip"
+		(exclude_from_sim no)
+		(at 19.558 65.024 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "191c0c87-fbab-418d-a16e-6138d6253ece")
+	)
+	(text "LED Strip 3"
+		(exclude_from_sim no)
+		(at 233.045 29.845 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "26a1827c-9249-4570-90c6-c4cda605d442")
+	)
+	(text "PMEG6010ELR/PMEG6010CEJ "
+		(exclude_from_sim no)
+		(at 112.395 50.165 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "2b389a0e-3eb1-474d-b499-1fb2967174a6")
+	)
+	(text "LED Strip 1"
+		(exclude_from_sim no)
+		(at 52.07 29.21 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "448f10c3-302d-4c99-8ac0-14abd1177fc4")
+	)
+	(text "SP3485/THVD1450D"
+		(exclude_from_sim no)
+		(at 133.35 147.32 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "6856aef6-f52b-44ba-81e9-472492549359")
+	)
+	(text "LED Strip 2"
+		(exclude_from_sim no)
+		(at 140.97 29.21 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "77d93575-4f6a-4bfe-b13e-b4125728eaa5")
+	)
+	(text "PMEG6010ELR/PMEG6010CEJ "
+		(exclude_from_sim no)
+		(at 23.495 50.165 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "84f34a89-2df7-46ba-958f-f81e3995ddda")
+	)
+	(text "RS485"
+		(exclude_from_sim no)
+		(at 230.505 99.06 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "92bb7047-9814-478a-926e-f9c01e07c99f")
+	)
+	(text "RS485"
+		(exclude_from_sim no)
+		(at 46.355 98.425 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a7f353a8-7b4c-4d8c-b80b-84ff537b0f5b")
+	)
+	(text "PMEG6010ELR/PMEG6010CEJ "
+		(exclude_from_sim no)
+		(at 203.835 50.165 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "bfa4d2fe-b934-4340-9f21-5ded2e6e6f1d")
+	)
+	(text "RS485"
+		(exclude_from_sim no)
+		(at 139.7 98.425 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ee4d1b46-b589-41a9-8333-cd9c32bdf5bc")
 	)
 	(junction
 		(at 140.97 73.66)
@@ -2226,127 +2376,6 @@
 		)
 		(uuid "f393c13b-a001-429a-aefa-e2808231cdc8")
 	)
-	(text "Can be used to detect\ninput voltage of strip"
-		(exclude_from_sim no)
-		(at 19.558 65.024 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "191c0c87-fbab-418d-a16e-6138d6253ece")
-	)
-	(text "LED Strip 3"
-		(exclude_from_sim no)
-		(at 233.045 29.845 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "26a1827c-9249-4570-90c6-c4cda605d442")
-	)
-	(text "PMEG6010ELR/PMEG6010CEJ "
-		(exclude_from_sim no)
-		(at 112.395 50.165 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "2b389a0e-3eb1-474d-b499-1fb2967174a6")
-	)
-	(text "LED Strip 1"
-		(exclude_from_sim no)
-		(at 52.07 29.21 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "448f10c3-302d-4c99-8ac0-14abd1177fc4")
-	)
-	(text "SP3485/THVD1450D"
-		(exclude_from_sim no)
-		(at 133.35 147.32 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "6856aef6-f52b-44ba-81e9-472492549359")
-	)
-	(text "LED Strip 2"
-		(exclude_from_sim no)
-		(at 140.97 29.21 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "77d93575-4f6a-4bfe-b13e-b4125728eaa5")
-	)
-	(text "PMEG6010ELR/PMEG6010CEJ "
-		(exclude_from_sim no)
-		(at 23.495 50.165 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "84f34a89-2df7-46ba-958f-f81e3995ddda")
-	)
-	(text "RS485"
-		(exclude_from_sim no)
-		(at 230.505 99.06 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "92bb7047-9814-478a-926e-f9c01e07c99f")
-	)
-	(text "RS485"
-		(exclude_from_sim no)
-		(at 46.355 98.425 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "a7f353a8-7b4c-4d8c-b80b-84ff537b0f5b")
-	)
-	(text "PMEG6010ELR/PMEG6010CEJ "
-		(exclude_from_sim no)
-		(at 203.835 50.165 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "bfa4d2fe-b934-4340-9f21-5ded2e6e6f1d")
-	)
-	(text "RS485"
-		(exclude_from_sim no)
-		(at 139.7 98.425 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "ee4d1b46-b589-41a9-8333-cd9c32bdf5bc")
-	)
 	(global_label "RS485_3_TX"
 		(shape input)
 		(at 223.52 127 180)
@@ -2906,7 +2935,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "1cab8c71-5f77-44f0-8a7a-9dc06456b1cf")
-		(property "Reference" "#PWR010"
+		(property "Reference" "#PWR046"
 			(at 234.95 54.61 0)
 			(effects
 				(font
@@ -3552,7 +3581,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "4a587938-e8ff-4770-bff5-74280f17a5d7")
-		(property "Reference" "R1"
+		(property "Reference" "R6"
 			(at 46.228 61.0616 0)
 			(effects
 				(font
@@ -3696,7 +3725,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "523a3df4-c6e5-4987-ac76-aed3664b5cba")
-		(property "Reference" "C2"
+		(property "Reference" "C17"
 			(at 45.72 177.8 0)
 			(effects
 				(font
@@ -3841,7 +3870,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "5a450425-99b1-4c55-b5c5-412ded26c35f")
-		(property "Reference" "#PWR010"
+		(property "Reference" "#PWR051"
 			(at 54.61 189.23 0)
 			(effects
 				(font
@@ -3913,7 +3942,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "68fcd5aa-6bc2-4365-a343-2346c5b95f3e")
-		(property "Reference" "#PWR010"
+		(property "Reference" "#PWR014"
 			(at 143.51 54.61 0)
 			(effects
 				(font
@@ -3985,7 +4014,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "738a8c6b-6211-4a39-8f1a-b863d05a9c95")
-		(property "Reference" "#PWR02"
+		(property "Reference" "#PWR040"
 			(at 233.68 110.49 0)
 			(effects
 				(font
@@ -4125,7 +4154,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "7705eb54-d36c-4f11-bbf0-058203079067")
-		(property "Reference" "C2"
+		(property "Reference" "C16"
 			(at 36.83 177.8 0)
 			(effects
 				(font
@@ -4337,7 +4366,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "7941dc14-9962-434c-a7b6-dc30d260f9e0")
-		(property "Reference" "#PWR010"
+		(property "Reference" "#PWR044"
 			(at 44.45 73.025 0)
 			(effects
 				(font
@@ -4558,7 +4587,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "84a71715-f499-4d07-a098-a510a22bb613")
-		(property "Reference" "#PWR02"
+		(property "Reference" "#PWR036"
 			(at 49.53 110.49 0)
 			(effects
 				(font
@@ -4630,7 +4659,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "851b5277-a9d6-46b3-b20e-6c7ff0a14ce5")
-		(property "Reference" "#PWR02"
+		(property "Reference" "#PWR039"
 			(at 142.24 110.49 0)
 			(effects
 				(font
@@ -4833,7 +4862,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "8c0e58bd-3ef6-4d1b-a237-fd841fd8bc18")
-		(property "Reference" "R1"
+		(property "Reference" "R5"
 			(at 46.228 53.4416 0)
 			(effects
 				(font
@@ -4977,7 +5006,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "9714ab9e-4745-4e3e-b09c-0b1576bbfeb4")
-		(property "Reference" "#PWR010"
+		(property "Reference" "#PWR035"
 			(at 133.35 73.025 0)
 			(effects
 				(font
@@ -5279,7 +5308,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "adea4da5-01f5-417e-a645-27af7839710d")
-		(property "Reference" "C2"
+		(property "Reference" "C18"
 			(at 54.61 177.8 0)
 			(effects
 				(font
@@ -5800,7 +5829,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "cf706227-a6e2-4455-b033-f55a5f5eec0a")
-		(property "Reference" "R1"
+		(property "Reference" "R10"
 			(at 226.568 61.0616 0)
 			(effects
 				(font
@@ -5875,7 +5904,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "d33c2789-dc18-4b5b-ad27-8840949d0a57")
-		(property "Reference" "R1"
+		(property "Reference" "R9"
 			(at 226.568 53.4416 0)
 			(effects
 				(font
@@ -6099,7 +6128,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "dd0437e2-00c7-48ce-b330-2b15d03ffb14")
-		(property "Reference" "#PWR09"
+		(property "Reference" "#PWR048"
 			(at 45.72 181.61 0)
 			(effects
 				(font
@@ -6171,7 +6200,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "e371dc35-5fb3-4207-8c47-0b1288918ef1")
-		(property "Reference" "#PWR010"
+		(property "Reference" "#PWR049"
 			(at 45.72 189.23 0)
 			(effects
 				(font
@@ -6387,7 +6416,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "eb01e4d5-d01c-4957-8754-f9a1af86db95")
-		(property "Reference" "#PWR010"
+		(property "Reference" "#PWR043"
 			(at 54.61 54.61 0)
 			(effects
 				(font
@@ -6458,7 +6487,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "ec03103d-0d82-4be1-8fdc-3ccaec27bd85")
-		(property "Reference" "R1"
+		(property "Reference" "R7"
 			(at 135.128 53.4416 0)
 			(effects
 				(font
@@ -6533,7 +6562,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "f3ebd85b-c513-4369-a880-843cf25b750d")
-		(property "Reference" "R1"
+		(property "Reference" "R8"
 			(at 135.128 61.0616 0)
 			(effects
 				(font
@@ -6744,7 +6773,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "fe63ba11-d5f1-43cf-81e1-233bd4a60822")
-		(property "Reference" "#PWR09"
+		(property "Reference" "#PWR050"
 			(at 54.61 181.61 0)
 			(effects
 				(font
@@ -6816,7 +6845,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "ff17c1f5-070a-4cb4-a91f-2e4541d7e4bb")
-		(property "Reference" "#PWR010"
+		(property "Reference" "#PWR047"
 			(at 224.79 73.025 0)
 			(effects
 				(font

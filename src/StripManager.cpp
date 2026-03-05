@@ -5,7 +5,7 @@
 
 AwaitableCoroutine StripManager::load() {
     int result;
-    for (int stripIndex = 0; stripIndex < STRIP_COUNT; ++stripIndex) {
+    for (int stripIndex = 0; stripIndex < LEDSTRIP_COUNT; ++stripIndex) {
         auto &strip = this->strips[stripIndex];
         auto &config = strip.config;
         co_await this->storage.read(FIRST_STRIP_ID + stripIndex, &config, sizeof(StripConfig), result);
@@ -34,7 +34,7 @@ AwaitableCoroutine StripManager::load() {
 
 AwaitableCoroutine StripManager::save() {
     int result;
-    for (int stripIndex = 0; stripIndex < STRIP_COUNT; ++stripIndex) {
+    for (int stripIndex = 0; stripIndex < LEDSTRIP_COUNT; ++stripIndex) {
         if (this->stripConfigsModified & (1 << stripIndex)) {
             auto &strip = this->strips[stripIndex];
             auto &config = strip.config;
@@ -124,19 +124,21 @@ int StripManager::updateLedCount(int stripIndex, int sourceIndex, int delta) {
 
 Coroutine StripManager::run() {
     while (true) {
-        // calculate all effects
+        // calculate all effects (see EffectManager::run())
         this->syncBarrier.doAll();
 
-        for (int stripIndex = 0; stripIndex < int(std::size(this->strips)); ++stripIndex) {
+        for (int stripIndex = 0; stripIndex < 1/*int(std::size(this->strips))*/; ++stripIndex) {
             auto &strip = this->strips[stripIndex];
+            auto &buffer = *strip.buffer;
             auto &config = strip.config;
 
             // wait until strip buffer is ready
-            co_await strip.buffer.untilReady();
+            co_await buffer.untilReady();
 
             // copy strip data into strip buffer
-            uint8_t *dst = strip.buffer.data();
+            uint8_t *dst = buffer.data();
             for (int sourceIndex = 0; sourceIndex < config.sourceCount; ++sourceIndex) {
+                // get source (player index and start/count of LEDs)
                 auto &source = config.sources[sourceIndex];
                 if (this->editStripIndex == -1) {
                     // normal mode
@@ -204,7 +206,7 @@ Coroutine StripManager::run() {
             }
 
             // show on led strip
-            strip.buffer.startWrite(dst);
+            buffer.startWrite(dst);
         }
     }
 }

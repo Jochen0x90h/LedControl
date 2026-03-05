@@ -1,10 +1,10 @@
-function(firmware FW BOARD_LIB)
+function(firmware APP BOARD_LIB)
     #message("*** Target: ${TARGET}")
     # check if target exists
     if(TARGET ${BOARD_LIB})
         string(REGEX REPLACE ".*\\:" "" BOARD ${BOARD_LIB})
-        set(NAME "${FW}-${BOARD}")
-        message("*** Firmware ${FW} on board ${BOARD}")
+        set(NAME "${APP}-${BOARD}")
+        message("*** App ${APP} on board ${BOARD}")
 
         add_executable(${NAME}
             E12.cpp
@@ -30,8 +30,8 @@ function(firmware FW BOARD_LIB)
             effects/Summer.hpp
             effects/Autumn.hpp
             effects/Winter.hpp
-            ${FW}.cpp
-            ${BOARD}/${FW}.hpp
+            ${APP}.cpp
+            ${BOARD}/${APP}.hpp
         )
         target_include_directories(${NAME}
             PRIVATE
@@ -111,5 +111,4 @@ firmware(LedControl coco-devboards::emu)
 firmware(LedControl g431)
 firmware(LedControl g431Triple)
 
-firmware(Test coco-devboards::emu)
-firmware(Test g431)
+#firmware(DisplayTest g431Triple)

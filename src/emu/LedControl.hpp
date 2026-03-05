@@ -3,6 +3,7 @@
 #include "config.hpp"
 #include <coco/SSD130x.hpp>
 #include <coco/BufferStorage.hpp>
+#include <coco/DummyOutputPort.hpp>
 #include <coco/platform/SSD130x_emu.hpp>
 #include <coco/platform/RotaryKnob_emu.hpp>
 #include <coco/platform/LedStrip_emu.hpp>
@@ -12,8 +13,6 @@
 
 
 using namespace coco;
-
-//constexpr int LEDSTRIP_LENGTH = 300;
 
 // emulated display
 constexpr int DISPLAY_WIDTH = 128;
@@ -54,19 +53,24 @@ struct Drivers {
     Loop_emu loop;
 
     // 3 LED strips
-    LedStrip_emu ledStrip1{loop};
-    LedStrip_emu::Buffer ledBuffer1{MAX_LEDSTRIP_LENGTH, ledStrip1};
-    Newline_emu newline1{loop}; // start a new line in the emulateor gui
-    LedStrip_emu ledStrip2{loop};
-    LedStrip_emu::Buffer ledBuffer2{MAX_LEDSTRIP_LENGTH, ledStrip2};
+    LedStrip_emu strip1{loop};
+    LedStrip_emu::Buffer stripBuffer1{MAX_LEDSTRIP_LENGTH, strip1};
+
     Newline_emu newline2{loop}; // start a new line in the emulateor gui
-    LedStrip_emu ledStrip3{loop};
-    LedStrip_emu::Buffer ledBuffer3{MAX_LEDSTRIP_LENGTH, ledStrip3};
-    Newline_emu newline3{loop}; // start a new line in the emulateor gui
+    LedStrip_emu strip2{loop};
+    LedStrip_emu::Buffer stripBuffer2{MAX_LEDSTRIP_LENGTH, strip2};
+
+    //Newline_emu newline3{loop}; // start a new line in the emulateor gui
+    //LedStrip_emu strip3{loop};
+    //LedStrip_emu::Buffer stripBuffer3{MAX_LEDSTRIP_LENGTH, strip3};
+
+    Buffer *stripBuffers[LEDSTRIP_COUNT] {&stripBuffer1, &stripBuffer2};//, &stripBuffer3};
 
     // display
+    Newline_emu newlineDisplay{loop}; // start a new line in the emulateor gui
     SSD130x_emu displayBuffer{loop, DISPLAY_WIDTH, DISPLAY_HEIGHT};
-    AwaitableCoroutine resetDisplay() {co_return;}
+    //AwaitableCoroutine resetDisplay() {co_return;}
+    DummyOutputPort resetPin;
 
     // rotary knob
     RotaryKnob_emu input{loop, true, 100}; // gui id

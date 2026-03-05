@@ -654,9 +654,9 @@ AwaitableCoroutine configurationMenu(Loop &loop, SSD130x &display, InputDevice &
     EffectManager &effectManager, StripManager &stripManager, RemoteControl &remoteControl)
 {
     // initialize and enable the display
-    co_await drivers.resetDisplay();
+    /*co_await drivers.resetDisplay();
     co_await display.init();
-    co_await display.enable();
+    co_await display.enable();*/
 
     //int currentPresetIndex = -1;
 
@@ -756,8 +756,13 @@ AwaitableCoroutine configurationMenu(Loop &loop, SSD130x &display, InputDevice &
 Coroutine mainMenu(Loop &loop, SSD130x &display, InputDevice &input, Storage &storage,
     EffectManager &effectManager, StripManager &stripManager, RemoteControl &remoteControl)
 {
+    // reset display
+    drivers.resetPin.set(1, 1);
+    co_await loop.sleep(10ms);
+    drivers.resetPin.set(0, 1);
+
     // initialize and enable the display
-    co_await drivers.resetDisplay();
+    //co_await drivers.resetDisplay();
     co_await display.init();
     co_await display.enable();
 
@@ -1053,7 +1058,41 @@ Coroutine noiseTest(Loop &loop, Strip &strip, Color color) {
 // size must be at least MAX_LEDSTRIP_LENGTH
 uint32_t stripData[1000];
 
+
+
+Coroutine draw(Loop &loop, OutputPort &out, Buffer &buffer) {
+    SSD130x display(buffer, DISPLAY_WIDTH, DISPLAY_HEIGHT, DISPLAY_FLAGS);
+
+    // reset display
+    out.set(1, 1);
+    co_await loop.sleep(10ms);
+    out.set(0, 1);
+
+    // initialize display
+    co_await display.init();
+    co_await display.enable();
+
+    int x = 0;
+    int y = 0;
+    while (true) {
+        Bitmap bitmap = display.bitmap();
+        bitmap.clear();
+        bitmap.drawText(0, 0, tahoma8pt1bpp, "Hello World!");
+        bitmap.drawText(50, 50, tahoma8pt1bpp, "SSD1309 SPI");
+        bitmap.drawRectangle(x, y, 10, 10);
+        x = (x + 1) & (DISPLAY_WIDTH - 1);
+        y = (y + 1) & (DISPLAY_HEIGHT - 1);
+
+        co_await display.show();
+        co_await loop.sleep(200ms);
+
+        debug::toggleRed();
+        debug::toggleGreen();
+    }
+}
+
 int main() {
+
     math::init();
 
     // flash storage
@@ -1063,13 +1102,12 @@ int main() {
     //Strip strip(drivers.ledBuffer1, drivers.ledBuffer2);
 
     // effect manager
-    //EffectManager effectManager(drivers.loop, storage, strip, effectInfos);
     EffectManager effectManager(drivers.loop, storage, effectInfos, StripData(stripData));
 
     // strip manager
     StripManager stripManager(drivers.loop, storage, StripData(stripData),
         effectManager.syncBarrier, effectManager.playerInfos,
-        drivers.ledBuffer1, drivers.ledBuffer2, drivers.ledBuffer3);
+        drivers.stripBuffers);//ledBuffer1, drivers.ledBuffer2, drivers.ledBuffer3);
 
     // IR remote control
     RemoteControl remoteControl(drivers.loop, storage, drivers.irDevice);
@@ -1077,6 +1115,9 @@ int main() {
     // start idle display
     SSD130x display(drivers.displayBuffer, DISPLAY_WIDTH, DISPLAY_HEIGHT, DISPLAY_FLAGS);
     mainMenu(drivers.loop, display, drivers.input, storage, effectManager, stripManager, remoteControl);
+
+
+    //draw(drivers.loop, drivers.resetPin, drivers.displayBuffer);
 
     drivers.loop.run();
     return 0;

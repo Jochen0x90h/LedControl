@@ -24,17 +24,17 @@ class Project(ConanFile):
         return False
 
     def requirements(self):
-        self.requires("coco-led-strip/towards1", options={"platform": self.options.platform})
-        self.requires("coco-spi/towards1", options={"platform": self.options.platform})
-        self.requires("coco-mono-display/towards1", options={"platform": self.options.platform})
-        self.requires("coco-flash/towards1", options={"platform": self.options.platform})
-        self.requires("coco-storage/towards1", options={"platform": self.options.platform})
-        self.requires("coco-math/towards1", options={"platform": self.options.platform})
-        self.requires("coco-ir/main", options={"platform": self.options.platform})
+        self.requires("coco-led-strip/linux", options={"platform": self.options.platform})
+        self.requires("coco-spi/linux", options={"platform": self.options.platform})
+        self.requires("coco-mono-display/linux", options={"platform": self.options.platform})
+        self.requires("coco-flash/linux", options={"platform": self.options.platform})
+        self.requires("coco-storage/linux", options={"platform": self.options.platform})
+        self.requires("coco-math/linux", options={"platform": self.options.platform})
+        self.requires("coco-ir/linux", options={"platform": self.options.platform})
 
     def build_requirements(self):
-        self.tool_requires("coco-toolchain/towards1", options={"platform": self.options.platform})
-        self.test_requires("coco-devboards/towards1", options={"platform": self.options.platform})
+        self.tool_requires("coco-toolchain/linux", options={"platform": self.options.platform})
+        self.test_requires("coco-devboards/linux", options={"platform": self.options.platform})
         if not self.cross():
             self.test_requires("gtest/1.17.0")
 

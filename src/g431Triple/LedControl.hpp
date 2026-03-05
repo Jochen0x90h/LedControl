@@ -7,6 +7,7 @@
 #include <coco/platform/LedStrip_UART_DMA.hpp>
 #include <coco/platform/Loop_TIM2.hpp>
 #include <coco/platform/SpiMaster_SPI_DMA.hpp>
+#include <coco/platform/SpiDisplayChannel_SPI_DMA.hpp>
 #include <coco/platform/OutputPort_GPIO.hpp>
 #include <coco/BufferStorage.hpp>
 #include <coco/SSD130x.hpp>
@@ -45,73 +46,72 @@ struct Drivers {
 
     // LED strip 1
     using LedStrip = LedStrip_UART_DMA;
-    LedStrip ledStrip1{loop,
+    LedStrip strip1{loop,
         gpio::PC4 | gpio::AF7 | gpio::Config::SPEED_HIGH, // USART1 TX (RS485_1_TX)
-        usart::USART1_INFO,
+        uart::USART1_INFO,
         dma::DMA1_CH1_INFO,
         USART1_CLOCK,
         1125ns, // bit time T
         75us}; // reset time
-    LedStrip::Buffer<MAX_LEDSTRIP_LENGTH * 3> ledBuffer1{ledStrip1};
+    LedStrip::Buffer<MAX_LEDSTRIP_LENGTH * 3> stripBuffer1{strip1};
 
     // LED strip 2
-    LedStrip ledStrip2{loop,
+    LedStrip strip2{loop,
         gpio::PB3 | gpio::AF7 | gpio::Config::SPEED_HIGH, // USART2 TX (RS485_2_TX)
-        usart::USART2_INFO,
+        uart::USART2_INFO,
         dma::DMA1_CH2_INFO,
         USART2_CLOCK,
         1125ns, // bit time T
         75us}; // reset time
-    LedStrip::Buffer<MAX_LEDSTRIP_LENGTH * 3> ledBuffer2{ledStrip2};
+    LedStrip::Buffer<MAX_LEDSTRIP_LENGTH * 3> stripBuffer2{strip2};
 
     // LED strip 3
-    /*LedStrip ledStrip3{loop,
+    /*LedStrip strip3{loop,
         gpio::PC10 | gpio::AF7 | gpio::Config::SPEED_HIGH, // USART3 TX (RS485_3_TX)
-        usart::USART3_INFO,
+        uart::USART3_INFO,
         dma::DMA1_CH3_INFO,
         USART3_CLOCK,
         1125ns, // bit time T
         75us}; // reset time*/
-    LedStrip::Buffer<MAX_LEDSTRIP_LENGTH * 3> ledBuffer3{ledStrip2}; //!
+    //LedStrip::Buffer<MAX_LEDSTRIP_LENGTH * 3> stripBuffer3{strip3};
+
+    Buffer *stripBuffers[LEDSTRIP_COUNT] {&stripBuffer1, &stripBuffer2};//, &stripBuffer3};
 
     // display
     using SpiMaster = SpiMaster_SPI_DMA;
     SpiMaster displaySpi{loop,
-        gpio::PA5 | gpio::AF5, // SPI1 SCK (DISP_SCK)
+        gpio::PA5 | gpio::AF5 | gpio::Config::SPEED_MEDIUM, // SPI1 SCK (DISP_SCK)
+        gpio::PA7 | gpio::AF5 | gpio::Config::SPEED_MEDIUM, // SPI1 MOSI (DISP_MOSI)
         gpio::NONE, // no MISO, send only
-        gpio::PA7 | gpio::AF5, // SPI1 MOSI (DISP_MOSI)
-        gpio::PA0, // DC (DISP_D/nC)
+        //gpio::PA0, // DC (DISP_D/nC)
         spi::SPI1_INFO,
-        dma::DMA1_CH2_CH3_INFO,
-        spi::ClockConfig::DIV32, spi::Config::PHA1_POL1};
-    SpiMaster::Channel displayChannel{displaySpi, gpio::PA4 | gpio::Config::INVERT, true}; // nCS (DISP_nCS)
-    SpiMaster::Buffer<0, DISPLAY_WIDTH * DISPLAY_HEIGHT / 8> displayBuffer{displayChannel};
+        dma::DMA1_CH4_CH5_INFO};
+        //spi::ClockConfig::DIV32, spi::Config::PHA1_POL1};
+    //SpiMaster::Channel displayChannel{displaySpi, gpio::PA4 | gpio::Config::INVERT, true}; // nCS (DISP_nCS)
+    SpiDisplayChannel_SPI_DMA displayChannel{displaySpi,
+        gpio::PA4 | gpio::Config::SPEED_MEDIUM | gpio::Config::INVERT, // DISP_nCS
+        gpio::PA0 | gpio::Config::SPEED_MEDIUM, false, 0x40, // DISP_D/nC
+        spi::Format::CLOCK_DIV_32 | spi::Format::PHA1_POL1 | spi::Format::DATA_8};
+    SpiMaster::Buffer<1, DISPLAY_WIDTH * DISPLAY_HEIGHT / 8> displayBuffer{displayChannel};
 
     // display reset pin
     static constexpr OutputPort_GPIO::Config outputConfig[] {
-        {gpio::PA2 | gpio::Config::SPEED_MEDIUM | gpio::Config::INVERT, false}, // display reset (DISP_nRST)
+        {gpio::PC15 | gpio::Config::SPEED_MEDIUM | gpio::Config::INVERT, false}, // DISP_nRST
     };
     OutputPort_GPIO resetPin{outputConfig};
 
-    // display reset method
-    AwaitableCoroutine resetDisplay() {
-        resetPin.set(1, 1);
-        co_await loop.sleep(10ms);
-        resetPin.set(0, 1);
-        co_return;
-    }
 
     // rotary knob with push button
     using InputDevice = InputDevice_EXTI_TIM;
     static constexpr gpio::Config inputPinConfigs[] {
         gpio::PC13 | gpio::Config::PULL_DOWN, // rotary knob A (ENC_A)
         gpio::PC14 | gpio::Config::PULL_DOWN, // rotary knob B (ENC_B)
-        gpio::PC15 | gpio::Config::PULL_DOWN, // push button (SW)
+        gpio::PB8 | gpio::Config::PULL_DOWN, // push button (SW)`
     };
     static constexpr InputDevice::Config inputConfigs[] {
-        {0, 0, InputDevice::Action::DECREMENT_WHEN_ENABLED, InputDevice::Action::INCREMENT_WHEN_ENABLED, 1ms, 1ms}, // quadrature decoder (inputs 0 and 1, counter 0)
-        {2, 1, InputDevice::Action::INCREMENT, InputDevice::Action::NONE, 10ms, 10ms}, // button press (input 2, counter 1)
-        {2, 2, InputDevice::Action::INCREMENT, InputDevice::Action::NONE, 3s, 10ms}, // button long press (input 2, counter 2)
+        {0, 0, InputDevice::Init::INPUT, InputDevice::Action::DECREMENT_WHEN_ENABLED, InputDevice::Action::INCREMENT_WHEN_ENABLED, 1ms, 1ms}, // quadrature decoder (inputs 0 and 1, counter 0)
+        {2, 1, InputDevice::Init::LOW, InputDevice::Action::INCREMENT, InputDevice::Action::NONE, 10ms, 10ms}, // button press (input 2, counter 1)
+        {2, 2, InputDevice::Init::LOW, InputDevice::Action::INCREMENT, InputDevice::Action::NONE, 3s, 10ms}, // button long press (input 2, counter 2)
     };
     InputDevice input{loop,
         inputPinConfigs,
@@ -126,6 +126,8 @@ struct Drivers {
         timer::TIM3_INFO,
         1, // channel 1
         APB1_TIMER_CLOCK};
+    IrReceiver::Buffer<80> irBuffer1{irDevice};
+    IrReceiver::Buffer<80> irBuffer2{irDevice};
 
     // flash storage
     Flash_flash flash;
@@ -150,29 +152,42 @@ extern "C" {
 
 // LED strip 1
 void USART1_IRQHandler() {
-    drivers.ledStrip1.UART_IRQHandler();
+    drivers.strip1.UART_IRQHandler();
 }
 void DMA1_Channel1_IRQHandler() {
-    drivers.ledStrip1.DMA_IRQHandler();
+    drivers.strip1.DMA_IRQHandler();
 }
 
 // LED strip 2
-
+void USART2_IRQHandler() {
+    drivers.strip2.UART_IRQHandler();
+}
+void DMA1_Channel2_IRQHandler() {
+    drivers.strip2.DMA_IRQHandler();
+}
 
 // LED strip 3
 
 
 // display
-void DMA1_Channel2_IRQHandler() {
+void DMA1_Channel4_IRQHandler() {
     drivers.displaySpi.DMA_Rx_IRQHandler();
 }
 
 // rotary knob with push button
+void EXTI9_5_IRQHandler() {
+    drivers.input.EXTI_IRQHandler();
+}
 void EXTI15_10_IRQHandler() {
     drivers.input.EXTI_IRQHandler();
 }
-void TIM3_IRQHandler() {
+void TIM4_IRQHandler() {
     drivers.input.TIM_IRQHandler();
+}
+
+// IR receiver
+void TIM3_IRQHandler() {
+    drivers.irDevice.TIM_IRQHandler();
 }
 
 }

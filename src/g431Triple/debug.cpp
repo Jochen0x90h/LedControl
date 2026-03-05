@@ -1,6 +1,6 @@
 #include <coco/Time.hpp>
 #include <coco/platform/gpio.hpp>
-#include <coco/platform/usart.hpp>
+#include <coco/platform/uart.hpp>
 #include "config.hpp"
 
 
@@ -12,10 +12,10 @@ constexpr auto greenPin = gpio::PB2 | gpio::Config::INVERT;
 constexpr auto bluePin = gpio::PB11 | gpio::Config::INVERT;
 
 const auto txPin = gpio::PC10 | gpio::AF7;
-#define UART_INFO usart::USART3_INFO
+#define UART_INFO uart::USART3_INFO
 constexpr auto uartClock = USART3_CLOCK;
-constexpr auto uartConfig = usart::Config::ENABLE_FIFO;
-constexpr auto uartFormat = usart::Format::DEFAULT;
+constexpr auto uartConfig = uart::Config::ENABLE_FIFO;
+constexpr auto uartFormat = uart::Format::DEFAULT;
 constexpr auto baudRate = 115200Hz;
 
 void init() {
@@ -27,10 +27,8 @@ void init() {
     // initialize UART for debug output to virtual COM port
     gpio::enableAlternate(txPin);
     UART_INFO.enableClock()
-        .enable(UART_INFO.enablePins(gpio::NONE, txPin, uartConfig), uartFormat, uartClock, baudRate)
+        .enable(UART_INFO.enableRxTxPins(gpio::NONE, txPin, uartConfig), uartFormat, uartClock, baudRate)
         .startTx();
-        //.initBaudRate(uartConfig, uartClock, baudRate)
-        //.enable(uartConfig, uartFormat, usart::Function::TX);
 }
 
 void set(uint32_t bits, uint32_t function) {
@@ -44,7 +42,7 @@ void sleep(Microseconds<> time) {
 }
 
 void write(const char *message, int length) {
-    auto uart = UART_INFO.registers;
+    /*auto uart = UART_INFO.registers;
 
     for (int i = 0; i < length; ++i) {
         // wait until tx fifo has space
@@ -52,6 +50,15 @@ void write(const char *message, int length) {
 
         // send a character
         uart->TDR = message[i];
+    }*/
+    auto uart = UART_INFO.instance();
+
+    for (int i = 0; i < length; ++i) {
+        // wait until fifo has space
+        uart.waitTx();
+
+        // send a character
+        uart.tx(message[i]);
     }
 }
 
